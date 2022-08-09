@@ -1,3 +1,42 @@
-/* 
-    General Styles used on every website (Don't Repeat Yourself)
-*/
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
+@import "../styles/theme/theme.scss";
+
+/* CSS Normalize */
+* {
+  padding: 0px !important;
+  margin: 0px !important;
+  box-sizing: border-box;
+}
+
+/* Montserrat font setting */
+body {
+  font-family: "Montserrat", sans-serif;
+}
+
+/* Custom btn-primary */
+.btn-primary {
+  color: white;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  color: white;
+}
+
+.btn-primary:focus {
+  box-shadow: none;
+  color: white;
+}
+
+/* Disable predefined btn click effect */
+.btn:focus {
+  box-shadow: transparent;
+}
+
+.btn:active {
+  box-shadow: transparent;
+}
+
+.btn:hover {
+  border-color: transparent;
+}
