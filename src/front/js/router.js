@@ -4,6 +4,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import injectContext from "./store/appContext";
 import Dashboard from "./pages/dashboard/Dashboard.jsx";
 import DashboardLayouts from "./layouts/DashboardLayout.jsx";
+import OffcanvasSidebar from "./components/Dashboard-sidebar/Offcanvas-sidebar.jsx";
+import Cases from "./pages/cases/Cases.jsx";
 
 //create your first component
 const Router = () => {
@@ -13,10 +15,12 @@ const Router = () => {
 
   return (
     <div>
+      <OffcanvasSidebar />
       <DashboardLayouts>
         <BrowserRouter basename={basename}>
           <Routes>
             <Route element={<Dashboard />} path="/" />
+            <Route element={<Cases />} path="/cases" />
           </Routes>
         </BrowserRouter>
       </DashboardLayouts>

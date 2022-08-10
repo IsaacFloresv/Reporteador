@@ -8,10 +8,10 @@ const DashboardLayout = ({ children }) => {
   return (
     <>
       <div className="d-flex">
-        <div className="d-none d-md-none d-lg-block ">
+        <div className="d-none d-xl-block ">
           <Sidebar />
         </div>
-        <div className="w-100 bg-light">
+        <div className="bg-light vw-100">
           <Navbar />
           {children}
         </div>

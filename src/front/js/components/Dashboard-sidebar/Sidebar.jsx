@@ -15,33 +15,33 @@ const Sidebar = () => {
   const menu = [
     {
       name: "Dashboard",
-      icon: <MdOutlineDashboard height={20} className="mt-1" />,
+      icon: <MdOutlineDashboard height={20} className="mt-2" />,
     },
     {
       name: "Mis Tareas",
-      icon: <GrTask height={20} className="mt-1" />,
+      icon: <GrTask height={20} className="mt-2" />,
     },
     {
       name: "Clientes",
-      icon: <TbUsers />,
+      icon: <TbUsers height={20} className="mt-2" />,
     },
     {
       name: "Casos",
-      icon: <HiOutlineBriefcase />,
+      icon: <HiOutlineBriefcase height={20} className="mt-2" />,
     },
     {
       name: "Documentos",
-      icon: <IoDocumentTextOutline />,
+      icon: <IoDocumentTextOutline height={20} className="mt-2" />,
     },
     {
       name: "Automatizacion",
-      icon: <BsChatRightText />,
+      icon: <BsChatRightText height={20} className="mt-2" />,
     },
   ];
 
   return (
     <div
-      class="d-flex flex-column flex-shrink-0 px-3 py-2"
+      className="d-flex flex-column flex-shrink-0 px-3 py-2"
       style={{ width: 280 + "px", height: 100 + "vh" }}
     >
       <div>
@@ -54,10 +54,10 @@ const Sidebar = () => {
       </div>
 
       {/* Menu */}
-      <ul class="nav flex-column mb-auto px-3 mt-2">
-        {menu.map((link) => {
+      <ul className="nav flex-column mb-auto px-3 mt-2">
+        {menu.map((link, index) => {
           return (
-            <div className="py-3 d-flex align-content-center">
+            <div key={index} className="py-3 d-flex align-content-center">
               {link.icon}
               <li className="mx-2 fw-normal" style={{ marginTop: 5 + "px" }}>
                 {link.name}
