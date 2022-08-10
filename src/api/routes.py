@@ -4,6 +4,7 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, User, Clients
 from api.utils import generate_sitemap, APIException
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 
 api = Blueprint('api', __name__)
 
@@ -31,12 +32,41 @@ def login():
 
     if password != user.password:
         return jsonify({"msg": "Wrong password"}), 401
-
+    access_token = create_access_token(identity=email)
     response_body = {
         'msg': 'Welcome to Dropcase',
+        'token':'access_token',
         'user': user.serialize()
     }
     return jsonify(response_body), 200
+
+@api.route("/auth", methods=["GET"])
+@jwt_required()
+def validate_token():
+    
+    user = get_jwt_identity()
+    validate_user = User.query.filter_by(email=user).first()
+    response_body = {
+        'logged_in_as': validate_user,
+        'msg': 'The token is valid.',
+        'user': user.serialize()
+    }
+    return jsonify(response_body), 200
+
+@api.route("/protected", methods=["GET"])
+def protected():
+    # Access the identity of the current user with get_jwt_identity
+    current_user = get_jwt_identity()
+    return jsonify({
+        "logged_in_as": current_user,
+        "msg": "Access Granted to Private route"
+    }), 200
+
+@api.route('/user/<int:id>', methods=['GET'])
+def single_user(id):
+    users = User.query.get(id)
+    users = user.serialize()
+    return jsonify(users), 200
 
 @api.route('/user', methods=['GET','POST','PUT'])
 def users():
