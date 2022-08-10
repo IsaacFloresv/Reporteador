@@ -3,21 +3,19 @@ from flask_sqlalchemy import SQLAlchemy
 import datetime
 from sqlalchemy.orm import relationship
 
-
 db = SQLAlchemy()
 
 class Users(db.Model):
-    __tablename__='users'
+    __tablename__='Users'
     id = db.Column(db.Integer, primary_key=True)
-
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(50), unique=False, nullable=False)
     name = db.Column(db.String(100), unique=False, nullable=False)
     lastname = db.Column(db.String(100), unique=False, nullable=False)
-    lawyer_identification = db.Column(db.String(100), unique=False, nullable=False)
-    delete = db.Column(db.Boolean, unique=False, nullable=False)
+    lawyer_identification = db.Column(db.String(100), unique=True, nullable=False)
+    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
+    delete = db.Column(db.Boolean, unique=False, nullable=False,default=False)
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow() )
-
 
     def __repr__(self):
         return f'<Users {self.id}>'
@@ -29,37 +27,11 @@ class Users(db.Model):
             'Lastname':self.lastname,
             "Email": self.email,
             'Active':self.is_active,
-            'Created at':self.create_at            # do not serialize the password, its a security breach
+            'Create_at':self.create_at            
         }
 
 class Clients(db.Model):
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120),nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    first_lastname = db.Column(db.String(120),nullable=False)
-    second_lastname = db.Column(db.String(120),nullable=False)
-    lawyer_id = db.Column(db.String(80), unique=False, nullable=False)
-    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
-    create_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow())
-    
-    def __repr__(self):
-        return f'<Clients {self.email}>'
-    def serialize(self):
-        return {
-            "id": self.id,
-            "email": self.email,
-
-            "password": self.password,
-            "name": self.name,
-            "lastname": self.lastname,
-            "lawyer_identification": self.lawyer_identification,
-            "delete":self.delete
-            # do not serialize the password, its a security breach
-        }
-
-class Clients(db.Model):
-    __tablename__='clients'
+    __tablename__='Clients'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=True, nullable=False)
     first_lastname = db.Column(db.String(120), unique=True, nullable=False)
@@ -87,9 +59,9 @@ class Clients(db.Model):
         }
 
 class Phone_number(db.Model):
-    __tablename__='phone_number'
+    __tablename__='Phone_number'
     id = db.Column(db.Integer, primary_key=True)
-    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'),nullable=False)
+    client_id = db.Column(db.Integer, db.ForeignKey('Clients.id'),nullable=False)
     client_id_relation= relationship(Clients,primaryjoin=client_id==Clients.id)
     phone_number = db.Column(db.String(50), unique=True, nullable=False)
     delete = db.Column(db.Boolean, unique=False, nullable=False)
@@ -108,13 +80,13 @@ class Phone_number(db.Model):
         }
 
 class Address(db.Model):
-    __tablename__='address'
+    __tablename__='Address'
     id = db.Column(db.Integer, primary_key=True)
-    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'),nullable=False)
+    client_id = db.Column(db.Integer, db.ForeignKey('Clients.id'),nullable=False)
     client_id_relation= relationship(Clients,primaryjoin=client_id==Clients.id)
     address = db.Column(db.String(100), unique=True, nullable=False)
     delete = db.Column(db.Boolean, unique=False, nullable=False)
-    db.Column(create_at = db.DateTime(timezone=True), default=datetime.datetime.utcnow())
+    create_at=db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
     def __repr__(self):
         return f'<Address {self.id}, {self.client_id}, {self.address}, {self.delete}>'
@@ -129,9 +101,9 @@ class Address(db.Model):
         }
 
 class Email_address(db.Model):
-    __tablename__='email_address'
+    __tablename__='Email_address'
     id = db.Column(db.Integer, primary_key=True)
-    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'),nullable=False)
+    client_id = db.Column(db.Integer, db.ForeignKey('Clients.id'),nullable=False)
     client_id_relation= relationship(Clients,primaryjoin=client_id==Clients.id)
     email_address = db.Column(db.String(100), unique=True, nullable=False)
     delete = db.Column(db.Boolean, unique=False, nullable=False)
@@ -150,9 +122,9 @@ class Email_address(db.Model):
         }
 
 class Notes(db.Model):
-    __tablename__='notes'
+    __tablename__='Notes'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'),nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('Users.id'),nullable=False)
     user_id_relation= relationship(Users,primaryjoin=user_id==Users.id)
     data = db.Column(db.String(500), unique=True, nullable=False)
     delete = db.Column(db.Boolean, unique=False, nullable=False)
@@ -171,7 +143,7 @@ class Notes(db.Model):
         }
 
 class Case_status(db.Model):
-    __tablename__='case_status'
+    __tablename__='Case_status'
     id = db.Column(db.Integer, primary_key=True)
     Case_status = db.Column(db.String(50), unique=True, nullable=False)
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
@@ -188,37 +160,37 @@ class Case_status(db.Model):
 
 
 class Files(db.Model):
-    __tablename__='files'
+    __tablename__='Files'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), unique=True, nullable=False)
     url = db.Column(db.String(500), unique=True, nullable=False)
-    Case_udates_id = db.Column(db.Integer, unique=True, nullable=False)
+    Case_updates_id = db.Column(db.Integer, unique=True, nullable=False)
     delete = db.Column(db.Boolean, unique=False, nullable=False)
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
     def __repr__(self):
-        return f'<Files {self.id}, {self.name}, {self.url}, {self.Case_udates_id}, {self.delete}>'
+        return f'<Files {self.id}, {self.name}, {self.url}, {self.Case_updates_id}, {self.delete}>'
 
     def serialize(self):
         return {
             "id": self.id,
             "name": self.name,
             "url": self.url,
-            "Case_udates_id": self.Case_udates_id,
+            "Case_updates_id": self.Case_updates_id,
             "delete": self.delete,
             # do not serialize the password, its a security breach
         }
 
 class Cases(db.Model):
-    __tablename__='cases'
+    __tablename__='Cases'
     id = db.Column(db.Integer, primary_key=True)
     exp_number = db.Column(db.Integer, unique=True, nullable=False)
     description = db.Column(db.String(250), unique=True, nullable=False)
-    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'),nullable=False)
+    client_id = db.Column(db.Integer, db.ForeignKey('Clients.id'),nullable=False)
     client_id_relation= relationship(Clients,primaryjoin=client_id==Clients.id)
-    lawyer_id = db.Column(db.Integer, db.ForeignKey('users.id'),nullable=False)
+    lawyer_id = db.Column(db.Integer, db.ForeignKey('Users.id'),nullable=False)
     lawyer_id_relation= relationship(Users,primaryjoin=lawyer_id==Users.id)
-    status_id = db.Column(db.Integer, db.ForeignKey('case_status.id'),nullable=False)
+    status_id = db.Column(db.Integer, db.ForeignKey('Case_status.id'),nullable=False)
     status_id_relation= relationship(Case_status,primaryjoin=status_id==Case_status.id)
     cost = db.Column(db.Integer, unique=True, nullable=False)
     init_date = db.Column(db.String(50), unique=True, nullable=False)
@@ -246,9 +218,9 @@ class Cases(db.Model):
 
 
 class Case_updates(db.Model):
-    __tablename__='case_updates'
+    __tablename__='Case_updates'
     id = db.Column(db.Integer, primary_key=True)
-    case_id = db.Column(db.Integer, db.ForeignKey('cases.id'),nullable=False)
+    case_id = db.Column(db.Integer, db.ForeignKey('Cases.id'),nullable=False)
     case_id_relation= relationship(Cases,primaryjoin=case_id==Cases.id)
     description = db.Column(db.String(500), unique=True, nullable=False)
     file_id = db.Column(db.Integer, unique=True, nullable=False)
@@ -261,7 +233,7 @@ class Case_updates(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "case_id": sefl.case_id,
+            "case_id": self.case_id,
             "description": self.description,
             "file_id": self.file_id,
             "delete": self.delete,
