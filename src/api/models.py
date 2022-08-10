@@ -1,12 +1,15 @@
+
 from flask_sqlalchemy import SQLAlchemy
 import datetime
 from sqlalchemy.orm import relationship
+
 
 db = SQLAlchemy()
 
 class Users(db.Model):
     __tablename__='users'
     id = db.Column(db.Integer, primary_key=True)
+
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(50), unique=False, nullable=False)
     name = db.Column(db.String(100), unique=False, nullable=False)
@@ -15,13 +18,38 @@ class Users(db.Model):
     delete = db.Column(db.Boolean, unique=False, nullable=False)
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow() )
 
+
     def __repr__(self):
         return f'<Users {self.id}>'
 
     def serialize(self):
         return {
+            "ID": self.id,
+            'Name':self.name,
+            'Lastname':self.lastname,
+            "Email": self.email,
+            'Active':self.is_active,
+            'Created at':self.create_at            # do not serialize the password, its a security breach
+        }
+
+class Clients(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120),nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    first_lastname = db.Column(db.String(120),nullable=False)
+    second_lastname = db.Column(db.String(120),nullable=False)
+    lawyer_id = db.Column(db.String(80), unique=False, nullable=False)
+    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
+    create_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow())
+    
+    def __repr__(self):
+        return f'<Clients {self.email}>'
+    def serialize(self):
+        return {
             "id": self.id,
             "email": self.email,
+
             "password": self.password,
             "name": self.name,
             "lastname": self.lastname,
@@ -47,11 +75,13 @@ class Clients(db.Model):
     def serialize(self):
         return {
             "id": self.id,
+
             "name": self.name,
             "first_lastname": self.first_lastname,
             "second_lastname": self.second_lastname,
             "lawyer_id": self.lawyer_id,
             "is_active": self.is_active,
+
             "delete": self.delete
             # do not serialize the password, its a security breach
         }
@@ -235,5 +265,7 @@ class Case_updates(db.Model):
             "description": self.description,
             "file_id": self.file_id,
             "delete": self.delete,
+
             # do not serialize the password, its a security breach
         }
+        
