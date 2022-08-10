@@ -9,33 +9,36 @@ import { GrTask } from "react-icons/gr";
 import { TbUsers } from "react-icons/tb";
 import { HiOutlineBriefcase } from "react-icons/hi";
 import { IoDocumentTextOutline } from "react-icons/io5";
-import { BsChatRightText } from "react-icons/bs";
+
+// Route functions
+import { Link } from "react-router-dom";
 
 const Sidebar = () => {
   const menu = [
     {
       name: "Dashboard",
       icon: <MdOutlineDashboard height={20} className="mt-2" />,
+      url: "/",
     },
     {
       name: "Mis Tareas",
       icon: <GrTask height={20} className="mt-2" />,
+      url: "/tareas",
     },
     {
       name: "Clientes",
       icon: <TbUsers height={20} className="mt-2" />,
+      url: "/clientes",
     },
     {
       name: "Casos",
       icon: <HiOutlineBriefcase height={20} className="mt-2" />,
+      url: "/casos",
     },
     {
       name: "Documentos",
       icon: <IoDocumentTextOutline height={20} className="mt-2" />,
-    },
-    {
-      name: "Automatizacion",
-      icon: <BsChatRightText height={20} className="mt-2" />,
+      url: "/documentos",
     },
   ];
 
@@ -59,9 +62,14 @@ const Sidebar = () => {
           return (
             <div key={index} className="py-3 d-flex align-content-center">
               {link.icon}
-              <li className="mx-2 fw-normal" style={{ marginTop: 5 + "px" }}>
-                {link.name}
-              </li>
+              <Link to={link.url} className="text-black text-decoration-none">
+                <li
+                  className="mx-2 fw-semibold"
+                  style={{ marginTop: 5 + "px" }}
+                >
+                  {link.name}
+                </li>
+              </Link>
             </div>
           );
         })}

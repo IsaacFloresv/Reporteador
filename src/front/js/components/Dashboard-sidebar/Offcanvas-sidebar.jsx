@@ -2,7 +2,6 @@ import React from "react";
 import Sidebar from "./Sidebar.jsx";
 
 const OffcanvasSidebar = () => {
-  console.log("ejecutandose");
   return (
     <div
       className="offcanvas offcanvas-start"

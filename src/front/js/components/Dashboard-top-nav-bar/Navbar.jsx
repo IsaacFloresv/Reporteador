@@ -23,7 +23,7 @@ const Navbar = () => {
 
       <div className="d-flex align-items-center">
         {/* Help Icon */}
-        <div className="px-4 border-start border-end d-flex align-items-center">
+        <div className="d-none d-xl-block px-4 border-start border-end d-flex align-items-center">
           <IoHelpBuoyOutline size={22} />
         </div>
 

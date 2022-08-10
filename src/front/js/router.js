@@ -15,15 +15,15 @@ const Router = () => {
 
   return (
     <div>
-      <OffcanvasSidebar />
-      <DashboardLayouts>
-        <BrowserRouter basename={basename}>
+      <BrowserRouter basename={basename}>
+        <OffcanvasSidebar />
+        <DashboardLayouts>
           <Routes>
             <Route element={<Dashboard />} path="/" />
-            <Route element={<Cases />} path="/cases" />
+            <Route element={<Cases />} path="/casos" />
           </Routes>
-        </BrowserRouter>
-      </DashboardLayouts>
+        </DashboardLayouts>
+      </BrowserRouter>
     </div>
   );
 };
