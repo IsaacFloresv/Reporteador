@@ -1,0 +1,20 @@
+// Change primary colors
+$primary: #82cf98;
+$danger: #f07474;
+$warning: #eed767;
+
+@import "node_modules/bootstrap/scss/functions";
+@import "node_modules/bootstrap/scss/variables";
+@import "node_modules/bootstrap/scss/maps";
+
+// new overlay colors
+$overlay-colors: (
+  "primary-overlay": #def6e5,
+  "danger-overlay": #ffb7b7,
+  "warning-overlay": #ffffbe,
+);
+
+// Merge the maps
+$theme-colors: map-merge($theme-colors, $overlay-colors);
+// Import bootstrap
+@import "bootstrap";
