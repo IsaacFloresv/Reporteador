@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Clients
+from api.models import db, Users, Clients
 from api.utils import generate_sitemap, APIException
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 
@@ -24,7 +24,7 @@ def login():
     email = request.json.get("email", None)
     password = request.json.get("password", None)
 
-    user = User.query.filter_by(email=email).first()
+    user = Users.query.filter_by(email=email).first()
     if user is None:
         return jsonify({
             "msg": "You are not a registered user,sign up to continue or go away!!!"
@@ -32,10 +32,10 @@ def login():
 
     if password != user.password:
         return jsonify({"msg": "Wrong password"}), 401
-    access_token = create_access_token(identity=email)
+    #access_token = create_access_token(identity=email)
     response_body = {
         'msg': 'Welcome to Dropcase',
-        'token':'access_token',
+        #'token':'access_token',
         'user': user.serialize()
     }
     return jsonify(response_body), 200
@@ -64,15 +64,15 @@ def protected():
 
 @api.route('/user/<int:id>', methods=['GET'])
 def single_user(id):
-    users = User.query.get(id)
-    users = user.serialize()
-    return jsonify(users), 200
+    users = Users.query.get(id)
+    single_user = users.serialize()
+    return jsonify(single_user), 200
 
 @api.route('/user', methods=['GET','POST','PUT'])
 def users():
 
     if request.method == 'GET':
-        users = User.query.all()
+        users = Users.query.all()
         all_users = list(map(lambda x: x.serialize(), users))
         response_body = {
             "msg": "Users list",
@@ -81,12 +81,12 @@ def users():
         return jsonify(response_body), 200
         db.session.commit()
 
-    if request.method=='POST':
+    if request.method=='PUT':
         if 'email' not in request.json:
             return jsonify({"msg": "Fill email fields please"}), 400
 
         email = request.json['email']
-        user = User.query.filter_by(email=email).first()
+        user = Users.query.filter_by(email=email).first()
 
         if 'password' in request.json:
             password = request.json['password']
@@ -108,13 +108,18 @@ def users():
             'msg': 'User successfully updated.',
             'user': user.serialize()
         }
-    elif request.method=='PUT':
+        db.session.commit()
+        return jsonify(response_body), 200
+        
+    elif request.method=='POST':
         body = request.json
         email = request.json.get('email')
-        name = request.json.get('name')
-        lastname = request.json.get('lastname')
-        lawyer_id = request.json.get('lawyer ID')
         password = request.json.get('password')
+        lawyer_identification = request.json.get('lawyer_identification')
+        name = request.json.get('name')
+        lastname = request.json.get('lastname')      
+        is_active = request.json.get('is_active')
+    
 
         if body is None:
             return "The request body is null", 400
@@ -122,9 +127,18 @@ def users():
             return 'You need to specify the email', 400
         if not password:
             return 'You need to enter a password', 400
+        if not lawyer_identification:
+            return 'You need to enter your lawyer ID', 400
+        if not name:
+            return 'You need to enter your name', 400
+        if not lastname:
+            return 'You need to enter your lastname', 400
+        if not is_active:
+            return 'You need to to set your account status', 400
+        
 
-        user = User(email=email, name=name, lastname=lastname,
-                    lawyer_id=lawyer_id, password=password,)
+        user = Users(email=email, name=name, lastname=lastname,
+                    lawyer_identification=lawyer_identification, password=password,is_active=is_active)
 
         db.session.add(user)
         db.session.commit()
@@ -136,7 +150,7 @@ def users():
 
         return jsonify(response_body), 200
 
-@api.route('/clients', methods=['GET','POST','PUT'])
+@api.route('/client', methods=['GET','POST','PUT'])
 def customers():
     if request.method == 'GET':
         customers = Clients.query.all()
@@ -152,8 +166,10 @@ def customers():
             return jsonify({"msg": "User ID missing"}), 400
 
         id = request.json['id']
+        print(id)
         customer = Clients.query.filter_by(id=id).first()
         print(customer)
+
         if 'name' in request.json:
             name = request.json['name']
             customer.name = name
@@ -173,7 +189,7 @@ def customers():
         if 'lawyer_id' in request.json:
             lawyer_id = request.json['lawyer_id']
             customer.lawyer_id = lawyer_id
-
+        
         response_body = {
             'msg': 'Customer successfully updated.',
             'Clients': customer.serialize()
@@ -182,7 +198,6 @@ def customers():
         return jsonify(response_body), 200
     elif request.method=='POST':
         body = request.json
-        email = request.json.get('email')
         name = request.json.get('name')
         lawyer_id = request.json.get('lawyer_id')
         is_active = request.json.get('is_active')
@@ -191,9 +206,9 @@ def customers():
 
         if body is None:
             return "The request body is null", 400
-        if not email:
-            return 'You need to specify the email', 400
-        clients = Clients(email=email, name=name, lawyer_id=lawyer_id, is_active=is_active,
+        if not name:
+            return 'You need to specify customer', 400
+        clients = Clients(name=name, lawyer_id=lawyer_id, is_active=is_active,
                         first_lastname=first_lastname, second_lastname=second_lastname)
         db.session.add(clients)
         db.session.commit()
