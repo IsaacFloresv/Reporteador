@@ -33,12 +33,12 @@ class Users(db.Model):
 class Clients(db.Model):
     __tablename__='Clients'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), unique=True, nullable=False)
-    first_lastname = db.Column(db.String(120), unique=True, nullable=False)
-    second_lastname = db.Column(db.String(120), unique=True, nullable=False)
+    name = db.Column(db.String(120), unique=False, nullable=False)
+    first_lastname = db.Column(db.String(120), unique=False, nullable=False)
+    second_lastname = db.Column(db.String(120), unique=False, nullable=False)
     lawyer_id = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
-    delete = db.Column(db.Boolean, unique=False, nullable=False)
+    delete = db.Column(db.Boolean, unique=False, nullable=False,default=False)
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
     def __repr__(self):
@@ -47,13 +47,11 @@ class Clients(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-
             "name": self.name,
             "first_lastname": self.first_lastname,
             "second_lastname": self.second_lastname,
             "lawyer_id": self.lawyer_id,
             "is_active": self.is_active,
-
             "delete": self.delete
             # do not serialize the password, its a security breach
         }
