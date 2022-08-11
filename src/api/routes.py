@@ -5,9 +5,10 @@ from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, Users, Clients
 from api.utils import generate_sitemap, APIException
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
-
+import smtplib, ssl, os, random, string
+from email.mime.text import MIMEText
+from flask_bcrypt import generate_password_hash,check_password_hash
 api = Blueprint('api', __name__)
-
 
 @api.errorhandler(APIException)
 def handle_invalid_usage(error):
@@ -29,13 +30,14 @@ def login():
         return jsonify({
             "msg": "You are not a registered user,sign up to continue or go away!!!"
         }), 401
-
-    if password != user.password:
-        return jsonify({"msg": "Wrong password"}), 401
-    #access_token = create_access_token(identity=email)
+    print(user.password)
+    is_correct=check_password_hash(user.password,password)
+    if not is_correct:
+        return jsonify({"msg":"Bad username or password"}),401
+    access_token = create_access_token(identity=email)
     response_body = {
         'msg': 'Welcome to Dropcase',
-        #'token':'access_token',
+        'token':access_token,
         'user': user.serialize()
     }
     return jsonify(response_body), 200
@@ -54,6 +56,7 @@ def validate_token():
     return jsonify(response_body), 200
 
 @api.route("/protected", methods=["GET"])
+@jwt_required()
 def protected():
     # Access the identity of the current user with get_jwt_identity
     current_user = get_jwt_identity()
@@ -136,13 +139,13 @@ def users():
         if not is_active:
             return 'You need to to set your account status', 400
         
-
+        pw_hash = generate_password_hash(password, 10).decode('utf-8')
         user = Users(email=email, name=name, lastname=lastname,
-                    lawyer_identification=lawyer_identification, password=password,is_active=is_active)
+                    lawyer_identification=lawyer_identification, password=pw_hash,is_active=is_active)
 
         db.session.add(user)
         db.session.commit()
-
+        
         response_body = {
             'msg': 'Thank you! Your account has been added successfully. Please sign in.',
             'user': user.serialize()
@@ -151,6 +154,7 @@ def users():
         return jsonify(response_body), 200
 
 @api.route('/client', methods=['GET','POST','PUT'])
+@jwt_required()
 def customers():
     if request.method == 'GET':
         customers = Clients.query.all()
@@ -189,7 +193,10 @@ def customers():
         if 'lawyer_id' in request.json:
             lawyer_id = request.json['lawyer_id']
             customer.lawyer_id = lawyer_id
-        
+
+        if 'delete' in request.json:
+            delete = request.json['delete']
+            customer.delete = delete        
         response_body = {
             'msg': 'Customer successfully updated.',
             'Clients': customer.serialize()
