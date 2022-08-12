@@ -5,14 +5,38 @@ from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, Users, Clients
 from api.utils import generate_sitemap, APIException
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
-import smtplib, ssl, os, random, string
+import smtplib
+import ssl
+import os
+import random
+import string
 from email.mime.text import MIMEText
-from flask_bcrypt import generate_password_hash,check_password_hash
+from flask_bcrypt import generate_password_hash, check_password_hash
+from socket import gaierror
 api = Blueprint('api', __name__)
+
 
 @api.errorhandler(APIException)
 def handle_invalid_usage(error):
     return jsonify(error.to_dict()), error.status_code
+
+
+def send_email(msg, email):
+    print(msg)
+    sender = "Dropcase"
+    receiver = email
+
+    try:
+        with smtplib.SMTP("smtp.mailtrap.io", 2525) as server:
+            server.login("8c7f3d9c31cc96", "97d8ee24d57c1d")
+            server.sendmail(sender, receiver, msg.as_string())
+        return jsonify("msg:Mail sent")
+    except (gaierror, ConnectionRefusedError):
+        print('Failed to connect to the server. Bad connection settings?')
+    except smtplib.SMTPServerDisconnected:
+        print('Failed to connect to the server. Wrong user/password?')
+    except smtplib.SMTPException as e:
+        print('SMTP error occurred: ' + str(e))
 
 
 @api.route('/')
@@ -31,21 +55,22 @@ def login():
             "msg": "You are not a registered user,sign up to continue or go away!!!"
         }), 401
     print(user.password)
-    is_correct=check_password_hash(user.password,password)
+    is_correct = check_password_hash(user.password, password)
     if not is_correct:
-        return jsonify({"msg":"Bad username or password"}),401
+        return jsonify({"msg": "Bad username or password"}), 401
     access_token = create_access_token(identity=email)
     response_body = {
         'msg': 'Welcome to Dropcase',
-        'token':access_token,
+        'token': access_token,
         'user': user.serialize()
     }
     return jsonify(response_body), 200
 
+
 @api.route("/auth", methods=["GET"])
 @jwt_required()
 def validate_token():
-    
+
     user = get_jwt_identity()
     validate_user = User.query.filter_by(email=user).first()
     response_body = {
@@ -54,6 +79,7 @@ def validate_token():
         'user': user.serialize()
     }
     return jsonify(response_body), 200
+
 
 @api.route("/protected", methods=["GET"])
 @jwt_required()
@@ -65,16 +91,20 @@ def protected():
         "msg": "Access Granted to Private route"
     }), 200
 
+
 @api.route('/user/<int:id>', methods=['GET'])
+@jwt_required()
 def single_user(id):
     users = Users.query.get(id)
     single_user = users.serialize()
     return jsonify(single_user), 200
 
-@api.route('/user', methods=['GET','POST','PUT'])
+
+@api.route('/user', methods=['GET', 'POST', 'PUT'])
 def users():
 
     if request.method == 'GET':
+
         users = Users.query.all()
         all_users = list(map(lambda x: x.serialize(), users))
         response_body = {
@@ -84,7 +114,7 @@ def users():
         return jsonify(response_body), 200
         db.session.commit()
 
-    if request.method=='PUT':
+    if request.method == 'PUT':
         if 'email' not in request.json:
             return jsonify({"msg": "Fill email fields please"}), 400
 
@@ -113,16 +143,15 @@ def users():
         }
         db.session.commit()
         return jsonify(response_body), 200
-        
-    elif request.method=='POST':
+
+    elif request.method == 'POST':
         body = request.json
         email = request.json.get('email')
         password = request.json.get('password')
         lawyer_identification = request.json.get('lawyer_identification')
         name = request.json.get('name')
-        lastname = request.json.get('lastname')      
+        lastname = request.json.get('lastname')
         is_active = request.json.get('is_active')
-    
 
         if body is None:
             return "The request body is null", 400
@@ -138,14 +167,28 @@ def users():
             return 'You need to enter your lastname', 400
         if not is_active:
             return 'You need to to set your account status', 400
-        
+
         pw_hash = generate_password_hash(password, 10).decode('utf-8')
         user = Users(email=email, name=name, lastname=lastname,
-                    lawyer_identification=lawyer_identification, password=pw_hash,is_active=is_active)
+                     lawyer_identification=lawyer_identification, password=pw_hash, is_active=is_active)
+        message = '''\
+Thank you for registering! You can sign in by visiting the link below.
+<br/>
+<br/>
+<br/>
+<br/>
+Thanks,
+<br/>
+            '''.format("")
+
+        msg = MIMEText(message, 'html')
+        msg['Subject'] = "Welcome"
+        msg['From'] = "Dropcase"
+        msg['To'] = email
+        send_email(msg, email)
 
         db.session.add(user)
         db.session.commit()
-        
         response_body = {
             'msg': 'Thank you! Your account has been added successfully. Please sign in.',
             'user': user.serialize()
@@ -153,7 +196,8 @@ def users():
 
         return jsonify(response_body), 200
 
-@api.route('/client', methods=['GET','POST','PUT'])
+
+@api.route('/client', methods=['GET', 'POST', 'PUT'])
 @jwt_required()
 def customers():
     if request.method == 'GET':
@@ -196,14 +240,14 @@ def customers():
 
         if 'delete' in request.json:
             delete = request.json['delete']
-            customer.delete = delete        
+            customer.delete = delete
         response_body = {
             'msg': 'Customer successfully updated.',
             'Clients': customer.serialize()
         }
         db.session.commit()
         return jsonify(response_body), 200
-    elif request.method=='POST':
+    elif request.method == 'POST':
         body = request.json
         name = request.json.get('name')
         lawyer_id = request.json.get('lawyer_id')
@@ -216,19 +260,20 @@ def customers():
         if not name:
             return 'You need to specify customer', 400
         clients = Clients(name=name, lawyer_id=lawyer_id, is_active=is_active,
-                        first_lastname=first_lastname, second_lastname=second_lastname)
+                          first_lastname=first_lastname, second_lastname=second_lastname)
         db.session.add(clients)
         db.session.commit()
         response_body = {
-        'msg': 'Customer has been created successfully.',
-        'user': clients.serialize()
+            'msg': 'Customer has been created successfully.',
+            'user': clients.serialize()
         }
         return jsonify(response_body), 200
 
 
-@api.route('/cases', methods=['GET','POST','PUT'])
+@api.route('/cases', methods=['GET', 'POST', 'PUT'])
+@jwt_required()
 def cases():
-    if request.method=='POST':
+    if request.method == 'POST':
         body = request.json
         email = request.json.get('email')
         name = request.json.get('name')
@@ -242,11 +287,64 @@ def cases():
         if not email:
             return 'You need to specify the email', 400
         clients = Clients(email=email, name=name, lawyer_id=lawyer_id, is_active=is_active,
-                        first_lastname=first_lastname, second_lastname=second_lastname)
+                          first_lastname=first_lastname, second_lastname=second_lastname)
         db.session.add(clients)
         db.session.commit()
         response_body = {
-        'msg': 'Customer has been created successfully.',
-        'user': clients.serialize()
+            'msg': 'Customer has been created successfully.',
+            'user': clients.serialize()
         }
+        return jsonify(response_body), 200
+
+
+@api.route("/reset", methods=["POST"])
+def update_password():
+    if request.method == "POST":
+        # new_password = request.json.get("password")
+        email = request.json.get("email")
+
+        if not email:
+            return jsonify({"msg": "Missing email in request."}), 400
+
+        user = Users.query.filter_by(email=email).first()
+
+        # Create and set new password
+        new_password = ''.join(random.choice(string.ascii_letters)
+                               for i in range(12))
+        # new_password_hashed
+        pw_hash = generate_password_hash(new_password, 10).decode('utf-8')
+        user.password = pw_hash
+        db.session.commit()
+
+        response_body = {
+            "msg": "Success. An email will be sent to your account with your temporary password."
+        }
+
+        try:
+            message = '''\
+                A reset request was sent to our system. Please use the following password to sign in:
+                <br/>
+                <br/>
+                <br/>
+                {0}
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                Thanks,
+                <br/>
+                Dropcase
+            
+            '''.format(new_password)
+
+            msg = MIMEText(message, 'html')
+            msg['Subject'] = "Password Reset Request"
+            msg['From'] = "Dropcase"
+            msg['To'] = email
+
+            send_email(msg, email)
+        except Exception as e:
+            print(e)
+            return jsonify({"msg": "Unable to send reset email."}), 400
+
         return jsonify(response_body), 200
