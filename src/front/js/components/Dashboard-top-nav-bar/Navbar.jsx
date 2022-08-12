@@ -7,10 +7,10 @@ const Navbar = () => {
   return (
     <div
       className="d-flex align-items-center justify-content-between"
-      style={{ backgroundColor: "white", height: 50 + "px" }}
+      style={{ backgroundColor: "white", height: 60 + "px" }}
     >
       {/* Responsive Menu Buttom */}
-      <div className="d-none d-xl-block"/>
+      <div className="d-none d-xl-block" />
       <button
         className="navbar-toggler mx-3 d-block d-xl-none"
         type="button"
@@ -43,7 +43,7 @@ const Navbar = () => {
           <img
             src="https://images.unsplash.com/photo-1571844306146-6f7451d80824?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=654&q=80"
             alt="profile-picture"
-            className="rounded shadow"
+            className="rounded"
             style={{
               width: 35,
               height: 35,

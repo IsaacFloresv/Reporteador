@@ -1,7 +1,7 @@
 import React from "react";
 
-const Cases = () => {
+const Casos = () => {
   return <div>Cases</div>;
 };
 
-export default Cases;
+export default Casos;

@@ -33,3 +33,20 @@ body {
 .btn:hover {
   border-color: transparent;
 }
+
+/* Scrollbar */
+
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #6d6d6d;
+  border-radius: 50px;
+}
+
+::-webkit-scrollbar-track {
+  background: #dcdcdc;
+  border-radius: 50px;
+}
+

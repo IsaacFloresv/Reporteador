@@ -1,11 +1,17 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
+// Context and Navigation
 import injectContext from "./store/appContext";
-import Dashboard from "./pages/dashboard/Dashboard.jsx";
 import DashboardLayouts from "./layouts/DashboardLayout.jsx";
 import OffcanvasSidebar from "./components/Dashboard-sidebar/Offcanvas-sidebar.jsx";
-import Cases from "./pages/cases/Cases.jsx";
+
+// Pages
+import Dashboard from "./pages/dashboard/Dashboard.jsx";
+import Documentos from "./pages/documentos/Documentos.jsx";
+import Clientes from "./pages/clientes/Clientes.jsx";
+import Casos from "./pages/casos/Casos.jsx";
+import Tareas from "./pages/tareas/Tareas.jsx";
 
 //create your first component
 const Router = () => {
@@ -20,7 +26,10 @@ const Router = () => {
         <DashboardLayouts>
           <Routes>
             <Route element={<Dashboard />} path="/" />
-            <Route element={<Cases />} path="/casos" />
+            <Route element={<Casos />} path="/casos" />
+            <Route element={<Clientes />} path="/clientes" />
+            <Route element={<Documentos />} path="/documentos" />
+            <Route element={<Tareas />} path="/tareas" />
           </Routes>
         </DashboardLayouts>
       </BrowserRouter>
