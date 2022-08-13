@@ -8,9 +8,9 @@ import Sidebar from "../components/Dashboard-sidebar/Sidebar.jsx";
 const DashboardLayout = ({ children }) => {
   return (
     <div className="d-flex vh-100 vw-100" style={{ overflow: "hidden" }}>
-      <sidebar className="d-none d-xl-block ">
+      <aside className="d-none d-xl-block ">
         <Sidebar />
-      </sidebar>
+      </aside>
       <div className="bg-light w-100">
         <Navbar />
         <div
