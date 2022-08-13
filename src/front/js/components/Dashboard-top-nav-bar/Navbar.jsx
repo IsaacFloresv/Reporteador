@@ -3,7 +3,11 @@ import React from "react";
 import { IoNotificationsOutline, IoHelpBuoyOutline } from "react-icons/io5";
 import { FcMenu } from "react-icons/fc";
 
+// Components
+import Notifications from "../../components/widgets/notifications/Notifications.jsx";
+
 const Navbar = () => {
+  const test = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
   return (
     <div
       className="d-flex align-items-center justify-content-between"
@@ -28,14 +32,37 @@ const Navbar = () => {
         </div>
 
         {/* Notification Icon */}
-        <div className="px-4 border-end h-100 d-flex align-items-center">
-          <IoNotificationsOutline size={22} />
-          <span
-            className="fw-normal position-absolute translate-middle badge rounded-pill bg-danger d-flex align-items-center justify-content-center px-1"
-            style={{ height: 15 }}
+        <div className="dropdown-center" style={{ cursor: "pointer" }}>
+          <div
+            className="px-4 border-end h-100 d-flex align-items-center"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
           >
-            5
-          </span>
+            <IoNotificationsOutline size={22} />
+            <span
+              className="fw-normal position-absolute translate-middle badge rounded-pill bg-danger d-flex align-items-center justify-content-center px-1"
+              style={{ height: 15 }}
+            >
+              5
+            </span>
+
+            {/* Dropdown menu */}
+            <div
+              className="dropdown-menu p-3 mt-2 border-0 shadow"
+              style={{ width: 300, height: 400, overflowY: "scroll" }}
+            >
+              {test.map((item, index) => {
+                return (
+                  <div key={index}>
+                    <Notifications />
+                  </div>
+                );
+              })}
+              <button className="w-100 btn btn-primary btn-sm">
+                Cargar mas
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* User profile */}
