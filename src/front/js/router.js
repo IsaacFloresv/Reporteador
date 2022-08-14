@@ -12,6 +12,8 @@ import Documentos from "./pages/documentos/Documentos.jsx";
 import Clientes from "./pages/clientes/Clientes.jsx";
 import Casos from "./pages/casos/Casos.jsx";
 import Tareas from "./pages/tareas/Tareas.jsx";
+import Login from "./pages/login/Login.jsx";
+import DashboardLayout from "./layouts/DashboardLayout.jsx";
 
 //create your first component
 const Router = () => {
@@ -23,15 +25,17 @@ const Router = () => {
     <div>
       <BrowserRouter basename={basename}>
         <OffcanvasSidebar />
-        <DashboardLayouts>
-          <Routes>
+        <Routes>
+          <Route element={<Login />} path="/login" />
+          {/* Dashboard Layout */}
+          <Route element={<DashboardLayout />}>
             <Route element={<Dashboard />} path="/" />
             <Route element={<Casos />} path="/casos" />
             <Route element={<Clientes />} path="/clientes" />
             <Route element={<Documentos />} path="/documentos" />
             <Route element={<Tareas />} path="/tareas" />
-          </Routes>
-        </DashboardLayouts>
+          </Route>
+        </Routes>
       </BrowserRouter>
     </div>
   );
