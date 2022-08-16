@@ -1,13 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
 @import "../styles/theme/theme.scss";
 
-/* CSS Normalize */
-* {
-  padding: 0px !important;
-  margin: 0px !important;
-  box-sizing: border-box;
-}
-
 /* Montserrat font setting */
 body {
   font-family: "Montserrat", sans-serif;
@@ -39,4 +32,25 @@ body {
 
 .btn:hover {
   border-color: transparent;
+}
+
+/* Scrollbar */
+
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #6d6d6d;
+  border-radius: 50px;
+}
+
+::-webkit-scrollbar-track {
+  background: #dcdcdc;
+  border-radius: 50px;
+}
+
+.img-responsive{
+  width: 100%;
+  height: 100%;
 }
