@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, Users, Clients
+from api.models import db, Users, Clients, Files
 from api.utils import generate_sitemap, APIException
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 import smtplib
@@ -209,6 +209,7 @@ def customers():
         }
         return jsonify(response_body), 200
         db.session.commit()
+
     elif request.method == 'PUT':
         if 'id' not in request.json:
             return jsonify({"msg": "User ID missing"}), 400
@@ -247,6 +248,7 @@ def customers():
         }
         db.session.commit()
         return jsonify(response_body), 200
+
     elif request.method == 'POST':
         body = request.json
         name = request.json.get('name')
@@ -347,4 +349,64 @@ def update_password():
             print(e)
             return jsonify({"msg": "Unable to send reset email."}), 400
 
+        return jsonify(response_body), 200
+
+@api.route('/files', methods=['POST','GET','PUT'])
+@jwt_required()
+def files():
+    if request.method == 'POST':
+        body = request.json
+        name = request.json.get('name')
+        url = request.json.get('url')
+        case_updates_id = request.json.get('case_updates_id')
+        delete = request.json.get('delete')
+
+        if body is None:
+            return "The request body is null", 400
+        if not name:
+            return 'You need to specify the name', 400
+        files = Files(name=name, url=url, Case_updates_id=case_updates_id, delete=delete)
+        db.session.add(files)
+        db.session.commit()
+        response_body = {
+            'msg': 'Files has been add successfully.',
+            'user': files.serialize()
+        }
+        return jsonify(response_body), 200
+
+    elif request.method == 'GET':
+        files = Files.query.all()
+        all_files = list(map(lambda x: x.serialize(), files))
+        response_body = {
+            "msg": "Files list complete",
+            "Files": all_files
+        }
+        return jsonify(response_body), 200
+        db.session.commit()
+
+    elif request.method == 'PUT':
+        if 'id' not in request.json:
+            return jsonify({"msg": "Id is a required field"}), 400
+
+        id = request.json['id']
+        file = Files.query.filter_by(id=id).first()
+
+        if 'name' in request.json:
+            file.name = request.json['name']
+
+        if 'url' in request.json:
+            file.url = request.json['url']
+
+        if 'Case_update_id' in request.json:
+            file.case_updates_id = request.json['Case_updates_id']
+
+        if 'delte' in request.json:
+            file.delete = request.json['delete']
+        
+        print(file)
+        response_body = {
+            'msg': 'File successfully updated.',
+            'Clients': file.serialize()
+        }
+        db.session.commit()
         return jsonify(response_body), 200
