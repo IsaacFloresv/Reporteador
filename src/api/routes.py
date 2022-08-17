@@ -351,10 +351,34 @@ def update_password():
 
         return jsonify(response_body), 200
 
-@api.route('/files', methods=['POST','GET','PUT'])
+@api.route('/files', methods=['GET'])
 @jwt_required()
 def files():
-    if request.method == 'POST':
+    if request.method == 'GET':
+        files = Files.query.all()
+        all_files = list(map(lambda x: x.serialize(), files))
+        response_body = {
+            "msg": "This total Files",
+            "Files": all_files
+        }
+        return jsonify(response_body), 200
+        db.session.commit()
+
+@api.route('/file', methods=['GET','POST','DELETE'])
+@jwt_required()
+def file():
+    if request.method == 'GET':
+        id = request.json['id']
+        files = db.session.query(Files).filter(Files.Case_updates_id==id)
+        all_files = list(map(lambda x: x.serialize(), files))
+        response_body = {
+            "msg": "Files list complete",
+            "Files": all_files
+        }
+        return jsonify(response_body), 200
+        db.session.commit()
+
+    elif request.method == 'POST':
         body = request.json
         name = request.json.get('name')
         url = request.json.get('url')
@@ -374,34 +398,13 @@ def files():
         }
         return jsonify(response_body), 200
 
-    elif request.method == 'GET':
-        files = Files.query.all()
-        all_files = list(map(lambda x: x.serialize(), files))
-        response_body = {
-            "msg": "Files list complete",
-            "Files": all_files
-        }
-        return jsonify(response_body), 200
-        db.session.commit()
-
-    elif request.method == 'PUT':
+    elif request.method == 'DELETE':
         if 'id' not in request.json:
             return jsonify({"msg": "Id is a required field"}), 400
 
         id = request.json['id']
         file = Files.query.filter_by(id=id).first()
-
-        if 'name' in request.json:
-            file.name = request.json['name']
-
-        if 'url' in request.json:
-            file.url = request.json['url']
-
-        if 'Case_update_id' in request.json:
-            file.case_updates_id = request.json['Case_updates_id']
-
-        if 'delte' in request.json:
-            file.delete = request.json['delete']
+        file.delete = True
         
         print(file)
         response_body = {
