@@ -147,35 +147,12 @@ class Case_status(db.Model):
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
     def __repr__(self):
-        return f'<Case_status {self.id}, {self.Case_status}, {self.delete}>'
+        return f'<Case_status {self.id}>'
 
     def serialize(self):
         return {
             "id": self.id,
             "case_status": self.Case_status,
-            # do not serialize the password, its a security breach
-        }
-
-
-class Files(db.Model):
-    __tablename__='Files'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150), unique=True, nullable=False)
-    url = db.Column(db.String(500), unique=True, nullable=False)
-    Case_updates_id = db.Column(db.Integer, unique=True, nullable=False)
-    delete = db.Column(db.Boolean, unique=False, nullable=False)
-    create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
-
-    def __repr__(self):
-        return f'<Files {self.id}, {self.name}, {self.url}, {self.Case_updates_id}, {self.delete}>'
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "url": self.url,
-            "Case_updates_id": self.Case_updates_id,
-            "delete": self.delete,
             # do not serialize the password, its a security breach
         }
 
@@ -238,4 +215,28 @@ class Case_updates(db.Model):
 
             # do not serialize the password, its a security breach
         }
+
+class Files(db.Model):
+    __tablename__='Files'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), unique=True, nullable=False)
+    url = db.Column(db.String(500), unique=True, nullable=False)
+    Case_updates_id = db.Column(db.Integer, db.ForeignKey('Case_updates.id'),nullable=False)
+    Case_updates_id_relation= relationship(Case_updates,primaryjoin=Case_updates_id==Case_updates.id)    
+    delete = db.Column(db.Boolean, unique=False, nullable=False)
+    create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
+
+    def __repr__(self):
+        return f'<Files {self.id}, {self.name}, {self.url}, {self.Case_updates_id}, {self.delete}>'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "url": self.url,
+            "Case_updates_id": self.Case_updates_id,
+            "delete": self.delete,
+            # do not serialize the password, its a security breach
+        }
+
         
