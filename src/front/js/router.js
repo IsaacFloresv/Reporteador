@@ -15,7 +15,11 @@ import Tareas from "./pages/tareas/Tareas.jsx";
 import Casos from "./pages/casos/Casos.jsx";
 import Login from "./pages/login/Login.jsx";
 import Signup from "./pages/SignUp/Signup.jsx";
+
 import NewClient from "./pages/clientes/NewClient.jsx";
+
+import NewCase from "./pages/casos/NewCase.jsx";
+
 
 //create your first component
 const Router = () => {
@@ -35,6 +39,7 @@ const Router = () => {
           <Route element={<DashboardLayout />}>
             <Route element={<Dashboard />} path="/dashboard" />
             <Route element={<Casos />} path="/casos" />
+            <Route element={<NewCase />} path="/nuevo-caso" />
             <Route element={<Clientes />} path="/clientes" />
             <Route element={<Documentos />} path="/documentos" />
             <Route element={<Tareas />} path="/tareas" />
