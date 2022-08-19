@@ -4,6 +4,7 @@
 /* Montserrat font setting */
 body {
   font-family: "Montserrat", sans-serif;
+  font-size: 14px;
 }
 
 /* Custom btn-primary */
@@ -69,6 +70,7 @@ body {
   height: 100%;
 }
 
+
 label{
   font-weight: 700;
   padding: 10px;
@@ -79,5 +81,10 @@ label{
   font-weight: 200;
   font-size:10px;
 
+}
+
+
+.table > tbody > tr > td {
+  vertical-align: middle;
 }
 
