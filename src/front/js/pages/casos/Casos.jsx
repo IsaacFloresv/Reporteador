@@ -1,6 +1,7 @@
 import React from "react";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { BsBriefcase } from "react-icons/bs";
+import { Link } from "react-router-dom";
 
 const Casos = () => {
   const checkbox = (
@@ -32,9 +33,9 @@ const Casos = () => {
             <span>Total:</span>
             <span className="mx-2 fw-semibold">18 Casos</span>
           </div>
-          <button className="btn btn-primary btn-sm">
-            + Abrir Caso
-          </button>
+          <Link to="/nuevo-caso">
+            <button className="btn btn-primary btn-sm">+ Abrir Caso</button>
+          </Link>
         </div>
       </div>
 
@@ -136,7 +137,6 @@ const Casos = () => {
           </div>
         </div>
       </div>
-
     </>
   );
 };

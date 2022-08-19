@@ -61,7 +61,7 @@ const NewCase = () => {
               </div>
               <div className="col-md-6">
                 <label className="">Initial Date</label>
-                <input type="datetime-local" className="form-control" />
+                <input type="date" className="form-control" />
               </div>
             </div>
             <hr />
