@@ -23,7 +23,7 @@ def handle_invalid_usage(error):
 
 def send_email(msg, email):
     print(msg)
-    sender = "Dropcase"
+    sender = "Dropcases"
     receiver = email
 
     try:
@@ -60,7 +60,7 @@ def login():
         return jsonify({"msg": "Bad username or password"}), 401
     access_token = create_access_token(identity=email)
     response_body = {
-        'msg': 'Welcome to Dropcase',
+        'msg': 'Welcome to Dropcases',
         'token': access_token,
         'user': user.serialize()
     }
@@ -98,6 +98,20 @@ def single_user(id):
     users = Users.query.get(id)
     single_user = users.serialize()
     return jsonify(single_user), 200
+    
+@api.route('/client/<int:id>', methods=['GET'])
+@jwt_required()
+def single_client(id):
+    client = Clients.query.get(id)
+    single_client = client.serialize()
+    return jsonify(single_client), 200
+
+@api.route('/case/<int:id>', methods=['GET'])
+@jwt_required()
+def single_case(id):
+    case = Cases.query.get(id)
+    single_case = case.serialize()
+    return jsonify(single_case), 200
 
 
 @api.route('/user', methods=['GET', 'POST', 'PUT'])
@@ -179,11 +193,13 @@ Thank you for registering! You can sign in by visiting the link below.
 <br/>
 Thanks,
 <br/>
+Dropcases
+<br/>
             '''.format("")
 
         msg = MIMEText(message, 'html')
         msg['Subject'] = "Welcome"
-        msg['From'] = "Dropcase"
+        msg['From'] = "Dropcases"
         msg['To'] = email
         send_email(msg, email)
 
@@ -400,13 +416,13 @@ def update_password():
                 <br/>
                 Thanks,
                 <br/>
-                Dropcase
+                Dropcases
             
             '''.format(new_password)
 
             msg = MIMEText(message, 'html')
             msg['Subject'] = "Password Reset Request"
-            msg['From'] = "Dropcase"
+            msg['From'] = "Dropcases"
             msg['To'] = email
 
             send_email(msg, email)
