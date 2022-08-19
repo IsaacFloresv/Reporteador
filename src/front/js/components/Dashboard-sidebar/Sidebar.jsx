@@ -18,7 +18,7 @@ const Sidebar = () => {
     {
       name: "Dashboard",
       icon: <MdOutlineDashboard height={20} className="mt-2" />,
-      url: "/",
+      url: "/dashboard",
     },
     {
       name: "Mis Tareas",
@@ -57,20 +57,23 @@ const Sidebar = () => {
       </div>
 
       {/* Menu */}
-      <ul className="nav flex-column mb-auto px-3 mt-2">
+      <ul className="nav flex-column mb-auto mt-2">
         {menu.map((link, index) => {
           return (
-            <div key={index} className="py-3 d-flex align-content-center">
-              {link.icon}
-              <Link to={link.url} className="text-black text-decoration-none">
+            <Link to={link.url} className="text-black text-decoration-none">
+              <div
+                key={index}
+                className="px-3 py-2 d-flex align-content-center hover-menu rounded"
+              >
+                {link.icon}
                 <li
                   className="mx-2 fw-semibold"
-                  style={{ marginTop: 5 + "px" }}
+                  style={{ marginTop: 4 + "px" }}
                 >
                   {link.name}
                 </li>
-              </Link>
-            </div>
+              </div>
+            </Link>
           );
         })}
       </ul>
