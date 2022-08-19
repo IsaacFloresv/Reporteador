@@ -9,7 +9,7 @@ const NewCase = () => {
           <label className="p-0">Add new case</label>
         </div>
         <div>
-          <button className="btn btn-link text-danger text-decoration-none btn-cancel">
+          <button className="btn btn-link text-danger btn-cancel">
             Cancel
           </button>
           <button className="btn btn-primary">Save</button>
@@ -83,7 +83,7 @@ const NewCase = () => {
               </div>
             </div>
             <div className="text-center">
-              <button className="btn btn-outline-primary new-case-btn my-1">
+              <button className="btn btn-outline-primary new-case-btn my-3">
                 Add a new case update
               </button>
             </div>
