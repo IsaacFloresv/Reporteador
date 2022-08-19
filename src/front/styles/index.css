@@ -41,8 +41,8 @@ body {
   width: 7px;
 }
 
-.btn-cancel{
-  text-decoration:none;
+.btn-cancel {
+  text-decoration: none;
 }
 .btn-cancel:hover {
   text-decoration: underline #f08181;
@@ -73,19 +73,16 @@ body {
   height: 100%;
 }
 
-
-label{
+label {
   font-weight: 700;
-  padding: 10px;
+  padding: 10px 0px;
 }
 
-.new-case-btn{
+.new-case-btn {
   color: black;
   font-weight: 200;
-  font-size:10px;
-
+  font-size: 10px;
 }
-
 
 .table > tbody > tr > td {
   vertical-align: middle;

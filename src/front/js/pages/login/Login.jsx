@@ -1,8 +1,30 @@
-import React from "react";
+import React, { useState } from "react";
 import login_image from "/workspace/dropcases/public/assets/login-image.png";
 import logo from "/workspace/dropcases/public/assets/logo.png";
-import {BiLockAlt} from "react-icons/bi"
+import { BiLockAlt } from "react-icons/bi";
+import { useNavigate } from "react-router-dom";
 const Login = () => {
+  const redirect = useNavigate();
+
+  const [loginData, setloginData] = useState({
+    username: "",
+    password: "",
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (
+      loginData.username === "demo@gmail.com" &&
+      loginData.password === "demo"
+    ) {
+      redirect("/dashboard", { replace: true });
+    }
+  };
+
+  const handleChange = (e) => {
+    setloginData({ ...loginData, [e.target.name]: e.target.value });
+  };
+
   return (
     <div className="container-fluid fw-bold">
       <div className="row">
@@ -14,57 +36,67 @@ const Login = () => {
           />
         </div>
         <form
-          class="col-12 col-xl-7  d-flex align-items-center needs-validation  "
-          novalidate
+          className="col-12 col-xl-7  d-flex align-items-center needs-validation"
+          onSubmit={(e) => handleSubmit(e)}
         >
           <div className="container">
             <div className="w-75 m-auto">
               <div className="col-6 text-center mx-auto ">
                 <img
-                  classname="text-center"
+                  className="text-center"
                   style={{ width: 100 + "%" }}
                   src={logo}
                 />
               </div>
               <div class="col-xxl-12 py-2">
-                <label for="validationCustom01" class="form-label">
-                  Username
+                <label
+                  htmlFor="validationCustom01"
+                  class="form-label px-0 mb-0"
+                >
+                  Correo electronico
                 </label>
                 <input
+                  name="username"
                   type="text"
                   class="form-control"
                   id="validationCustom01"
                   placeholder="email "
                   required
+                  onChange={(e) => handleChange(e)}
                 />
                 <div class="valid-feedback">Looks good!</div>
               </div>
               <div class="col-xxl-12">
-                <label for="validationCustom02" class="form-label">
-                  Password
+                <label
+                  htmlFor="validationCustom02"
+                  class="form-label px-0 mb-0"
+                >
+                  Contraseña
                 </label>
                 <input
-                  type="text"
+                  name="password"
+                  type="password"
                   class="form-control"
                   id="validationCustom02"
                   placeholder="password"
-                  value=""
+                  onChange={(e) => handleChange(e)}
                   required
                 />
                 <div class="valid-feedback">Looks good!</div>
               </div>
               <div className="align-items-center d-flex justify-content-between py-2">
                 <div>
-                  <div class="form-check">
+                  <div>
                     <input class="form-check-input" type="checkbox" value="" />
-                    <label class="form-check-label" for="invalidCheck">
-                      Recordar cuenta
-                    </label>
+                    <span className="mx-2">Recordar cuenta</span>
                   </div>
                 </div>
                 <div>
-                  <button className="btn btn-link ">
-                    <span className="mx-2"><BiLockAlt/></span>Olvide mi contraseña
+                  <button className="btn btn-link pe-0 ">
+                    <span className="mx-2">
+                      <BiLockAlt />
+                    </span>
+                    Olvide mi contraseña
                   </button>
                 </div>
               </div>

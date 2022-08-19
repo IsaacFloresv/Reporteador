@@ -1,5 +1,6 @@
 import React from "react";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
+import { Link } from "react-router-dom";
 
 const Clientes = () => {
   const checkbox = (
@@ -31,9 +32,11 @@ const Clientes = () => {
             <span>Total:</span>
             <span className="mx-2 fw-semibold">38 Clientes</span>
           </div>
-          <button className="btn btn-primary btn-sm">
-            + Agregar Nuevo cliente
-          </button>
+          <Link to="/nuevo-cliente">
+            <button className="btn btn-primary btn-sm">
+              + Agregar Nuevo cliente
+            </button>
+          </Link>
         </div>
       </div>
 
