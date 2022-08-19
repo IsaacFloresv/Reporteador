@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
 @import "../styles/theme/theme.scss";
 
 /* Montserrat font setting */
@@ -41,6 +41,20 @@ body {
   width: 7px;
 }
 
+.btn-cancel:hover {
+  border-color: red;
+}
+.dashed-border {
+  border: 1px dashed #82cf98;
+}
+.dashed-border-upload {
+  border: 1px dashed #6fa5fb;
+}
+
+.upload-bg {
+  background-color: #fcfdff;
+}
+
 ::-webkit-scrollbar-thumb {
   background: #6d6d6d;
   border-radius: 50px;
@@ -56,6 +70,21 @@ body {
   height: 100%;
 }
 
+
+label{
+  font-weight: 700;
+  padding: 10px;
+}
+
+.new-case-btn{
+  color: black;
+  font-weight: 200;
+  font-size:10px;
+
+}
+
+
 .table > tbody > tr > td {
   vertical-align: middle;
 }
+
