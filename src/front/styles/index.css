@@ -41,8 +41,11 @@ body {
   width: 7px;
 }
 
+.btn-cancel{
+  text-decoration:none;
+}
 .btn-cancel:hover {
-  border-color: red;
+  text-decoration: underline #f08181;
 }
 .dashed-border {
   border: 1px dashed #82cf98;
