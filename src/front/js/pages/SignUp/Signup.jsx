@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import logo from "/workspace/dropcases/public/assets/logo.png"
 import register_image from '/workspace/dropcases/public/assets/register_image.png'
 const Signup = () => {
@@ -61,9 +62,11 @@ const Signup = () => {
                                     <button class="btn btn-primary col-12" type="submit">Register</button>
                                 </div>
                                 <div className='text-center'>
+                                    <Link to='/login'>
                                     <button className="btn text-secondary fs-6">
                                         <span className="mx-2" onmouseover={{class:'text-decoration-underline'}} ></span>Ya tengo una cuenta,acceder
                                     </button>
+                                    </Link>
                                 </div>
                             </div>
                         </div>
