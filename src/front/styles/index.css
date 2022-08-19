@@ -4,6 +4,7 @@
 /* Montserrat font setting */
 body {
   font-family: "Montserrat", sans-serif;
+  font-size: 14px;
 }
 
 /* Custom btn-primary */
@@ -50,7 +51,11 @@ body {
   border-radius: 50px;
 }
 
-.img-responsive{
+.img-responsive {
   width: 100%;
   height: 100%;
+}
+
+.table > tbody > tr > td {
+  vertical-align: middle;
 }
