@@ -1,7 +1,9 @@
 import React from "react";
 import { GrDocumentUpload } from "react-icons/gr/index";
+import { useNavigate } from "react-router-dom";
 
 const NewCase = () => {
+  const navigate = useNavigate();
   return (
     <div>
       <div className="d-flex justify-content-between my-3">
@@ -9,7 +11,10 @@ const NewCase = () => {
           <label className="p-0">Add new case</label>
         </div>
         <div>
-          <button className="btn btn-link text-danger btn-cancel">
+          <button
+            onClick={() => navigate(-1)}
+            className="btn btn-link text-danger btn-cancel"
+          >
             Cancel
           </button>
           <button className="btn btn-primary">Save</button>

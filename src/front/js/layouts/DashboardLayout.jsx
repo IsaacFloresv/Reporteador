@@ -19,8 +19,12 @@ const DashboardLayout = ({ children }) => {
           style={{ overflowY: "scroll", overflowX: "hidden" }}
         >
           <section className="m-auto mt-5" style={{ width: 85 + "%" }}>
-            <Breadcrumbs page="Dashboard" />
+            {/* <Breadcrumbs page="Dashboard" /> */}
             <Outlet />
+            <br />
+            <br />
+            <br />
+            <br />
           </section>
         </div>
       </div>

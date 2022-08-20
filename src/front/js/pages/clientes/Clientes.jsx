@@ -88,17 +88,19 @@ const Clientes = () => {
                           {checkbox}
                         </td>
                         <td>
-                          <img
-                            src="https://www.lavanguardia.com/files/image_449_220/files/fp/uploads/2022/06/13/62a776a005e6f.r_d.3200-2132.jpeg"
-                            width={40}
-                            height={40}
-                            alt=""
-                            className="rounded"
-                            style={{ objectFit: "cover" }}
-                          />{" "}
-                          <span className="mx-2 fw-semibold">
-                            Jonny Deep Martinez
-                          </span>
+                          <Link className="text-decoration-none text-black" to="/client/eduardo">
+                            <img
+                              src="https://www.lavanguardia.com/files/image_449_220/files/fp/uploads/2022/06/13/62a776a005e6f.r_d.3200-2132.jpeg"
+                              width={40}
+                              height={40}
+                              alt=""
+                              className="rounded"
+                              style={{ objectFit: "cover" }}
+                            />{" "}
+                            <span className="mx-2 fw-semibold">
+                              Jonny Deep Martinez
+                            </span>
+                          </Link>
                         </td>
                         <td>
                           <div className="badge text-bg-primary fw-normal text-white d-flex align-items-center justify-content-center">
