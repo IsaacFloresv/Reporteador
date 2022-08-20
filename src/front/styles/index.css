@@ -81,9 +81,14 @@ label {
 .new-case-btn {
   color: black;
   font-weight: 200;
-  font-size:12px;
+  font-size: 12px;
 }
 
 .table > tbody > tr > td {
   vertical-align: middle;
+}
+
+.hover-menu:hover {
+  background-color: #def6e5;
+  cursor: pointer;
 }

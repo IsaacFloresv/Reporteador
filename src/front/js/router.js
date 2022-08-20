@@ -17,9 +17,7 @@ import Login from "./pages/login/Login.jsx";
 import Signup from "./pages/SignUp/Signup.jsx";
 import NewClient from "./pages/clientes/NewClient.jsx";
 import NewCase from "./pages/casos/NewCase.jsx";
-
-
-
+import Client from "./pages/clientes/Client.jsx";
 
 //create your first component
 const Router = () => {
@@ -43,8 +41,9 @@ const Router = () => {
             <Route element={<Clientes />} path="/clientes" />
             <Route element={<Documentos />} path="/documentos" />
             <Route element={<Tareas />} path="/tareas" />
-            <Route element={<NewClient/>} path="/nuevo-cliente"/>
-            <Route element={<NewCase/>} path="/nuevo-caso"/>
+            <Route element={<NewClient />} path="/nuevo-cliente" />
+            <Route element={<Client />} path="/client/:name" />
+            <Route element={<NewCase />} path="/nuevo-caso" />
           </Route>
         </Routes>
       </BrowserRouter>

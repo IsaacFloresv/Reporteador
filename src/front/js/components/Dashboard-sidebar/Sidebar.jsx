@@ -5,7 +5,6 @@ import logo from "../../../../../public/assets/logo.png";
 
 // Import icons
 import { MdOutlineDashboard } from "react-icons/md";
-import { GrTask } from "react-icons/gr";
 import { TbUsers } from "react-icons/tb";
 import { HiOutlineBriefcase } from "react-icons/hi";
 import { IoDocumentTextOutline } from "react-icons/io5";
@@ -19,11 +18,6 @@ const Sidebar = () => {
       name: "Dashboard",
       icon: <MdOutlineDashboard height={20} className="mt-2" />,
       url: "/dashboard",
-    },
-    {
-      name: "Mis Tareas",
-      icon: <GrTask height={20} className="mt-2" />,
-      url: "/tareas",
     },
     {
       name: "Clientes",
