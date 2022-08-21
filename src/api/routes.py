@@ -14,7 +14,10 @@ from email.mime.text import MIMEText
 from flask_bcrypt import generate_password_hash, check_password_hash
 from socket import gaierror
 api = Blueprint('api', __name__)
-
+# instancia del objeto Flask
+app = Flask(__name__)
+# Carpeta de subida
+app.config['UPLOAD_FOLDER'] = './public/client_files/'
 
 @api.errorhandler(APIException)
 def handle_invalid_usage(error):
@@ -351,6 +354,33 @@ def update_password():
 
         return jsonify(response_body), 200
 
+@app.route("/uploader", methods=['POST'])
+def uploader():
+    if request.method == "POST":
+        #Get the name of the client
+        usuario = request.json.get('usuario')
+        #Get the name of the directory where the files will be saved
+        folder = os.path.join(app.config['UPLOAD_FOLDER'],usuario)
+        #It is confirmed if the directory exists, if it doesn't exist, the folder is created
+        if (os.path.isdir(folder)== False):
+            os.makedirs(folder)
+
+        #Get the name of the file
+        f = request.files['archivo']
+        filename = f.filename
+        ruta = os.path.join(folder,filename)
+        #It is confirmed if the file exists in the directory, if it doesn't exist, the file is saved
+        if os.path.isfile(ruta):
+            return 'the file already exists.'
+        else:
+            #The file is saved
+            f.save(ruta)
+    return jsonify(ruta), 200
+
+if __name__ == '__main__':
+ # Iniciamos la aplicación
+ app.run(debug=True)
+
 @api.route('/files', methods=['GET'])
 @jwt_required()
 def files():
@@ -358,7 +388,7 @@ def files():
         files = Files.query.all()
         all_files = list(map(lambda x: x.serialize(), files))
         response_body = {
-            "msg": "This total Files",
+            "msg": "This is total Files",
             "Files": all_files
         }
         return jsonify(response_body), 200
@@ -381,6 +411,7 @@ def file():
     elif request.method == 'POST':
         body = request.json
         name = request.json.get('name')
+        
         url = request.json.get('url')
         case_updates_id = request.json.get('case_updates_id')
         delete = request.json.get('delete')
