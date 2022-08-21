@@ -1,13 +1,15 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
-from flask import Flask, request, jsonify, url_for, Blueprint
+from flask import Flask, request, jsonify, url_for, Blueprint, send_file
 from api.models import db, Users, Clients, Files
 from api.utils import generate_sitemap, APIException
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 import smtplib
 import ssl
 import os
+from os import path
+from pathlib import Path
 import random
 import string
 from email.mime.text import MIMEText
@@ -17,7 +19,7 @@ api = Blueprint('api', __name__)
 # instancia del objeto Flask
 app = Flask(__name__)
 # Carpeta de subida
-app.config['UPLOAD_FOLDER'] = './public/client_files/'
+app.config['UPLOAD_FOLDER'] = "/workspace/dropcases/public/client_files"
 
 @api.errorhandler(APIException)
 def handle_invalid_usage(error):
@@ -354,11 +356,12 @@ def update_password():
 
         return jsonify(response_body), 200
 
-@app.route("/uploader", methods=['POST'])
+@api.route('/uploader', methods=['POST'])
 def uploader():
-    if request.method == "POST":
+    if request.method == 'POST':
         #Get the name of the client
-        usuario = request.json.get('usuario')
+        usuario = request.form['usuario']
+        print(usuario)
         #Get the name of the directory where the files will be saved
         folder = os.path.join(app.config['UPLOAD_FOLDER'],usuario)
         #It is confirmed if the directory exists, if it doesn't exist, the folder is created
@@ -375,11 +378,7 @@ def uploader():
         else:
             #The file is saved
             f.save(ruta)
-    return jsonify(ruta), 200
-
-if __name__ == '__main__':
- # Iniciamos la aplicación
- app.run(debug=True)
+    return ruta, 200
 
 @api.route('/files', methods=['GET'])
 @jwt_required()
@@ -444,3 +443,7 @@ def file():
         }
         db.session.commit()
         return jsonify(response_body), 200
+
+if __name__ == '__main__':
+ # Iniciamos la aplicación
+     app.run(host='0.0.0.0',port=3000,debug=True) 
