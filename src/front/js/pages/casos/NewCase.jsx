@@ -6,9 +6,9 @@ const NewCase = () => {
   const navigate = useNavigate();
   return (
     <div>
-      <div className="d-flex justify-content-between my-3">
+      <div className="d-flex justify-content-between align-items-center my-3">
         <div>
-          <label className="p-0">Add new case</label>
+          <h5 className="p-0">Agregar un nuevo caso</h5>
         </div>
         <div>
           <button
@@ -17,20 +17,20 @@ const NewCase = () => {
           >
             Cancel
           </button>
-          <button className="btn btn-primary">Save</button>
+          <button className="btn btn-primary">Guardar Caso</button>
         </div>
       </div>
-      <div className="bg-white rounded dashed-border p-4 vh-100">
+      <div className="bg-white rounded dashed-border p-4">
         <div className="row">
-          <label className="my-2 text-primary">1.Case Info</label>
+          <label className="my-2 text-primary">1.Informacion del caso</label>
           <div>
             <div className="row">
               <div className="col-12">
-                <label>Case name</label>
+                <label>Nombre del caso</label>
                 <input type="text" className="form-control" />
               </div>
               <div className="col-md-6">
-                <label>Proceedings Number</label>
+                <label>Numero de proceso</label>
                 <input
                   type="text"
                   className="form-control"
@@ -38,7 +38,7 @@ const NewCase = () => {
                 />
               </div>
               <div className="col-md-6">
-                <label>Customer</label>
+                <label>Cliente</label>
                 <div className="input-group mb-3">
                   <select
                     className="form-select"
@@ -55,7 +55,7 @@ const NewCase = () => {
             <div className="row">
               <div className="col-md-6">
                 <label className="py-0">
-                  Cost<label>(Optional)</label>
+                  Cost <label className="fw-light"> (Optional)</label>
                 </label>
                 <input
                   type="text"
@@ -65,21 +65,32 @@ const NewCase = () => {
                 />
               </div>
               <div className="col-md-6">
-                <label className="">Initial Date</label>
+                <label className="">Fecha de inicio</label>
                 <input type="date" className="form-control" />
               </div>
+              <div className="col-12">
+                <label className="">Descripcion</label>
+                <textarea
+                  className="form-control"
+                  aria-label="With textarea"
+                  rows={7}
+                />
+              </div>
             </div>
+            <br />
             <hr />
             <div className="">
               <label className="text-primary">2. Primera Actualizacion</label>
               <div className="">
-                <label className="">Description</label>
+                <label className="">Titulo</label>
+                <input type="text" className="form-control" />
+                <label className="">Descripcion</label>
                 <textarea
                   className="form-control"
                   aria-label="With textarea"
                   rows={4}
-                ></textarea>
-                <label className="">Attach file</label>
+                />
+                <label className="">Subir archivos</label>
                 <div className="dashed-border-upload form-control text-center upload-bg">
                   <GrDocumentUpload />
                   <div>Drag and drop your file </div>
@@ -88,8 +99,8 @@ const NewCase = () => {
               </div>
             </div>
             <div className="text-center">
-              <button className="btn btn-outline-primary new-case-btn my-3">
-                Add a new case update
+              <button className="btn btn-outline-primary my-3">
+                Agregar una nueva actualizacion
               </button>
             </div>
           </div>
