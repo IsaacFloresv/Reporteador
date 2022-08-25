@@ -30,7 +30,7 @@ const CasesFollowing = () => {
 
         {/* Right */}
         <div className="mx-2 text-end">
-          <span className="badge text-bg-primary text-white">status</span>
+          <span className="badge text-bg-primary fw-normal text-white">Activo</span>
           <p
             className="m-0 py-1 fw-semibold"
             style={{ fontSize: 0.75 + "rem" }}

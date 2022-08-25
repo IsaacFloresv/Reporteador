@@ -21,6 +21,9 @@ const DashboardLayout = ({ children }) => {
           <section className="m-auto mt-5" style={{ width: 85 + "%" }}>
             <Breadcrumbs page="Dashboard" />
             <Outlet />
+            <br />
+            <br />
+            <br />
           </section>
         </div>
       </div>

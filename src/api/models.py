@@ -18,7 +18,7 @@ class Users(db.Model):
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow() )
 
     def __repr__(self):
-        return f'<Users {self.id}>'
+        return f'User ID:{self.id} Username:{self.name}'
 
     def serialize(self):
         return {
@@ -42,7 +42,7 @@ class Clients(db.Model):
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
     def __repr__(self):
-        return f'<Clients {self.name},{self.first_lastname},{self.second_lastname},{self.lawyer_id},{self.is_active},{self.delete}>'
+        return f'Customer:{self.name},{self.first_lastname}'
 
     def serialize(self):
         return {
@@ -66,7 +66,7 @@ class Phone_number(db.Model):
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
     def __repr__(self):
-        return f'<Phone_number {self.id}, {self.client_id}, {self.phone_number}, {self.delete}>'
+        return f'Phone number:{self.phone_number}'
 
     def serialize(self):
         return {
@@ -87,7 +87,7 @@ class Address(db.Model):
     create_at=db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
     def __repr__(self):
-        return f'<Address {self.id}, {self.client_id}, {self.address}, {self.delete}>'
+        return f'Address:{self.address}'
 
     def serialize(self):
         return {
@@ -108,7 +108,7 @@ class Email_address(db.Model):
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
     def __repr__(self):
-        return f'<Email_address {self.id}, {self.client_id}, {self.email_address}, {self.delete}>'
+        return f'Email_address:{self.email_address}'
 
     def serialize(self):
         return {
@@ -129,7 +129,7 @@ class Notes(db.Model):
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
     def __repr__(self):
-        return f'<Notes {self.id}>'
+        return f'Note:{self.data}'
 
     def serialize(self):
         return {
@@ -149,6 +149,7 @@ class Case_status(db.Model):
     def __repr__(self):
         return f'<Case_status {self.id}>'
 
+
     def serialize(self):
         return {
             "id": self.id,
@@ -156,6 +157,28 @@ class Case_status(db.Model):
             # do not serialize the password, its a security breach
         }
 
+class Files(db.Model):
+    __tablename__='Files'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), unique=True, nullable=False)
+    url = db.Column(db.String(500), unique=True, nullable=False)
+    Case_updates_id = db.Column(db.Integer, unique=True, nullable=False)
+    delete = db.Column(db.Boolean, unique=False, nullable=False)
+    create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
+
+    def __repr__(self):
+        return f'File_name:{self.name}'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "url": self.url,
+            "Case_updates_id": self.Case_updates_id,
+            "delete": self.delete,
+            # do not serialize the password, its a security breach
+        }
+        
 class Cases(db.Model):
     __tablename__='Cases'
     id = db.Column(db.Integer, primary_key=True)
@@ -170,11 +193,11 @@ class Cases(db.Model):
     cost = db.Column(db.Integer, unique=True, nullable=False)
     init_date = db.Column(db.String(50), unique=True, nullable=False)
     end_date = db.Column(db.String(50), unique=True, nullable=False)
-    delete = db.Column(db.Boolean, unique=False, nullable=False)
+    delete = db.Column(db.Boolean, unique=False, nullable=False,default=False)
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
     def __repr__(self):
-        return f'<Cases {self.id}, {self.exp_number}, {self.description},{self.client_id},{self.lawyer_id},{self.status_id},{self.cost},{self.init_date},{self.end_date}>'
+        return f'Cases {self.exp_number}, {self.description},{self.client_id},{self.lawyer_id}'
 
     def serialize(self):
         return {
@@ -203,7 +226,7 @@ class Case_updates(db.Model):
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
     def __repr__(self):
-        return f'<Case_updates {self.id}, {self.case_id}, {self.delete}>'
+        return f'Case update: {self.description}'
 
     def serialize(self):
         return {

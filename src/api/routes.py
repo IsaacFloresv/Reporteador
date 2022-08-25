@@ -1,6 +1,7 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
+
 from flask import Flask, request, jsonify, url_for, Blueprint, send_file
 from api.models import db, Users, Clients, Files
 from api.utils import generate_sitemap, APIException
@@ -28,7 +29,7 @@ def handle_invalid_usage(error):
 
 def send_email(msg, email):
     print(msg)
-    sender = "Dropcase"
+    sender = "Dropcases"
     receiver = email
 
     try:
@@ -65,7 +66,7 @@ def login():
         return jsonify({"msg": "Bad username or password"}), 401
     access_token = create_access_token(identity=email)
     response_body = {
-        'msg': 'Welcome to Dropcase',
+        'msg': 'Welcome to Dropcases',
         'token': access_token,
         'user': user.serialize()
     }
@@ -103,6 +104,20 @@ def single_user(id):
     users = Users.query.get(id)
     single_user = users.serialize()
     return jsonify(single_user), 200
+    
+@api.route('/client/<int:id>', methods=['GET'])
+@jwt_required()
+def single_client(id):
+    client = Clients.query.get(id)
+    single_client = client.serialize()
+    return jsonify(single_client), 200
+
+@api.route('/case/<int:id>', methods=['GET'])
+@jwt_required()
+def single_case(id):
+    case = Cases.query.get(id)
+    single_case = case.serialize()
+    return jsonify(single_case), 200
 
 
 @api.route('/user', methods=['GET', 'POST', 'PUT'])
@@ -184,11 +199,13 @@ Thank you for registering! You can sign in by visiting the link below.
 <br/>
 Thanks,
 <br/>
+Dropcases
+<br/>
             '''.format("")
 
         msg = MIMEText(message, 'html')
         msg['Subject'] = "Welcome"
-        msg['From'] = "Dropcase"
+        msg['From'] = "Dropcases"
         msg['To'] = email
         send_email(msg, email)
 
@@ -215,14 +232,12 @@ def customers():
         return jsonify(response_body), 200
         db.session.commit()
 
-    elif request.method == 'PUT':
+    if request.method == 'PUT':
         if 'id' not in request.json:
             return jsonify({"msg": "User ID missing"}), 400
 
         id = request.json['id']
-        print(id)
         customer = Clients.query.filter_by(id=id).first()
-        print(customer)
 
         if 'name' in request.json:
             name = request.json['name']
@@ -275,34 +290,103 @@ def customers():
             'user': clients.serialize()
         }
         return jsonify(response_body), 200
-
+@api.route('/status', methods=['GET', 'POST', 'PUT'])
+@jwt_required()
+def case_status():
+    if request.method == 'POST':
+        body = request.json
+        description = request.json.get('description')
+        if body is None:
+            return "The request body is null", 400
+        if not description:
+            return 'You need to specify a case status to be added', 400
+        case_status = Case_status(Case_status=description)
+        db.session.add(case_status)
+        db.session.commit()
+        response_body = {
+            'msg': ' A new case staturs has been created successfully.',
+            'user': case_status.serialize()
+        }
+        return jsonify(response_body), 200
 
 @api.route('/cases', methods=['GET', 'POST', 'PUT'])
 @jwt_required()
 def cases():
     if request.method == 'POST':
         body = request.json
-        email = request.json.get('email')
-        name = request.json.get('name')
-        lawyer_id = request.json.get('lawyer_id')
-        is_active = request.json.get('is_active')
-        first_lastname = request.json.get('first_lastname')
-        second_lastname = request.json.get('second_lastname')
-
+        exp_number = request.json.get('exp_number')
+        description = request.json.get('description')
+        client_id = request.json.get('client_id')
+        lawyer_id=request.json.get('lawyer_id')
+        status_id=request.json.get('status_id')
+        cost=request.json.get('cost')
+        init_date=request.json.get('init_date')
+        end_date=request.json.get('end_date')
+       
         if body is None:
             return "The request body is null", 400
-        if not email:
-            return 'You need to specify the email', 400
-        clients = Clients(email=email, name=name, lawyer_id=lawyer_id, is_active=is_active,
-                          first_lastname=first_lastname, second_lastname=second_lastname)
-        db.session.add(clients)
+        if not client_id:
+            return 'You need to specify the numero de cliente', 400
+        cases = Cases(exp_number=exp_number,description=description,client_id=client_id,lawyer_id=lawyer_id,status_id=status_id,cost=cost,init_date=init_date,end_date=end_date)
+        db.session.add(cases)
         db.session.commit()
         response_body = {
-            'msg': 'Customer has been created successfully.',
-            'user': clients.serialize()
+        'msg': ' A new case has been created successfully.',
+        'user': cases.serialize()
         }
         return jsonify(response_body), 200
+        
+    if request.method == 'GET':
 
+        cases = Cases.query.all()
+        print(cases)
+        all_cases = list(map(lambda x: x.serialize(),cases))
+        print(all_cases)
+        response_body = {
+            "msg": "All cases",
+            "Cases": all_cases
+        }
+        return jsonify(response_body), 200
+        db.session.commit()
+    elif request.method == 'PUT':
+        if 'id' not in request.json:
+            return jsonify({"msg": "Case ID missing"}), 400
+
+        id = request.json['id']
+        case = Cases.query.filter_by(id=id).first()
+       
+        if 'description' in request.json:
+            description = request.json['description']
+            case.description = description
+            
+
+        if 'cost' in request.json:
+            cost = request.json['cost']
+            case.cost = cost
+
+        if 'end_date' in request.json:
+            end_date = request.json['end_date']
+            case.end_date = end_date
+
+        if 'lawyer_id' in request.json:
+            lawyer_id = request.json['lawyer_id']
+            case.lawyer_id = lawyer_id
+
+        if 'status_id' in request.json:
+            status_id = request.json['status_id']
+            case.status_id = status_id
+
+        if 'delete' in request.json:
+            delete = request.json['delete']
+            case.delete = delete
+
+        
+        response_body = {
+            'msg': 'Case successfully updated.',
+            'Case_updated': case.serialize()
+        }
+        db.session.commit()
+        return jsonify(response_body), 200
 
 @api.route("/reset", methods=["POST"])
 def update_password():
@@ -340,13 +424,13 @@ def update_password():
                 <br/>
                 Thanks,
                 <br/>
-                Dropcase
+                Dropcases
             
             '''.format(new_password)
 
             msg = MIMEText(message, 'html')
             msg['Subject'] = "Password Reset Request"
-            msg['From'] = "Dropcase"
+            msg['From'] = "Dropcases"
             msg['To'] = email
 
             send_email(msg, email)

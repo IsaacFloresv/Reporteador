@@ -1,9 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
 @import "../styles/theme/theme.scss";
 
 /* Montserrat font setting */
 body {
   font-family: "Montserrat", sans-serif;
+  font-size: 14px;
 }
 
 /* Custom btn-primary */
@@ -40,6 +41,23 @@ body {
   width: 7px;
 }
 
+.btn-cancel {
+  text-decoration: none;
+}
+.btn-cancel:hover {
+  text-decoration: underline #f08181;
+}
+.dashed-border {
+  border: 1px dashed #82cf98;
+}
+.dashed-border-upload {
+  border: 1px dashed #6fa5fb;
+}
+
+.upload-bg {
+  background-color: #fcfdff;
+}
+
 ::-webkit-scrollbar-thumb {
   background: #6d6d6d;
   border-radius: 50px;
@@ -50,7 +68,35 @@ body {
   border-radius: 50px;
 }
 
-.img-responsive{
+.img-responsive {
   width: 100%;
   height: 100%;
+}
+
+label {
+  font-weight: 700;
+  padding: 10px 0px;
+}
+
+.new-case-btn {
+  color: black;
+  font-weight: 200;
+  font-size: 12px;
+}
+
+.table > tbody > tr > td {
+  vertical-align: middle;
+}
+
+.hover-menu:hover {
+  background-color: #def6e5;
+  cursor: pointer;
+}
+
+.react-calendar__tile--active {
+  background: #def6e5 !important;
+}
+
+.react-calendar__tile--now {
+  background: #82cf98 !important;
 }
