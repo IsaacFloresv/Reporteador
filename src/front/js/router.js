@@ -18,11 +18,10 @@ import Signup from "./pages/SignUp/Signup.jsx";
 import NewClient from "./pages/clientes/NewClient.jsx";
 import NewCase from "./pages/casos/NewCase.jsx";
 import Client from "./pages/clientes/Client.jsx";
+import Caso from "./pages/casos/Caso.jsx";
 
 //create your first component
 const Router = () => {
-  //the basename is used when your project is published in a subdirectory and not in the root of the domain
-  // you can set the basename on the .env file located at the root of this project, E.g: BASENAME=/react-hello-webapp/
   const basename = process.env.BASENAME || "";
 
   return (
@@ -44,6 +43,7 @@ const Router = () => {
             <Route element={<NewClient />} path="/nuevo-cliente" />
             <Route element={<Client />} path="/client/:name" />
             <Route element={<NewCase />} path="/nuevo-caso" />
+            <Route element={<Caso />} path="/caso/:name" />
           </Route>
         </Routes>
       </BrowserRouter>
