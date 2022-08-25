@@ -290,6 +290,7 @@ def customers():
             'user': clients.serialize()
         }
         return jsonify(response_body), 200
+
 @api.route('/status', methods=['GET', 'POST', 'PUT'])
 @jwt_required()
 def case_status():
@@ -440,8 +441,8 @@ def update_password():
 
         return jsonify(response_body), 200
 
-@api.route('/uploader', methods=['POST'])
-def uploader():
+@api.route('/upload', methods=['POST'])
+def upload():
     if request.method == 'POST':
         #Get the name of the client
         usuario = request.form['usuario']
@@ -454,15 +455,26 @@ def uploader():
 
         #Get the name of the file
         f = request.files['archivo']
-        filename = f.filename
+        filename = f.filename.replace(" ","_")
         ruta = os.path.join(folder,filename)
         #It is confirmed if the file exists in the directory, if it doesn't exist, the file is saved
         if os.path.isfile(ruta):
-            return 'the file already exists.'
+            index = filename.index('.')
+            # Find cant of all existing files with same name
+            keyword = filename[:index]
+            duplicate_names = 0
+            for fname in os.listdir(folder):
+                if keyword in fname:
+                    duplicate_names += 1
+            # Remplace duplicate file name with new name
+            filename = filename[:index]+ f"({duplicate_names})" +filename[index:]
+            ruta = os.path.join(folder,filename)
+            f.save(ruta)
+            return jsonify({'response': 'Uploaded succesfully!', 'route': ruta}), 200
         else:
             #The file is saved
             f.save(ruta)
-    return ruta, 200
+            return jsonify({'response': 'Uploaded succesfully!', 'route': ruta}), 200
 
 @api.route('/files', methods=['GET'])
 @jwt_required()
@@ -477,42 +489,14 @@ def files():
         return jsonify(response_body), 200
         db.session.commit()
 
-@api.route('/file', methods=['GET','POST','DELETE'])
-@jwt_required()
-def file():
+@api.route('/file/<filename>', methods=['GET','DELETE'])
+# @jwt_required()
+def file(filename):
     if request.method == 'GET':
-        id = request.json['id']
-        files = db.session.query(Files).filter(Files.Case_updates_id==id)
-        all_files = list(map(lambda x: x.serialize(), files))
-        response_body = {
-            "msg": "Files list complete",
-            "Files": all_files
-        }
-        return jsonify(response_body), 200
-        db.session.commit()
+        image_attach = send_file(f'/workspace/dropcases/public/client_files/carlos.lukass28@gmail.com/{filename}')
+        return (image_attach), 200
 
-    elif request.method == 'POST':
-        body = request.json
-        name = request.json.get('name')
-        
-        url = request.json.get('url')
-        case_updates_id = request.json.get('case_updates_id')
-        delete = request.json.get('delete')
-
-        if body is None:
-            return "The request body is null", 400
-        if not name:
-            return 'You need to specify the name', 400
-        files = Files(name=name, url=url, Case_updates_id=case_updates_id, delete=delete)
-        db.session.add(files)
-        db.session.commit()
-        response_body = {
-            'msg': 'Files has been add successfully.',
-            'user': files.serialize()
-        }
-        return jsonify(response_body), 200
-
-    elif request.method == 'DELETE':
+    if request.method == 'DELETE':
         if 'id' not in request.json:
             return jsonify({"msg": "Id is a required field"}), 400
 
