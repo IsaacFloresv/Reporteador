@@ -7,7 +7,6 @@ from api.models import db, Users, Clients, Files
 from api.utils import generate_sitemap, APIException
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 import smtplib
-import ssl
 import os
 from os import path
 from pathlib import Path
@@ -60,7 +59,6 @@ def login():
         return jsonify({
             "msg": "You are not a registered user,sign up to continue or go away!!!"
         }), 401
-    print(user.password)
     is_correct = check_password_hash(user.password, password)
     if not is_correct:
         return jsonify({"msg": "Bad username or password"}), 401
@@ -71,6 +69,19 @@ def login():
         'user': user.serialize()
     }
     return jsonify(response_body), 200
+
+"""@api.route("/validate", methods=["GET"])
+@jwt_required()
+def validate_token():
+    # Access the identity of the current user with get_jwt_identity
+    current_user = get_jwt_identity()
+    user = Users.query.filter_by(email=current_user).first()
+    response = {
+        'logged_in_as': current_user,
+        'msg': 'The token is valid.',
+        'user': user.serialize()
+    }
+    return jsonify(response), 200"""
 
 
 @api.route("/auth", methods=["GET"])
@@ -164,19 +175,25 @@ def users():
         db.session.commit()
         return jsonify(response_body), 200
 
-    elif request.method == 'POST':
+    if request.method == 'POST':
         body = request.json
         email = request.json.get('email')
         password = request.json.get('password')
         lawyer_identification = request.json.get('lawyer_identification')
         name = request.json.get('name')
         lastname = request.json.get('lastname')
-        is_active = request.json.get('is_active')
+        user = Users.query.filter_by(email=email).first()
+        
 
         if body is None:
             return "The request body is null", 400
         if not email:
             return 'You need to specify the email', 400
+        if user:
+            return jsonify({
+                "status":"user_duplicate",
+                "msg":"Email already exist,please login"
+            }),400
         if not password:
             return 'You need to enter a password', 400
         if not lawyer_identification:
@@ -185,38 +202,39 @@ def users():
             return 'You need to enter your name', 400
         if not lastname:
             return 'You need to enter your lastname', 400
-        if not is_active:
-            return 'You need to to set your account status', 400
-
+       
+        
         pw_hash = generate_password_hash(password, 10).decode('utf-8')
         user = Users(email=email, name=name, lastname=lastname,
-                     lawyer_identification=lawyer_identification, password=pw_hash, is_active=is_active)
-        message = '''\
-Thank you for registering! You can sign in by visiting the link below.
-<br/>
-<br/>
-<br/>
-<br/>
-Thanks,
-<br/>
-Dropcases
-<br/>
-            '''.format("")
-
-        msg = MIMEText(message, 'html')
-        msg['Subject'] = "Welcome"
-        msg['From'] = "Dropcases"
-        msg['To'] = email
-        send_email(msg, email)
-
+                     lawyer_identification=lawyer_identification, password=pw_hash)
         db.session.add(user)
         db.session.commit()
+        try:
+            message = '''\
+                Thank you for registering! You can sign in by visiting the link below.
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                Thanks,
+                <br/>
+                Dropcases
+                <br/>
+            '''.format("")
+
+            msg = MIMEText(message, 'html')
+            msg['Subject'] = "Welcome"
+            msg['From'] = "Dropcases"
+            msg['To'] = email
+            send_email(msg, email)
+
+        except Exception as e:
+            return jsonify({"msg":"unable to send confirmation email"}),400
         response_body = {
             'msg': 'Thank you! Your account has been added successfully. Please sign in.',
             'user': user.serialize()
         }
-
-        return jsonify(response_body), 200
+        return jsonify(response_body),200
 
 
 @api.route('/client', methods=['GET', 'POST', 'PUT'])
