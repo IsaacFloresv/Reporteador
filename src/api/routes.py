@@ -407,7 +407,7 @@ def cases():
         db.session.commit()
         return jsonify(response_body), 200
 
-@api.route("/reset", methods=["POST"])
+@api.route("/reset", methods=["POST","PUT"])
 def update_password():
     if request.method == "POST":
         # new_password = request.json.get("password")
@@ -418,46 +418,71 @@ def update_password():
 
         user = Users.query.filter_by(email=email).first()
 
-        # Create and set new password
-        new_password = ''.join(random.choice(string.ascii_letters)
+        if user:
+            new_password = ''.join(random.choice(string.ascii_letters)
                                for i in range(12))
         # new_password_hashed
+            pw_hash = generate_password_hash(new_password, 10).decode('utf-8')
+            user.password = pw_hash
+            db.session.commit()
+
+            response_body = {
+                "msg": "Success. An email will be sent to your account with your temporary password."
+            }
+
+            try:
+                message = '''\
+                    A reset request was sent to our system. Please use the following password to sign in:
+                    <br/>
+                    <br/>
+                    <br/>
+                    {0}
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    Thanks,
+                    <br/>
+                    Dropcases
+                
+                '''.format(new_password)
+
+                msg = MIMEText(message, 'html')
+                msg['Subject'] = "Password Reset Request"
+                msg['From'] = "Dropcases"
+                msg['To'] = email
+
+                send_email(msg, email)
+            except Exception as e:
+                print(e)
+                return jsonify({"msg": "Unable to send reset email."}), 400
+
+            return jsonify(response_body), 200
+        else:
+            return jsonify({"msg": "Email not registered"}), 400
+    if request.method == "PUT":
+        email = request.json.get("email", None)
+        old_Password = request.json.get("old_password", None)
+        new_password = request.json.get('new_password',None)
+        user = Users.query.filter_by(email=email).first()
+        
+        if user is None:
+            return jsonify({
+            "msg": "Please fill all inputs"
+            }), 401
+        is_correct = check_password_hash(user.password, old_Password)
         pw_hash = generate_password_hash(new_password, 10).decode('utf-8')
-        user.password = pw_hash
-        db.session.commit()
+        if not is_correct:
+            return jsonify({"msg": "Bad username or password"}), 401
 
+        if 'new_password' in request.json:
+            new_password = request.json['new_password']
+            user.password = new_password
         response_body = {
-            "msg": "Success. An email will be sent to your account with your temporary password."
-        }
-
-        try:
-            message = '''\
-                A reset request was sent to our system. Please use the following password to sign in:
-                <br/>
-                <br/>
-                <br/>
-                {0}
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                Thanks,
-                <br/>
-                Dropcases
-            
-            '''.format(new_password)
-
-            msg = MIMEText(message, 'html')
-            msg['Subject'] = "Password Reset Request"
-            msg['From'] = "Dropcases"
-            msg['To'] = email
-
-            send_email(msg, email)
-        except Exception as e:
-            print(e)
-            return jsonify({"msg": "Unable to send reset email."}), 400
-
-        return jsonify(response_body), 200
+            'msg': 'New password stored succesfully',
+            'user': user.serialize()
+    }
+    return jsonify(response_body), 200
 
 @api.route('/upload', methods=['POST'])
 def upload():

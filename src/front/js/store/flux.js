@@ -1,5 +1,4 @@
 import { Alert } from "bootstrap";
-
 const URL = process.env.BACKEND_URL;
 
 const getState = ({ getStore, getActions, setStore }) => {
@@ -64,7 +63,6 @@ const getState = ({ getStore, getActions, setStore }) => {
               msg: data.msg,
               show: true,
             });
-
             return store;
           });
       },
@@ -127,7 +125,6 @@ const getState = ({ getStore, getActions, setStore }) => {
       },
       checkToken: () => {
         let tokenCheck = JSON.parse(localStorage.getItem("Dropcases"));
-
         if (tokenCheck !== null) {
           // token is present, so do something (set loggedIn, maybe?)
           // console.log(tokenCheck);
@@ -141,7 +138,6 @@ const getState = ({ getStore, getActions, setStore }) => {
               if (response.status === 401) {
                 throw new Error("Token Expired, please login.");
               }
-
               if (!response.ok) throw new Error(response.status);
               return response.json();
             })
@@ -173,5 +169,6 @@ const getState = ({ getStore, getActions, setStore }) => {
     },
   };
 };
+}
 
 export default getState;
