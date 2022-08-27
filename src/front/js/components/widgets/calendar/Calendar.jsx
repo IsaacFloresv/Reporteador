@@ -6,7 +6,7 @@ const CalendarWidget = () => {
   const [value, onChange] = useState(new Date());
   return (
     <div>
-      <Calendar className='border border-0' onChange={onChange} value={value} />
+      <Calendar  className='border border-0 w-100' onChange={onChange} value={value}/>
     </div>
   );
 };

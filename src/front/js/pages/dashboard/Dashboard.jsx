@@ -167,7 +167,7 @@ const Dashboard = () => {
           <div>
             <WidgetContainer title="Mis notas">
               <div
-                style={{ height: 400, width: 100 + "%", overflowY: "scroll" }}
+                style={{ height: 370, width: 100 + "%", overflowY: "scroll" }}
                 className="position-relative"
               >
                 {test.map((item, index) => {

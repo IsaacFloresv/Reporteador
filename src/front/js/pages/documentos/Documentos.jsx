@@ -1,7 +1,16 @@
 import React from "react";
 
 const Documentos = () => {
-  return <div>documentos</div>;
+  return(
+    <div>
+      <form action="/uploader" enctype="multipart/form-data" method="POST">
+        <label for="usuario">Usuario</label>
+        <input type="text" name="usuario"/>
+        <input type="file" name="archivo"></input>
+        <input type="submit"></input>
+      </form>
+    </div>
+   );
 };
 
 export default Documentos;

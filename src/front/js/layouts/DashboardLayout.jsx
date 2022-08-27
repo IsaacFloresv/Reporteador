@@ -1,4 +1,5 @@
 import React from "react";
+import { Outlet } from "react-router-dom";
 
 // Components
 import Navbar from "../components/Dashboard-top-nav-bar/Navbar.jsx";
@@ -17,9 +18,12 @@ const DashboardLayout = ({ children }) => {
           className="w-100 h-100"
           style={{ overflowY: "scroll", overflowX: "hidden" }}
         >
-          <section className="m-auto mt-5" style={{width: 85+'%'}}>
+          <section className="m-auto mt-5" style={{ width: 85 + "%" }}>
             <Breadcrumbs page="Dashboard" />
-            {children}
+            <Outlet />
+            <br />
+            <br />
+            <br />
           </section>
         </div>
       </div>
