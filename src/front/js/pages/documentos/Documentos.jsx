@@ -46,6 +46,24 @@ const folders = [
     client: "Homero Simpson",
     edited: "09/07/2012",
   },
+  {
+    name: "Homero Simpson",
+    cant: 15,
+    client: "Homero Simpson",
+    edited: "09/07/2012",
+  },
+  {
+    name: "Homero Simpson",
+    cant: 15,
+    client: "Homero Simpson",
+    edited: "09/07/2012",
+  },
+  {
+    name: "Homero Simpson",
+    cant: 15,
+    client: "Homero Simpson",
+    edited: "09/07/2012",
+  },
 ];
 
 const Documentos = () => {
@@ -57,19 +75,19 @@ const Documentos = () => {
       {/* Complemets */}
       {/* Left Columns */}
       <Search_documents />
-      <div classname="Container">
-        <div class="row pt-2">
-          <p className="col">
-            <b> Agregados recientemente</b>
-          </p>
+      <div className="Container">
+        <div class="row pt-2 mt-4">
+          <h5 className="col ">
+            Agregados recientemente
+          </h5>
           <p className="col d-md-flex justify-content-md-end">
             <a href="#">ver todos</a>
           </p>
         </div>
-        <div className="container align-items-center p-2 m-0">
+        <div className="container-fluid align-items-center p-2 m-0">
           <div
-            className="row "
-            style={{ height: 300, width: 100 + "%", overflowy: "scroll" }}
+            className="row"
+            // style={{ height: 300 }}
           >
             {documents.map((item, index) => {
               return (
@@ -88,18 +106,18 @@ const Documentos = () => {
           </div>
         </div>
       </div>
-      <div className="Container pt-2">
-      <div class="row pt-2">
-        <p className="col text-left">
-            <b> Mis carpetas</b>
-          </p>        
+      <div className="Container-fluid pt-2">
+        <div class="row pt-2 mb-2">
+          <h5 className="col text-left">
+             Mis carpetas
+          </h5>
           <p className="col d-md-flex justify-content-md-end">
             <a href="#">ver todos</a>
           </p>
-          </div>
+        </div>
         <div
-          className="row"
-          style={{ height: 300, width: 100 + "%", overflowy: "scroll" }}
+          className="d-flex"
+          style={{ width: 100 + "%", overflowX: "scroll" }}
         >
           {folders.map((item, index) => {
             return (

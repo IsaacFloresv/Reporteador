@@ -4,7 +4,7 @@ const Card_documents = ({ name, caso, edited, index }) => {
   return (
     <div className="card text-left ">
       <div className="card-body">
-        <img src="..." class="card-img-top" alt="..." />
+        <img src="https://talentclick.com/wp-content/uploads/2021/08/placeholder-image.png" class=" card-img-top" alt="..." />
       </div>
       <div className="card-footer text-muted pb-0 mb-0">
         <p className="pb-0 mb-0">{name}</p>
