@@ -1,9 +1,9 @@
 import React, {useContext, useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
-import {Context} from "/workspace/dropcases/src/front/js/store/appContext.js"
+import {Context} from "../../store/appContext.js"
 import {Link} from "react-router-dom";
-import logo from "/workspace/dropcases/public/assets/logo.png";
-import register_image from "/workspace/dropcases/public/assets/register_image.png";
+import logo from "../../../../../public/assets/logo.png";
+import register_image from "../../../../../public/assets/register_image.png";
 
 const Signup = () => {
     let navigate = useNavigate();
