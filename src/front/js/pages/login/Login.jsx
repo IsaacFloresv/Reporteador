@@ -1,7 +1,7 @@
 import React, {useContext, useState, useEffect} from "react";
-import {Context} from "/workspace/dropcases/src/front/js/store/appContext.js"
-import login_image from "/workspace/dropcases/public/assets/login-image.png";
-import logo from "/workspace/dropcases/public/assets/logo.png";
+import {Context} from "../../store/appContext.js"
+import login_image from "../../../../../public/assets/login-image.png";
+import logo from "../../../../../public/assets/logo.png";
 import {BiLockAlt} from "react-icons/bi";
 import {useNavigate} from "react-router-dom";
 const Login = () => {

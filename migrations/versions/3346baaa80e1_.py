@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: af66a882d88c
+Revision ID: 3346baaa80e1
 Revises: 
-Create Date: 2022-08-17 20:31:17.815022
+Create Date: 2022-08-27 02:12:15.513012
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'af66a882d88c'
+revision = '3346baaa80e1'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -47,8 +47,7 @@ def upgrade():
     sa.Column('delete', sa.Boolean(), nullable=False),
     sa.Column('create_at', sa.DateTime(timezone=True), nullable=True),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('email'),
-    sa.UniqueConstraint('lawyer_identification')
+    sa.UniqueConstraint('email')
     )
     op.create_table('Address',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -115,14 +114,16 @@ def upgrade():
     op.create_table('Case_updates',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('case_id', sa.Integer(), nullable=False),
-    sa.Column('description', sa.String(length=500), nullable=False),
+    sa.Column('title', sa.String(length=500), nullable=False),
+    sa.Column('description', sa.String(length=5000), nullable=False),
     sa.Column('file_id', sa.Integer(), nullable=False),
     sa.Column('delete', sa.Boolean(), nullable=False),
     sa.Column('create_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['case_id'], ['Cases.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('description'),
-    sa.UniqueConstraint('file_id')
+    sa.UniqueConstraint('file_id'),
+    sa.UniqueConstraint('title')
     )
     op.create_table('Files',
     sa.Column('id', sa.Integer(), nullable=False),
