@@ -1,19 +1,25 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
-from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, Users, Clients,Cases,Case_status
+
+from flask import Flask, request, jsonify, url_for, Blueprint, send_file
+from api.models import db, Users, Clients, Files
 from api.utils import generate_sitemap, APIException
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 import smtplib
 import os
+from os import path
+from pathlib import Path
 import random
 import string
 from email.mime.text import MIMEText
 from flask_bcrypt import generate_password_hash, check_password_hash
 from socket import gaierror
 api = Blueprint('api', __name__)
-
+# instancia del objeto Flask
+app = Flask(__name__)
+# Carpeta de subida
+app.config['UPLOAD_FOLDER'] = "/workspace/dropcases/public/client_files"
 
 @api.errorhandler(APIException)
 def handle_invalid_usage(error):
@@ -243,6 +249,7 @@ def customers():
         }
         return jsonify(response_body), 200
         db.session.commit()
+
     if request.method == 'PUT':
         if 'id' not in request.json:
             return jsonify({"msg": "User ID missing"}), 400
@@ -279,6 +286,7 @@ def customers():
         }
         db.session.commit()
         return jsonify(response_body), 200
+
     elif request.method == 'POST':
         body = request.json
         name = request.json.get('name')
@@ -300,6 +308,7 @@ def customers():
             'user': clients.serialize()
         }
         return jsonify(response_body), 200
+
 @api.route('/status', methods=['GET', 'POST', 'PUT'])
 @jwt_required()
 def case_status():
@@ -450,3 +459,77 @@ def update_password():
 
         return jsonify(response_body), 200
 
+@api.route('/upload', methods=['POST'])
+def upload():
+    if request.method == 'POST':
+        #Get the name of the client
+        usuario = request.form['usuario']
+        print(usuario)
+        #Get the name of the directory where the files will be saved
+        folder = os.path.join(app.config['UPLOAD_FOLDER'],usuario)
+        #It is confirmed if the directory exists, if it doesn't exist, the folder is created
+        if (os.path.isdir(folder)== False):
+            os.makedirs(folder)
+
+        #Get the name of the file
+        f = request.files['archivo']
+        filename = f.filename.replace(" ","_")
+        ruta = os.path.join(folder,filename)
+        #It is confirmed if the file exists in the directory, if it doesn't exist, the file is saved
+        if os.path.isfile(ruta):
+            index = filename.index('.')
+            # Find cant of all existing files with same name
+            keyword = filename[:index]
+            duplicate_names = 0
+            for fname in os.listdir(folder):
+                if keyword in fname:
+                    duplicate_names += 1
+            # Remplace duplicate file name with new name
+            filename = filename[:index]+ f"({duplicate_names})" +filename[index:]
+            ruta = os.path.join(folder,filename)
+            f.save(ruta)
+            return jsonify({'response': 'Uploaded succesfully!', 'route': ruta}), 200
+        else:
+            #The file is saved
+            f.save(ruta)
+            return jsonify({'response': 'Uploaded succesfully!', 'route': ruta}), 200
+
+@api.route('/files', methods=['GET'])
+@jwt_required()
+def files():
+    if request.method == 'GET':
+        files = Files.query.all()
+        all_files = list(map(lambda x: x.serialize(), files))
+        response_body = {
+            "msg": "This is total Files",
+            "Files": all_files
+        }
+        return jsonify(response_body), 200
+        db.session.commit()
+
+@api.route('/file/<filename>', methods=['GET','DELETE'])
+# @jwt_required()
+def file(filename):
+    if request.method == 'GET':
+        image_attach = send_file(f'/workspace/dropcases/public/client_files/carlos.lukass28@gmail.com/{filename}')
+        return (image_attach), 200
+
+    if request.method == 'DELETE':
+        if 'id' not in request.json:
+            return jsonify({"msg": "Id is a required field"}), 400
+
+        id = request.json['id']
+        file = Files.query.filter_by(id=id).first()
+        file.delete = True
+        
+        print(file)
+        response_body = {
+            'msg': 'File successfully updated.',
+            'Clients': file.serialize()
+        }
+        db.session.commit()
+        return jsonify(response_body), 200
+
+if __name__ == '__main__':
+ # Iniciamos la aplicación
+     app.run(debug=True) 

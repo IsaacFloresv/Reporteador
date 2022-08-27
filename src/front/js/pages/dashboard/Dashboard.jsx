@@ -223,7 +223,7 @@ const Dashboard = () => {
           <div className="col">
             <WidgetContainer title="Mi Agenda">
               <div
-                style={{ height: 100+'%', width: 100 + "%", overflowY: "scroll" }}
+                style={{ height: 500, width: 100 + "%", overflowY: "scroll" }}
               >
                 {agenda.map((item, index) => {
                   return (

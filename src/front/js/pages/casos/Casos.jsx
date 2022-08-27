@@ -81,6 +81,7 @@ const Casos = () => {
                           {checkbox}
                         </td>
                         <td>
+                        <Link to="/caso/ale" className="text-decoration-none text-black">
                           <div className="d-flex align-items-center">
                             <div
                               className="bg-light rounded d-flex align-items-center justify-content-center"
@@ -100,6 +101,7 @@ const Casos = () => {
                               </small>
                             </div>
                           </div>
+                        </Link>
                         </td>
                         <td>
                           <div className="w-50 mx-auto badge text-bg-primary fw-normal text-white d-flex align-items-center justify-content-center">
