@@ -1,6 +1,6 @@
 import { Alert } from "bootstrap";
 
-const URL="https://3001-carloslukass-dropcases-s65g9cclpdt.ws-us63.gitpod.io"
+const URL="https://3001-carloslukass-dropcases-hh891x5gpd2.ws-us63.gitpod.io"
 const getState = ({
 	getStore,
 	getActions,
