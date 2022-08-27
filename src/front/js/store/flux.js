@@ -1,6 +1,6 @@
 import { Alert } from "bootstrap";
 
-const URL="https://3001-carloslukass-dropcases-hh891x5gpd2.ws-us63.gitpod.io"
+const URL="https://3001-carloslukass-dropcases-s65g9cclpdt.ws-us63.gitpod.io"
 const getState = ({
 	getStore,
 	getActions,
@@ -131,23 +131,6 @@ const getState = ({
 						
 						return data.msg;
 					});
-=======
-			uploadFiles: (files, user) =>{
-				for(let i = 0; i < files.length; i++){
-					const formData = new FormData();
-					formData.append("usuario", user);
-					formData.append("archivo", files[i]);
-					fetch(
-					"https://3001-carloslukass-dropcases-od2ynxzu3gx.ws-us63.gitpod.io/api/upload",
-					{
-						method: "POST",
-						body: formData,
-					}
-				).then((res) => console.log(res));
-			}
-
-			}
-
 		},
 		checkToken: () => {
 		let tokenCheck = JSON.parse(localStorage.getItem("Dropcases"));
@@ -183,9 +166,24 @@ const getState = ({
 				}
 			},
 
+			uploadFiles: (files, user) =>{
+				for(let i = 0; i < files.length; i++){
+					const formData = new FormData();
+					formData.append("usuario", user);
+					formData.append("archivo", files[i]);
+					fetch(
+					"https://3001-carloslukass-dropcases-od2ynxzu3gx.ws-us63.gitpod.io/api/upload",
+					{
+						method: "POST",
+						body: formData,
+					}
+				).then((res) => console.log(res));
+			}
+			},
 
+		}
 
-	};
+	}
 };
 
 export default getState;
