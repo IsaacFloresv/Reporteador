@@ -9,23 +9,23 @@ const NewClient = () => {
     <div>
       <div className="d-flex justify-content-between align-items-center my-3">
         <div>
-          <h5 className="p-0">Agregar nuevos clientes</h5>
+          <h5 className="p-0">Agregar un nuevo cliente</h5>
         </div>
         <div>
         
           <button onClick={() => navigate(-1)} className="btn btn-link text-danger btn-cancel">
-            Cancel
+            Cancelar
           </button>
-          <button className="btn btn-primary">Save</button>
+          <button className="btn btn-primary">Guardar</button>
         </div>
       </div>
       <div className="bg-white rounded dashed-border p-4">
         <div className="row">
-          <label className="my-2 text-primary">1.Customer Info</label>
+          <label className="my-2 text-primary">1. Informacion del Cliente</label>
           <div>
             <div className="row">
               <div className="col-md-6">
-                <label>Names</label>
+                <label>Nombres</label>
                 <input
                   type="text"
                   className="form-control"
@@ -33,7 +33,7 @@ const NewClient = () => {
                 />
               </div>
               <div className="col-md-6">
-                <label>DNI Number</label>
+                <label>Numero de DNI</label>
                 <input
                   type="text"
                   className="form-control"
@@ -41,7 +41,7 @@ const NewClient = () => {
                 />
               </div>
               <div className="col-md-6">
-                <label>Last name</label>
+                <label>Apellido paterno</label>
                 <input
                   type="text"
                   className="form-control"
@@ -49,7 +49,7 @@ const NewClient = () => {
                 />
               </div>
               <div className="col-md-6">
-                <label>Middle Name</label>
+                <label>Apellido materno</label>
                 <input
                   type="text"
                   className="form-control"
@@ -57,7 +57,7 @@ const NewClient = () => {
                 />
               </div>
               <div className="col-md-6">
-                <label>Phone number #1</label>
+                <label>Numero de Telefono #1</label>
                 <input
                   type="text"
                   className="form-control"
@@ -66,7 +66,7 @@ const NewClient = () => {
               </div>
               <div className="col-md-6">
                 <label>
-                  Phone number #2
+                Numero de Telefono #2
                   <text className="text-black-50">(optional)</text>
                 </label>
                 <input

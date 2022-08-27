@@ -1,20 +1,25 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
-from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, Users, Clients,Cases,Case_status
+
+from flask import Flask, request, jsonify, url_for, Blueprint, send_file
+from api.models import db, Users, Clients, Files
 from api.utils import generate_sitemap, APIException
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 import smtplib
-import ssl
 import os
+from os import path
+from pathlib import Path
 import random
 import string
 from email.mime.text import MIMEText
 from flask_bcrypt import generate_password_hash, check_password_hash
 from socket import gaierror
 api = Blueprint('api', __name__)
-
+# instancia del objeto Flask
+app = Flask(__name__)
+# Carpeta de subida
+app.config['UPLOAD_FOLDER'] = "/workspace/dropcases/public/client_files"
 
 @api.errorhandler(APIException)
 def handle_invalid_usage(error):
@@ -54,7 +59,6 @@ def login():
         return jsonify({
             "msg": "You are not a registered user,sign up to continue or go away!!!"
         }), 401
-    print(user.password)
     is_correct = check_password_hash(user.password, password)
     if not is_correct:
         return jsonify({"msg": "Bad username or password"}), 401
@@ -65,6 +69,19 @@ def login():
         'user': user.serialize()
     }
     return jsonify(response_body), 200
+
+"""@api.route("/validate", methods=["GET"])
+@jwt_required()
+def validate_token():
+    # Access the identity of the current user with get_jwt_identity
+    current_user = get_jwt_identity()
+    user = Users.query.filter_by(email=current_user).first()
+    response = {
+        'logged_in_as': current_user,
+        'msg': 'The token is valid.',
+        'user': user.serialize()
+    }
+    return jsonify(response), 200"""
 
 
 @api.route("/auth", methods=["GET"])
@@ -158,19 +175,25 @@ def users():
         db.session.commit()
         return jsonify(response_body), 200
 
-    elif request.method == 'POST':
+    if request.method == 'POST':
         body = request.json
         email = request.json.get('email')
         password = request.json.get('password')
         lawyer_identification = request.json.get('lawyer_identification')
         name = request.json.get('name')
         lastname = request.json.get('lastname')
-        is_active = request.json.get('is_active')
+        user = Users.query.filter_by(email=email).first()
+        
 
         if body is None:
             return "The request body is null", 400
         if not email:
             return 'You need to specify the email', 400
+        if user:
+            return jsonify({
+                "status":"user_duplicate",
+                "msg":"Email already exist,please login"
+            }),400
         if not password:
             return 'You need to enter a password', 400
         if not lawyer_identification:
@@ -179,38 +202,39 @@ def users():
             return 'You need to enter your name', 400
         if not lastname:
             return 'You need to enter your lastname', 400
-        if not is_active:
-            return 'You need to to set your account status', 400
-
+       
+        
         pw_hash = generate_password_hash(password, 10).decode('utf-8')
         user = Users(email=email, name=name, lastname=lastname,
-                     lawyer_identification=lawyer_identification, password=pw_hash, is_active=is_active)
-        message = '''\
-Thank you for registering! You can sign in by visiting the link below.
-<br/>
-<br/>
-<br/>
-<br/>
-Thanks,
-<br/>
-Dropcases
-<br/>
-            '''.format("")
-
-        msg = MIMEText(message, 'html')
-        msg['Subject'] = "Welcome"
-        msg['From'] = "Dropcases"
-        msg['To'] = email
-        send_email(msg, email)
-
+                     lawyer_identification=lawyer_identification, password=pw_hash)
         db.session.add(user)
         db.session.commit()
+        try:
+            message = '''\
+                Thank you for registering! You can sign in by visiting the link below.
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                Thanks,
+                <br/>
+                Dropcases
+                <br/>
+            '''.format("")
+
+            msg = MIMEText(message, 'html')
+            msg['Subject'] = "Welcome"
+            msg['From'] = "Dropcases"
+            msg['To'] = email
+            send_email(msg, email)
+
+        except Exception as e:
+            return jsonify({"msg":"unable to send confirmation email"}),400
         response_body = {
             'msg': 'Thank you! Your account has been added successfully. Please sign in.',
             'user': user.serialize()
         }
-
-        return jsonify(response_body), 200
+        return jsonify(response_body),200
 
 
 @api.route('/client', methods=['GET', 'POST', 'PUT'])
@@ -225,6 +249,7 @@ def customers():
         }
         return jsonify(response_body), 200
         db.session.commit()
+
     if request.method == 'PUT':
         if 'id' not in request.json:
             return jsonify({"msg": "User ID missing"}), 400
@@ -261,6 +286,7 @@ def customers():
         }
         db.session.commit()
         return jsonify(response_body), 200
+
     elif request.method == 'POST':
         body = request.json
         name = request.json.get('name')
@@ -282,6 +308,7 @@ def customers():
             'user': clients.serialize()
         }
         return jsonify(response_body), 200
+
 @api.route('/status', methods=['GET', 'POST', 'PUT'])
 @jwt_required()
 def case_status():
@@ -380,7 +407,7 @@ def cases():
         db.session.commit()
         return jsonify(response_body), 200
 
-@api.route("/reset", methods=["POST"])
+@api.route("/reset", methods=["POST","PUT"])
 def update_password():
     if request.method == "POST":
         # new_password = request.json.get("password")
@@ -391,44 +418,143 @@ def update_password():
 
         user = Users.query.filter_by(email=email).first()
 
-        # Create and set new password
-        new_password = ''.join(random.choice(string.ascii_letters)
+        if user:
+            new_password = ''.join(random.choice(string.ascii_letters)
                                for i in range(12))
         # new_password_hashed
+            pw_hash = generate_password_hash(new_password, 10).decode('utf-8')
+            user.password = pw_hash
+            db.session.commit()
+
+            response_body = {
+                "msg": "Success. An email will be sent to your account with your temporary password."
+            }
+
+            try:
+                message = '''\
+                    A reset request was sent to our system. Please use the following password to sign in:
+                    <br/>
+                    <br/>
+                    <br/>
+                    {0}
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    Thanks,
+                    <br/>
+                    Dropcases
+                
+                '''.format(new_password)
+
+                msg = MIMEText(message, 'html')
+                msg['Subject'] = "Password Reset Request"
+                msg['From'] = "Dropcases"
+                msg['To'] = email
+
+                send_email(msg, email)
+            except Exception as e:
+                print(e)
+                return jsonify({"msg": "Unable to send reset email."}), 400
+
+            return jsonify(response_body), 200
+        else:
+            return jsonify({"msg": "Email not registered"}), 400
+    if request.method == "PUT":
+        email = request.json.get("email", None)
+        old_Password = request.json.get("old_password", None)
+        new_password = request.json.get('new_password',None)
+        user = Users.query.filter_by(email=email).first()
+        
+        if user is None:
+            return jsonify({
+            "msg": "Please fill all inputs"
+            }), 401
+        is_correct = check_password_hash(user.password, old_Password)
         pw_hash = generate_password_hash(new_password, 10).decode('utf-8')
-        user.password = pw_hash
+        if not is_correct:
+            return jsonify({"msg": "Bad username or password"}), 401
+
+        if 'new_password' in request.json:
+            new_password = request.json['new_password']
+            user.password = new_password
+        response_body = {
+            'msg': 'New password stored succesfully',
+            'user': user.serialize()
+    }
+    return jsonify(response_body), 200
+
+@api.route('/upload', methods=['POST'])
+def upload():
+    if request.method == 'POST':
+        #Get the name of the client
+        usuario = request.form['usuario']
+        print(usuario)
+        #Get the name of the directory where the files will be saved
+        folder = os.path.join(app.config['UPLOAD_FOLDER'],usuario)
+        #It is confirmed if the directory exists, if it doesn't exist, the folder is created
+        if (os.path.isdir(folder)== False):
+            os.makedirs(folder)
+
+        #Get the name of the file
+        f = request.files['archivo']
+        filename = f.filename.replace(" ","_")
+        ruta = os.path.join(folder,filename)
+        #It is confirmed if the file exists in the directory, if it doesn't exist, the file is saved
+        if os.path.isfile(ruta):
+            index = filename.index('.')
+            # Find cant of all existing files with same name
+            keyword = filename[:index]
+            duplicate_names = 0
+            for fname in os.listdir(folder):
+                if keyword in fname:
+                    duplicate_names += 1
+            # Remplace duplicate file name with new name
+            filename = filename[:index]+ f"({duplicate_names})" +filename[index:]
+            ruta = os.path.join(folder,filename)
+            f.save(ruta)
+            return jsonify({'response': 'Uploaded succesfully!', 'route': ruta}), 200
+        else:
+            #The file is saved
+            f.save(ruta)
+            return jsonify({'response': 'Uploaded succesfully!', 'route': ruta}), 200
+
+@api.route('/files', methods=['GET'])
+@jwt_required()
+def files():
+    if request.method == 'GET':
+        files = Files.query.all()
+        all_files = list(map(lambda x: x.serialize(), files))
+        response_body = {
+            "msg": "This is total Files",
+            "Files": all_files
+        }
+        return jsonify(response_body), 200
         db.session.commit()
 
+@api.route('/file/<filename>', methods=['GET','DELETE'])
+# @jwt_required()
+def file(filename):
+    if request.method == 'GET':
+        image_attach = send_file(f'/workspace/dropcases/public/client_files/carlos.lukass28@gmail.com/{filename}')
+        return (image_attach), 200
+
+    if request.method == 'DELETE':
+        if 'id' not in request.json:
+            return jsonify({"msg": "Id is a required field"}), 400
+
+        id = request.json['id']
+        file = Files.query.filter_by(id=id).first()
+        file.delete = True
+        
+        print(file)
         response_body = {
-            "msg": "Success. An email will be sent to your account with your temporary password."
+            'msg': 'File successfully updated.',
+            'Clients': file.serialize()
         }
-
-        try:
-            message = '''\
-                A reset request was sent to our system. Please use the following password to sign in:
-                <br/>
-                <br/>
-                <br/>
-                {0}
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                Thanks,
-                <br/>
-                Dropcases
-            
-            '''.format(new_password)
-
-            msg = MIMEText(message, 'html')
-            msg['Subject'] = "Password Reset Request"
-            msg['From'] = "Dropcases"
-            msg['To'] = email
-
-            send_email(msg, email)
-        except Exception as e:
-            print(e)
-            return jsonify({"msg": "Unable to send reset email."}), 400
-
+        db.session.commit()
         return jsonify(response_body), 200
 
+if __name__ == '__main__':
+ # Iniciamos la aplicación
+     app.run(debug=True) 
