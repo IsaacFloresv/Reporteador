@@ -12,8 +12,8 @@ class Users(db.Model):
     password = db.Column(db.String(500), unique=False, nullable=False)
     name = db.Column(db.String(100), unique=False, nullable=False)
     lastname = db.Column(db.String(100), unique=False, nullable=False)
-    lawyer_identification = db.Column(db.String(100), unique=True, nullable=False)
-    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
+    lawyer_identification = db.Column(db.String(100), unique=False, nullable=False)
+    is_active = db.Column(db.Boolean(), unique=False, nullable=False,default=True)
     delete = db.Column(db.Boolean, unique=False, nullable=False,default=False)
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow() )
 
