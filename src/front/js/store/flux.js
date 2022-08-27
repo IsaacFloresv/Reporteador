@@ -1,6 +1,6 @@
 import { Alert } from "bootstrap";
 
-const URL="https://3001-carloslukass-dropcases-hh891x5gpd2.ws-us63.gitpod.io"
+const URL="https://3001-carloslukass-dropcases-dguzxcoj1q5.ws-us63.gitpod.io"
 const getState = ({
 	getStore,
 	getActions,
@@ -115,7 +115,7 @@ const getState = ({
 				console.log("alert",alert.msg)
 				);
 			},
-			forgotPassword: email => {
+			forgotPassword: (email) => {
 				
 				return fetch(`${URL}/api/reset`, {
 					method: "POST",
@@ -131,30 +131,27 @@ const getState = ({
 						
 						return data.msg;
 					});
-=======
-			uploadFiles: (files, user) =>{
-				for(let i = 0; i < files.length; i++){
-					const formData = new FormData();
-					formData.append("usuario", user);
-					formData.append("archivo", files[i]);
-					fetch(
-					"https://3001-carloslukass-dropcases-od2ynxzu3gx.ws-us63.gitpod.io/api/upload",
-					{
-						method: "POST",
-						body: formData,
-					}
-				).then((res) => console.log(res));
-			}
-
-			}
+		},
+		uploadFiles: (files, user) =>{
+			for(let i = 0; i < files.length; i++){
+				const formData = new FormData();
+				formData.append("usuario", user);
+				formData.append("archivo", files[i]);
+				fetch(
+				"https://3001-carloslukass-dropcases-od2ynxzu3gx.ws-us63.gitpod.io/api/upload",
+				{
+					method: "POST",
+					body: formData,
+				}
+			).then((res) => console.log(res));
+		}
 
 		},
 		checkToken: () => {
 		let tokenCheck = JSON.parse(localStorage.getItem("Dropcases"));
 
 				if (tokenCheck !== null) {
-					// token is present, so do something (set loggedIn, maybe?)
-					// console.log(tokenCheck);
+					
 					return fetch(`${URL}/validate`, {
 						headers: {
 							"Content-Type": "application/json",
@@ -181,11 +178,9 @@ const getState = ({
 						})
 						.catch(error => console.error(error));
 				}
-			},
-
-
-
-	};
+			}
+	}
 };
+}
 
 export default getState;
