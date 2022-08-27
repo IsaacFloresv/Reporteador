@@ -1,6 +1,6 @@
 import { Alert } from "bootstrap";
 
-const URL = `process.env.BACKEND_URL`;
+const URL = process.env.BACKEND_URL;
 
 const getState = ({ getStore, getActions, setStore }) => {
   return {
