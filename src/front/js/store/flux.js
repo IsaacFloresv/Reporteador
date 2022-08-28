@@ -1,5 +1,5 @@
-import { Alert } from "bootstrap";
 const URL = process.env.BACKEND_URL;
+console.log(URL);
 
 const getState = ({ getStore, getActions, setStore }) => {
   return {
@@ -78,9 +78,9 @@ const getState = ({ getStore, getActions, setStore }) => {
           body: raw,
         };
         const store = getStore();
-        console.log(values.email)
-        console.log(raw.email)
-        return fetch(`${URL}/api/login`, requestOptions)
+        console.log(values.email);
+        console.log(raw.email);
+        return fetch(`${URL}/login`, requestOptions)
           .then((response) => response.json())
           .then((data) => {
             if (typeof data.user === "undefined") throw new Error(data.msg);
@@ -88,7 +88,7 @@ const getState = ({ getStore, getActions, setStore }) => {
               "Dropcase",
               JSON.stringify({
                 token: data.token,
-                email: data.user.email,
+                email: data.user.Email,
                 name: `${data.user.Name} ${data.user.Lastname}`,
                 loggedIn: true,
               })
@@ -113,9 +113,9 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
       },
       forgotPassword: (email) => {
-          return fetch(`${URL}/api/reset`, {
+        return fetch(`${URL}/api/reset`, {
           method: "POST",
-          cros:"no-cors",
+          cros: "no-cors",
           headers: {
             "Content-Type": "application/json",
           },
@@ -181,9 +181,11 @@ const getState = ({ getStore, getActions, setStore }) => {
           });
         }
       },
+      logout: () => {
+        localStorage.clear();
+      },
     },
   };
 };
-
 
 export default getState;
