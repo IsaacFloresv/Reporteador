@@ -3,7 +3,7 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 """
 
 from flask import Flask, request, jsonify, url_for, Blueprint, send_file
-from api.models import db, Users, Clients, Files
+from api.models import db, Users, Clients, Files, Notes
 from api.utils import generate_sitemap, APIException
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 import smtplib
@@ -489,7 +489,6 @@ def upload():
     if request.method == 'POST':
         #Get the name of the client
         usuario = request.form['usuario']
-        print(usuario)
         #Get the name of the directory where the files will be saved
         folder = os.path.join(app.config['UPLOAD_FOLDER'],usuario)
         #It is confirmed if the directory exists, if it doesn't exist, the folder is created
@@ -553,6 +552,54 @@ def file(filename):
             'Clients': file.serialize()
         }
         db.session.commit()
+        return jsonify(response_body), 200
+
+@api.route('/notes', methods=['POST','GET','DELETE'])
+#@jwt_required()
+def notes():
+    if request.method == 'POST':
+        body = request.json
+        user_id = request.json.get('user_id')
+        data = request.json.get('data')
+        delete = request.json.get('delete')
+        if body is None:
+            return "The request body is null", 400
+        if not data:
+            return 'You need write something', 400
+        notes = Notes(user_id=user_id,data=data,delete=delete)
+        db.session.add(notes)
+        db.session.commit()
+        response_body = {
+            'msg': ' A new note has been created successfully.',
+            'Notes': notes.serialize()
+        }
+        return jsonify(response_body), 200
+
+    if request.method == 'GET':
+        notes = Notes.query.all()
+        all_notes = list(map(lambda x: x.serialize(), notes))
+        db.session.commit()
+        response_body = {
+            "msg": "This is total notes",
+            "Notes": all_notes
+        }
+        return jsonify(response_body), 200
+        
+    if request.method == 'DELETE':
+        id = request.json['id']
+        print(id)
+        
+        if id is None:
+            return "The request body is null", 400
+
+        note = Notes.query.filter_by(id=id).first()
+        print(note.delete)
+        note.delete = True                                                                                          
+        db.session.commit()
+        response_body = {
+            'msg': 'The note successfully deleted.',
+            'Notes': note.serialize()
+        }        
         return jsonify(response_body), 200
 
 if __name__ == '__main__':
