@@ -22,8 +22,7 @@ import Caso from "./pages/casos/Caso.jsx";
 //create your first component
 const Router = () => {
   const basename = process.env.BASENAME || "";
-  const auth = JSON.parse(localStorage.getItem("Dropcase")) || false;
-  console.log(auth);
+
   return (
     <div>
       <BrowserRouter basename={basename}>

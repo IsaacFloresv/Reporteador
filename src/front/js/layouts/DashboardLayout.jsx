@@ -8,7 +8,6 @@ import Sidebar from "../components/Dashboard-sidebar/Sidebar.jsx";
 
 const DashboardLayout = () => {
   const auth = JSON.parse(localStorage.getItem("Dropcase")) || false;
-  console.log(auth);
 
   return (
     <>
