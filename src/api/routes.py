@@ -19,7 +19,7 @@ api = Blueprint('api', __name__)
 # instancia del objeto Flask
 app = Flask(__name__)
 # Carpeta de subida
-app.config['UPLOAD_FOLDER'] = "/workspace/dropcases/public/client_files"
+app.config['UPLOAD_FOLDER'] = "~/public/client_files"
 
 @api.errorhandler(APIException)
 def handle_invalid_usage(error):

@@ -84,21 +84,23 @@ const getState = ({ getStore, getActions, setStore }) => {
           .then((response) => response.json())
           .then((data) => {
             if (typeof data.user === "undefined") throw new Error(data.msg);
-            setStore({
-              user: {
-                ...data.user,
-                loggedIn: true,
-              },
-              token: data.token,
-            });
-            console.log("store", store);
             localStorage.setItem(
               "Dropcase",
               JSON.stringify({
                 token: data.token,
                 email: data.user.email,
+                name: `${data.user.Name} ${data.user.Lastname}`,
+                loggedIn: true,
               })
             );
+            const userinfo = JSON.parse(localStorage.getItem("Dropcase"));
+            if (userinfo !== null) {
+              setStore({
+                user: {
+                  ...userinfo,
+                },
+              });
+            }
           })
           .catch(
             (error) =>
@@ -168,6 +170,16 @@ const getState = ({ getStore, getActions, setStore }) => {
             method: "POST",
             body: formData,
           }).then((res) => console.log(res));
+        }
+      },
+      userIsLogin: () => {
+        const userinfo = JSON.parse(localStorage.getItem("Dropcase"));
+        if (userinfo !== null) {
+          setStore({
+            user: {
+              ...userinfo,
+            },
+          });
         }
       },
     },
