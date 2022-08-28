@@ -36,14 +36,14 @@ class Clients(db.Model):
     name = db.Column(db.String(120), unique=False, nullable=False)
     first_lastname = db.Column(db.String(120), unique=False, nullable=False)
     second_lastname = db.Column(db.String(120), unique=False, nullable=False)
-    lawyer_id = db.Column(db.String(80), unique=False, nullable=False)
-    is_favorite = db.Column(db.Boolean(), unique=False, nullable=False)
+    lawyer_id = db.Column(db.String(100), db.ForeignKey('Users.lawyer_identification'),nullable=False)
+    lawyer_id_relation= relationship(Users,primaryjoin=lawyer_id==Users.lawyer_identification)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
     delete = db.Column(db.Boolean, unique=False, nullable=False,default=False)
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
     def __repr__(self):
-        return f'Customer:{self.name},{self.first_lastname}'
+        return f'Customer:{self.id}'
 
     def serialize(self):
         return {
