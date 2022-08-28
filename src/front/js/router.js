@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 // Context and Navigation
 import injectContext from "./store/appContext";
@@ -19,11 +19,11 @@ import NewClient from "./pages/clientes/NewClient.jsx";
 import NewCase from "./pages/casos/NewCase.jsx";
 import Client from "./pages/clientes/Client.jsx";
 import Caso from "./pages/casos/Caso.jsx";
-
 //create your first component
 const Router = () => {
   const basename = process.env.BASENAME || "";
-
+  const auth = JSON.parse(localStorage.getItem("Dropcase")) || false;
+  console.log(auth);
   return (
     <div>
       <BrowserRouter basename={basename}>

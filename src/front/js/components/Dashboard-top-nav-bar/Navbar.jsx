@@ -1,13 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
 // Icons
 import { IoNotificationsOutline, IoHelpBuoyOutline } from "react-icons/io5";
 import { FcMenu } from "react-icons/fc";
 
 // Components
 import Notifications from "../../components/widgets/notifications/Notifications.jsx";
+import { Context } from "../../store/appContext.js";
 
 const Navbar = () => {
   const test = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+  const { store, actions } = useContext(Context);
+  console.log(store.user);
+
   return (
     <div
       className="d-flex align-items-center justify-content-between"
@@ -68,7 +72,7 @@ const Navbar = () => {
         {/* User profile */}
         <div className="btn d-flex align-items-center dropdown-toggle px-4">
           <img
-            src="https://images.unsplash.com/photo-1571844306146-6f7451d80824?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=654&q=80"
+            src="https://cdn2.vectorstock.com/i/thumb-large/86/26/person-gray-photo-placeholder-man-material-design-vector-23838626.jpg"
             alt="profile-picture"
             className="rounded"
             style={{
@@ -78,7 +82,7 @@ const Navbar = () => {
               objectPosition: "top center",
             }}
           />
-          <h6 className="px-3 my-0">Alexandra Irene</h6>
+          <h6 className="px-3 my-0">{store.user.name}</h6>
         </div>
       </div>
     </div>

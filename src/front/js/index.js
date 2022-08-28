@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 
 //import bootstrap
 import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min";
+import "bootstrap/dist/js/bootstrap.esm.js";
 
 //include your index.scss file into the bundle
 import "../styles/index.css";

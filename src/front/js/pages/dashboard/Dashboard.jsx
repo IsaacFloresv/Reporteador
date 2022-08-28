@@ -17,7 +17,6 @@ const Dashboard = () => {
     {
       cant: "$3,089.64",
       difference: "-10%",
-      type: "Pagos",
       time: 30,
       style: "negative",
     },
