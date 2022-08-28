@@ -126,17 +126,17 @@ class Notes(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('Users.id'),nullable=False)
     user_id_relation= relationship(Users,primaryjoin=user_id==Users.id)
-    data = db.Column(db.String(500), unique=True, nullable=False)
+    data = db.Column(db.String(500), unique=False, nullable=False)
     delete = db.Column(db.Boolean, unique=False, nullable=False)
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
     def __repr__(self):
-        return f'Note:{self.data}'
+        return f'Notes:{self.id}'
 
     def serialize(self):
         return {
             "id": self.id,
-            "user_id": self.client_id,
+            "user_id": self.user_id,
             "data": self.data,
             "delete": self.delete,
             # do not serialize the password, its a security breach
