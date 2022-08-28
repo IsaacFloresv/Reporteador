@@ -554,7 +554,7 @@ def file(filename):
         db.session.commit()
         return jsonify(response_body), 200
 
-@api.route('/notes', methods=['POST','GET','DELETE'])
+@api.route('/notes', methods=['POST','GET','PUT','DELETE'])
 #@jwt_required()
 def notes():
     if request.method == 'POST':
@@ -584,16 +584,31 @@ def notes():
             "Notes": all_notes
         }
         return jsonify(response_body), 200
+    
+    if request.method == 'PUT':
+        id = request.json['id']
+        data = request.json.get('data')
+
+        if id is None:
+            return "The request id is null", 400
+        if data is None:
+            return "The request data is null", 400
+        note = Notes.query.filter_by(id=id).first()
+        note.data = data                                                                                          
+        db.session.commit()
+        response_body = {
+            'msg': ' the note has been update successfully.',
+            'Notes': note.serialize()
+        }
+        return jsonify(response_body), 200
         
     if request.method == 'DELETE':
         id = request.json['id']
-        print(id)
-        
+
         if id is None:
             return "The request body is null", 400
 
         note = Notes.query.filter_by(id=id).first()
-        print(note.delete)
         note.delete = True                                                                                          
         db.session.commit()
         response_body = {
