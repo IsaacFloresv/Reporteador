@@ -46,7 +46,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           body: raw,
         };
         const store = getStore();
-        return fetch(`${URL}/user`, requestOptions)
+        return fetch(`${URL}/api/user`, requestOptions)
           .then((response) => response.json())
           .then((data) => {
             console.log("data ", data);
@@ -78,7 +78,9 @@ const getState = ({ getStore, getActions, setStore }) => {
           body: raw,
         };
         const store = getStore();
-        return fetch(`${URL}/login`, requestOptions)
+        console.log(values.email)
+        console.log(raw.email)
+        return fetch(`${URL}/api/login`, requestOptions)
           .then((response) => response.json())
           .then((data) => {
             if (typeof data.user === "undefined") throw new Error(data.msg);
@@ -109,13 +111,14 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
       },
       forgotPassword: (email) => {
-        return fetch(`${URL}/reset`, {
+          return fetch(`${URL}/api/reset`, {
           method: "POST",
+          cros:"no-cors",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            email: email,
+            email: "pedro.ortiz@yahoo.com",
           }),
         })
           .then((res) => res.json())
@@ -169,6 +172,6 @@ const getState = ({ getStore, getActions, setStore }) => {
     },
   };
 };
-}
+
 
 export default getState;

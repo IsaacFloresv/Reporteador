@@ -62,13 +62,14 @@ def login():
     is_correct = check_password_hash(user.password, password)
     if not is_correct:
         return jsonify({"msg": "Bad username or password"}), 401
-    access_token = create_access_token(identity=email)
-    response_body = {
-        'msg': 'Welcome to Dropcases',
-        'token': access_token,
-        'user': user.serialize()
-    }
-    return jsonify(response_body), 200
+    if is_correct:
+        access_token = create_access_token(identity=email)
+        response_body = {
+            'msg': 'Welcome to Dropcases',
+            'token': access_token,
+            'user': user.serialize()
+        }
+        return jsonify(response_body), 200
 
 """@api.route("/validate", methods=["GET"])
 @jwt_required()
@@ -419,8 +420,7 @@ def update_password():
         user = Users.query.filter_by(email=email).first()
 
         if user:
-            new_password = ''.join(random.choice(string.ascii_letters)
-                               for i in range(12))
+            new_password = ''.join(random.choice(string.ascii_letters)for i in range(12))
         # new_password_hashed
             pw_hash = generate_password_hash(new_password, 10).decode('utf-8')
             user.password = pw_hash
@@ -471,17 +471,19 @@ def update_password():
             "msg": "Please fill all inputs"
             }), 401
         is_correct = check_password_hash(user.password, old_Password)
-        pw_hash = generate_password_hash(new_password, 10).decode('utf-8')
+        
         if not is_correct:
             return jsonify({"msg": "Bad username or password"}), 401
 
         if 'new_password' in request.json:
             new_password = request.json['new_password']
-            user.password = new_password
+            pw_hash = generate_password_hash(new_password, 10).decode('utf-8')
+            user.password = pw_hash
         response_body = {
             'msg': 'New password stored succesfully',
             'user': user.serialize()
     }
+    db.session.commit()
     return jsonify(response_body), 200
 
 @api.route('/upload', methods=['POST'])
