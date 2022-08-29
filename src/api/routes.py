@@ -3,7 +3,7 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 """
 
 from flask import Flask, request, jsonify, url_for, Blueprint, send_file
-from api.models import db, Users, Clients, Files
+from api.models import db, Users, Clients, Files, Notes
 from api.utils import generate_sitemap, APIException
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 import smtplib
@@ -62,13 +62,14 @@ def login():
     is_correct = check_password_hash(user.password, password)
     if not is_correct:
         return jsonify({"msg": "Bad username or password"}), 401
-    access_token = create_access_token(identity=email)
-    response_body = {
-        'msg': 'Welcome to Dropcases',
-        'token': access_token,
-        'user': user.serialize()
-    }
-    return jsonify(response_body), 200
+    if is_correct:
+        access_token = create_access_token(identity=email)
+        response_body = {
+            'msg': 'Welcome to Dropcases',
+            'token': access_token,
+            'user': user.serialize()
+        }
+        return jsonify(response_body), 200
 
 """@api.route("/validate", methods=["GET"])
 @jwt_required()
@@ -407,7 +408,7 @@ def cases():
         db.session.commit()
         return jsonify(response_body), 200
 
-@api.route("/reset", methods=["POST"])
+@api.route("/reset", methods=["POST","PUT"])
 def update_password():
     if request.method == "POST":
         # new_password = request.json.get("password")
@@ -418,53 +419,78 @@ def update_password():
 
         user = Users.query.filter_by(email=email).first()
 
-        # Create and set new password
-        new_password = ''.join(random.choice(string.ascii_letters)
-                               for i in range(12))
+        if user:
+            new_password = ''.join(random.choice(string.ascii_letters)for i in range(12))
         # new_password_hashed
-        pw_hash = generate_password_hash(new_password, 10).decode('utf-8')
-        user.password = pw_hash
-        db.session.commit()
+            pw_hash = generate_password_hash(new_password, 10).decode('utf-8')
+            user.password = pw_hash
+            db.session.commit()
 
+            response_body = {
+                "msg": "Success. An email will be sent to your account with your temporary password."
+            }
+
+            try:
+                message = '''\
+                    A reset request was sent to our system. Please use the following password to sign in:
+                    <br/>
+                    <br/>
+                    <br/>
+                    {0}
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    Thanks,
+                    <br/>
+                    Dropcases
+                
+                '''.format(new_password)
+
+                msg = MIMEText(message, 'html')
+                msg['Subject'] = "Password Reset Request"
+                msg['From'] = "Dropcases"
+                msg['To'] = email
+
+                send_email(msg, email)
+            except Exception as e:
+                print(e)
+                return jsonify({"msg": "Unable to send reset email."}), 400
+
+            return jsonify(response_body), 200
+        else:
+            return jsonify({"msg": "Email not registered"}), 400
+    if request.method == "PUT":
+        email = request.json.get("email", None)
+        old_Password = request.json.get("old_password", None)
+        new_password = request.json.get('new_password',None)
+        user = Users.query.filter_by(email=email).first()
+        
+        if user is None:
+            return jsonify({
+            "msg": "Please fill all inputs"
+            }), 401
+        is_correct = check_password_hash(user.password, old_Password)
+        
+        if not is_correct:
+            return jsonify({"msg": "Bad username or password"}), 401
+
+        if 'new_password' in request.json:
+            new_password = request.json['new_password']
+            pw_hash = generate_password_hash(new_password, 10).decode('utf-8')
+            user.password = pw_hash
         response_body = {
-            "msg": "Success. An email will be sent to your account with your temporary password."
-        }
-
-        try:
-            message = '''\
-                A reset request was sent to our system. Please use the following password to sign in:
-                <br/>
-                <br/>
-                <br/>
-                {0}
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                Thanks,
-                <br/>
-                Dropcases
-            
-            '''.format(new_password)
-
-            msg = MIMEText(message, 'html')
-            msg['Subject'] = "Password Reset Request"
-            msg['From'] = "Dropcases"
-            msg['To'] = email
-
-            send_email(msg, email)
-        except Exception as e:
-            print(e)
-            return jsonify({"msg": "Unable to send reset email."}), 400
-
-        return jsonify(response_body), 200
+            'msg': 'New password stored succesfully',
+            'user': user.serialize()
+    }
+    db.session.commit()
+    return jsonify(response_body), 200
 
 @api.route('/upload', methods=['POST'])
 def upload():
     if request.method == 'POST':
         #Get the name of the client
         usuario = request.form['usuario']
-        print(usuario)
         #Get the name of the directory where the files will be saved
         folder = os.path.join(app.config['UPLOAD_FOLDER'],usuario)
         #It is confirmed if the directory exists, if it doesn't exist, the folder is created
@@ -528,6 +554,69 @@ def file(filename):
             'Clients': file.serialize()
         }
         db.session.commit()
+        return jsonify(response_body), 200
+
+@api.route('/notes', methods=['POST','GET','PUT','DELETE'])
+#@jwt_required()
+def notes():
+    if request.method == 'POST':
+        body = request.json
+        user_id = request.json.get('user_id')
+        data = request.json.get('data')
+        delete = request.json.get('delete')
+        if body is None:
+            return "The request body is null", 400
+        if not data:
+            return 'You need write something', 400
+        notes = Notes(user_id=user_id,data=data,delete=delete)
+        db.session.add(notes)
+        db.session.commit()
+        response_body = {
+            'msg': ' A new note has been created successfully.',
+            'Notes': notes.serialize()
+        }
+        return jsonify(response_body), 200
+
+    if request.method == 'GET':
+        notes = Notes.query.all()
+        all_notes = list(map(lambda x: x.serialize(), notes))
+        db.session.commit()
+        response_body = {
+            "msg": "This is total notes",
+            "Notes": all_notes
+        }
+        return jsonify(response_body), 200
+    
+    if request.method == 'PUT':
+        id = request.json['id']
+        data = request.json.get('data')
+
+        if id is None:
+            return "The request id is null", 400
+        if data is None:
+            return "The request data is null", 400
+        note = Notes.query.filter_by(id=id).first()
+        note.data = data                                                                                          
+        db.session.commit()
+        response_body = {
+            'msg': ' the note has been update successfully.',
+            'Notes': note.serialize()
+        }
+        return jsonify(response_body), 200
+        
+    if request.method == 'DELETE':
+        id = request.json['id']
+
+        if id is None:
+            return "The request body is null", 400
+
+        note = Notes.query.filter_by(id=id).first()
+        note.delete = True                                                                                          
+        db.session.commit()
+        response_body = {
+            'msg': 'The note successfully deleted.',
+            'Notes': note.serialize()
+        }        
         return jsonify(response_body), 200
 
 if __name__ == '__main__':

@@ -1,6 +1,5 @@
-import { Alert } from "bootstrap";
-
 const URL = process.env.BACKEND_URL;
+console.log(URL);
 
 const getState = ({ getStore, getActions, setStore }) => {
   return {
@@ -64,7 +63,6 @@ const getState = ({ getStore, getActions, setStore }) => {
               msg: data.msg,
               show: true,
             });
-
             return store;
           });
       },
@@ -80,6 +78,8 @@ const getState = ({ getStore, getActions, setStore }) => {
           body: raw,
         };
         const store = getStore();
+        console.log(values.email);
+        console.log(raw.email);
         return fetch(`${URL}/login`, requestOptions)
           .then((response) => response.json())
           .then((data) => {
@@ -88,7 +88,7 @@ const getState = ({ getStore, getActions, setStore }) => {
               "Dropcase",
               JSON.stringify({
                 token: data.token,
-                email: data.user.email,
+                email: data.user.Email,
                 name: `${data.user.Name} ${data.user.Lastname}`,
                 loggedIn: true,
               })
@@ -113,26 +113,74 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
       },
       forgotPassword: (email) => {
-        return fetch(`${URL}/reset`, {
+
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        const raw = JSON.stringify(email);
+        const requestOptions = {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: email,
-          }),
-        })
-          .then((res) => res.json())
+          headers: myHeaders,
+          cors: "no-cors",
+          body: raw,
+        };
+        return fetch(`${URL}/reset`, requestOptions)
+          .then((response) => response.json())
           .then((data) => {
+            console.log(data.email)
+            localStorage.setItem(
+              "Dropcase",
+              JSON.stringify({
+                email: data.email,
+              })
+            );
+            return data.msg;
+          });
+      },
+      verificationCode: (code) => {
+        let local = JSON.parse(localStorage.getItem("Dropcase"))
+        console.log(local)
+        console.log(code)
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        console.log(code)
+        const raw = JSON.stringify({code:code.code,email:local.email});
+        const requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          cors: "no-cors",
+          body: raw,
+        };
+        console.log(raw)
+        return fetch(`${URL}/vcode`, requestOptions)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data.msg)
+            return data.msg;
+          });
+      },
+      newPassword: (password) => {
+        let local = JSON.parse(localStorage.getItem("Dropcase"))
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        const raw = JSON.stringify({new_password:password.new_password,email:local.email});
+        const requestOptions = {
+          method: "PUT",
+          headers: myHeaders,
+          cors: "no-cors",
+          body: raw,
+        };
+        console.log(raw)
+        return fetch(`${URL}/reset`, requestOptions)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data.msg)
             return data.msg;
           });
       },
       checkToken: () => {
         let tokenCheck = JSON.parse(localStorage.getItem("Dropcases"));
-
         if (tokenCheck !== null) {
-          // token is present, so do something (set loggedIn, maybe?)
-          // console.log(tokenCheck);
+          
           return fetch(`${URL}/validate`, {
             headers: {
               "Content-Type": "application/json",
@@ -143,7 +191,6 @@ const getState = ({ getStore, getActions, setStore }) => {
               if (response.status === 401) {
                 throw new Error("Token Expired, please login.");
               }
-
               if (!response.ok) throw new Error(response.status);
               return response.json();
             })
@@ -181,6 +228,9 @@ const getState = ({ getStore, getActions, setStore }) => {
             },
           });
         }
+      },
+      logout: () => {
+        localStorage.clear();
       },
     },
   };
