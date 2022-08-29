@@ -114,9 +114,9 @@ const Signup = () => {
                   />
                 </div>
                 <div className="row">
-                  <div className="col-md-6">
+                  <div className="col-6">
                     <label for="validationCustom01" className="form-label m-0">
-                      Full Name
+                      First Name
                     </label>
                     <input
                       type="text"
@@ -125,10 +125,12 @@ const Signup = () => {
                       required
                       onChange={(e) => handleChange(e)}
                     />{" "}
-                    {errors.name && <p> {errors.name}</p>}{" "}
+                    {errors.name && (
+                      <p className="text-danger"> {errors.name}</p>
+                    )}{" "}
                   </div>
 
-                  <div className="col-md-6">
+                  <div className="col-6 d-flex flex-column">
                     <label className="form-label m-0">Apellido</label>
                     <div className="input-group has-validation">
                       <input
@@ -138,7 +140,9 @@ const Signup = () => {
                         onChange={(e) => handleChange(e)}
                         required
                       />{" "}
-                      {errors.lastname && <p> {errors.lastname}</p>}{" "}
+                      {errors.lastname && (
+                        <p className="text-danger"> {errors.lastname}</p>
+                      )}{" "}
                     </div>
                   </div>
                 </div>
@@ -154,7 +158,10 @@ const Signup = () => {
                     required
                   />{" "}
                   {errors.lawyer_identification && (
-                    <p> {errors.lawyer_identification}</p>
+                    <p className="text-danger">
+                      {" "}
+                      {errors.lawyer_identification}
+                    </p>
                   )}{" "}
                 </div>
                 <div className="col-md-12">
@@ -168,7 +175,9 @@ const Signup = () => {
                     onChange={(e) => handleChange(e)}
                     required
                   />{" "}
-                  {errors.email && <p> {errors.email}</p>}{" "}
+                  {errors.email && (
+                    <p className="text-danger"> {errors.email}</p>
+                  )}{" "}
                 </div>
                 <div className="col-md-12">
                   <label for="validationCustom02" className="form-label m-0">
@@ -181,7 +190,9 @@ const Signup = () => {
                     onChange={(e) => handleChange(e)}
                     required
                   />{" "}
-                  {errors.password && <p> {errors.password}</p>}{" "}
+                  {errors.password && (
+                    <p className="text-danger"> {errors.password}</p>
+                  )}{" "}
                 </div>
                 <div className="col-md-12">
                   <label for="validationCustom05" className="form-label m-0">
@@ -194,7 +205,9 @@ const Signup = () => {
                     onChange={(e) => handleChange(e)}
                     required
                   />{" "}
-                  {errors.verifiedPassword && <p> {errors.verifiedPassword}</p>}{" "}
+                  {errors.verifiedPassword && (
+                    <p className="text-danger"> {errors.verifiedPassword}</p>
+                  )}{" "}
                 </div>
                 <div className="col-12 py-4">
                   <button className="btn btn-primary col-12" type="submit">

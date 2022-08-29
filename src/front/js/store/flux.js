@@ -18,6 +18,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         show: false,
       },
       status: "",
+      showError: false,
     },
     actions: {
       setAlert: (payload) => {
@@ -82,7 +83,12 @@ const getState = ({ getStore, getActions, setStore }) => {
         fetch(`${URL}/login`, requestOptions)
           .then((response) => response.json())
           .then((data) => {
-            console.log(data.msg);
+            if (data.status === "invalid_credentials") {
+              setStore({
+                showError: true,
+              });
+            }
+            console.log(data);
             if (typeof data.user === "undefined") throw new Error(data.msg);
             localStorage.setItem(
               "Dropcase",
