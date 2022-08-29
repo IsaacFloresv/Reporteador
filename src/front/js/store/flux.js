@@ -1,5 +1,5 @@
-import { Alert } from "bootstrap";
 const URL = process.env.BACKEND_URL;
+console.log(URL);
 
 const getState = ({ getStore, getActions, setStore }) => {
   return {
@@ -113,6 +113,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
       },
       forgotPassword: (email) => {
+
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
         const raw = JSON.stringify(email);
@@ -234,6 +235,5 @@ const getState = ({ getStore, getActions, setStore }) => {
     },
   };
 };
-
 
 export default getState;

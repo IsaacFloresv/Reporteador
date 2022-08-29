@@ -37,6 +37,7 @@ class Clients(db.Model):
     first_lastname = db.Column(db.String(120), unique=False, nullable=False)
     second_lastname = db.Column(db.String(120), unique=False, nullable=False)
     lawyer_id = db.Column(db.String(80), unique=False, nullable=False)
+    is_favorite = db.Column(db.Boolean(), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
     delete = db.Column(db.Boolean, unique=False, nullable=False,default=False)
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
@@ -51,8 +52,9 @@ class Clients(db.Model):
             "first_lastname": self.first_lastname,
             "second_lastname": self.second_lastname,
             "lawyer_id": self.lawyer_id,
+            "is_favorite": self.is_active,
+            "delete": self.delete,
             "is_active": self.is_active,
-            "delete": self.delete
             # do not serialize the password, its a security breach
         }
 
@@ -124,17 +126,17 @@ class Notes(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('Users.id'),nullable=False)
     user_id_relation= relationship(Users,primaryjoin=user_id==Users.id)
-    data = db.Column(db.String(500), unique=True, nullable=False)
+    data = db.Column(db.String(500), unique=False, nullable=False)
     delete = db.Column(db.Boolean, unique=False, nullable=False)
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
     def __repr__(self):
-        return f'Note:{self.data}'
+        return f'Notes:{self.id}'
 
     def serialize(self):
         return {
             "id": self.id,
-            "user_id": self.client_id,
+            "user_id": self.user_id,
             "data": self.data,
             "delete": self.delete,
             # do not serialize the password, its a security breach
@@ -190,7 +192,7 @@ class Cases(db.Model):
             "end_date": self.end_date,
             "delete": self.delete,
             # do not serialize the password, its a security breach
-        }
+        }   
 
 
 class Case_updates(db.Model):
@@ -242,3 +244,22 @@ class Files(db.Model):
         }
 
         
+class Notifications(db.Model):
+    _tablename_='Notifications'
+    id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.String(250), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('Users.id'),nullable=False)
+    user_id_relation= relationship(Users,primaryjoin=user_id==Users.id)
+    create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
+
+    def __repr__(self):
+        return f'Notifications {self.description}'
+
+    def serialize(self):
+        return{
+        "id": self.id,
+        "description": self.description,
+        "date": self.create_at,
+        }
+        
+    

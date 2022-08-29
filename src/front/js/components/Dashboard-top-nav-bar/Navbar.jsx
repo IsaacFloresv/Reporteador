@@ -1,13 +1,23 @@
-import React from "react";
+import React, { useContext } from "react";
 // Icons
 import { IoNotificationsOutline, IoHelpBuoyOutline } from "react-icons/io5";
 import { FcMenu } from "react-icons/fc";
+import { MdLogout } from "react-icons/md";
 
 // Components
 import Notifications from "../../components/widgets/notifications/Notifications.jsx";
+import { Context } from "../../store/appContext.js";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const test = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+  const { store, actions } = useContext(Context);
+  const handleLogout = () => {
+    actions.logout();
+    navigate(0);
+  };
+
   return (
     <div
       className="d-flex align-items-center justify-content-between"
@@ -48,7 +58,7 @@ const Navbar = () => {
 
             {/* Dropdown menu */}
             <div
-              className="dropdown-menu p-3 mt-2 border-0 shadow"
+              className="dropdown-menu p-3 mt-3 border-0 shadow"
               style={{ width: 300, height: 400, overflowY: "scroll" }}
             >
               {test.map((item, index) => {
@@ -66,9 +76,9 @@ const Navbar = () => {
         </div>
 
         {/* User profile */}
-        <div className="btn d-flex align-items-center dropdown-toggle px-4">
+        <div className="btn d-flex align-items-center px-4">
           <img
-            src="https://images.unsplash.com/photo-1571844306146-6f7451d80824?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=654&q=80"
+            src="https://cdn2.vectorstock.com/i/thumb-large/86/26/person-gray-photo-placeholder-man-material-design-vector-23838626.jpg"
             alt="profile-picture"
             className="rounded"
             style={{
@@ -78,7 +88,29 @@ const Navbar = () => {
               objectPosition: "top center",
             }}
           />
-          <h6 className="px-3 my-0">Alexandra Irene</h6>
+          <div class="dropdown">
+            <h6
+              className="px-3 my-0"
+              type="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              {store.user.name}
+              <span className="dropdown-toggle mx-2"></span>
+            </h6>
+            <ul class="dropdown-menu border-0 shadow mt-3">
+              <li onClick={() => handleLogout()}>
+                <span class="dropdown-item">
+                  <MdLogout
+                    size={15}
+                    className="me-2"
+                    style={{ marginTop: -5 }}
+                  />
+                  Cerrar Session
+                </span>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
