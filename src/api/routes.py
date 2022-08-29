@@ -57,11 +57,12 @@ def login():
     user = Users.query.filter_by(email=email).first()
     if user is None:
         return jsonify({
+            "status": "invalid_credentials",
             "msg": "You are not a registered user,sign up to continue or go away!!!"
-        }), 401
+        }), 400
     is_correct = check_password_hash(user.password, password)
     if not is_correct:
-        return jsonify({"msg": "Bad username or password"}), 401
+        return jsonify({"status": "invalid_credentials","msg": "Bad username or password"}), 400
     if is_correct:
         access_token = create_access_token(identity=email)
         response_body = {

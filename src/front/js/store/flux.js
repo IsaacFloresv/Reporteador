@@ -1,5 +1,5 @@
 const URL = process.env.BACKEND_URL;
-console.log(URL);
+URL;
 
 const getState = ({ getStore, getActions, setStore }) => {
   return {
@@ -18,6 +18,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         show: false,
       },
       status: "",
+      showError: false,
     },
     actions: {
       setAlert: (payload) => {
@@ -49,7 +50,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         return fetch(`${URL}/user`, requestOptions)
           .then((response) => response.json())
           .then((data) => {
-            console.log("data ", data);
+            "data ", data;
             setStore({
               user: {
                 ...store.user,
@@ -57,7 +58,7 @@ const getState = ({ getStore, getActions, setStore }) => {
               },
               status: data.status,
             });
-            console.log("store", store), console.log("status", store.status);
+            ("store", store), ("status", store.status);
             getActions().setAlert({
               type: "success",
               msg: data.msg,
@@ -77,12 +78,17 @@ const getState = ({ getStore, getActions, setStore }) => {
           cors: "no-cors",
           body: raw,
         };
-        const store = getStore();
-        console.log(values.email);
-        console.log(raw.email);
-        return fetch(`${URL}/login`, requestOptions)
+        values.email;
+        raw.email;
+        fetch(`${URL}/login`, requestOptions)
           .then((response) => response.json())
           .then((data) => {
+            if (data.status === "invalid_credentials") {
+              setStore({
+                showError: true,
+              });
+            }
+            console.log(data);
             if (typeof data.user === "undefined") throw new Error(data.msg);
             localStorage.setItem(
               "Dropcase",
@@ -102,18 +108,15 @@ const getState = ({ getStore, getActions, setStore }) => {
               });
             }
           })
-          .catch(
-            (error) =>
-              getActions().setAlert({
-                type: "danger",
-                msg: error.message,
-                show: true,
-              }),
-            console.log("alert", alert.msg)
+          .catch((error) =>
+            getActions().setAlert({
+              type: "danger",
+              msg: error.message,
+              show: true,
+            })
           );
       },
       forgotPassword: (email) => {
-
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
         const raw = JSON.stringify(email);
@@ -126,7 +129,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         return fetch(`${URL}/reset`, requestOptions)
           .then((response) => response.json())
           .then((data) => {
-            console.log(data.email)
+            data.email;
             localStorage.setItem(
               "Dropcase",
               JSON.stringify({
@@ -137,50 +140,50 @@ const getState = ({ getStore, getActions, setStore }) => {
           });
       },
       verificationCode: (code) => {
-        let local = JSON.parse(localStorage.getItem("Dropcase"))
-        console.log(local)
-        console.log(code)
+        let local = JSON.parse(localStorage.getItem("Dropcase"))(local)(code);
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-        console.log(code)
-        const raw = JSON.stringify({code:code.code,email:local.email});
+        code;
+        const raw = JSON.stringify({ code: code.code, email: local.email });
         const requestOptions = {
           method: "POST",
           headers: myHeaders,
           cors: "no-cors",
           body: raw,
         };
-        console.log(raw)
+        raw;
         return fetch(`${URL}/vcode`, requestOptions)
           .then((response) => response.json())
           .then((data) => {
-            console.log(data.msg)
+            data.msg;
             return data.msg;
           });
       },
       newPassword: (password) => {
-        let local = JSON.parse(localStorage.getItem("Dropcase"))
+        let local = JSON.parse(localStorage.getItem("Dropcase"));
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-        const raw = JSON.stringify({new_password:password.new_password,email:local.email});
+        const raw = JSON.stringify({
+          new_password: password.new_password,
+          email: local.email,
+        });
         const requestOptions = {
           method: "PUT",
           headers: myHeaders,
           cors: "no-cors",
           body: raw,
         };
-        console.log(raw)
+        raw;
         return fetch(`${URL}/reset`, requestOptions)
           .then((response) => response.json())
           .then((data) => {
-            console.log(data.msg)
+            data.msg;
             return data.msg;
           });
       },
       checkToken: () => {
         let tokenCheck = JSON.parse(localStorage.getItem("Dropcases"));
         if (tokenCheck !== null) {
-          
           return fetch(`${URL}/validate`, {
             headers: {
               "Content-Type": "application/json",
@@ -216,7 +219,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           fetch(`${URL}/upload`, {
             method: "POST",
             body: formData,
-          }).then((res) => console.log(res));
+          }).then((res) => res);
         }
       },
       userIsLogin: () => {
