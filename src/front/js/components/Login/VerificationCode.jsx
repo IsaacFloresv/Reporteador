@@ -16,13 +16,10 @@ const VerificationCode = ({ setStage }) => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(codes.code);
     const errores = validateCode({ code: codes.code });
     if (Object.keys(errores).length === 0) {
       let code = await actions.verificationCode({ code: codes.code });
-      console.log(store.status);
       if (store.alert.msg == "Wrong Code") {
-        console.log("Codigo de verificación incorrecto");
       }
       //if(data.msg =="Set new password")
       setErrors(errores);
@@ -61,13 +58,7 @@ const VerificationCode = ({ setStage }) => {
               required
               onChange={(e) => handleChange(e)}
             />{" "}
-            {errors.code && (
-              <p>
-                {" "}
-                {errors.code}
-                {console.log(codes)}
-              </p>
-            )}
+            {errors.code && <p> {errors.code}</p>}
             <div className="valid-feedback">Looks good!</div>
             <div className="d-flex justify-content-between">
               <div className="col-3">
