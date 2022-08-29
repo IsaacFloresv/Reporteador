@@ -46,7 +46,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           body: raw,
         };
         const store = getStore();
-        return fetch(`${URL}/api/user`, requestOptions)
+        return fetch(`${URL}/user`, requestOptions)
           .then((response) => response.json())
           .then((data) => {
             console.log("data ", data);
@@ -113,26 +113,74 @@ const getState = ({ getStore, getActions, setStore }) => {
           );
       },
       forgotPassword: (email) => {
-        return fetch(`${URL}/api/reset`, {
+
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        const raw = JSON.stringify(email);
+        const requestOptions = {
           method: "POST",
-          cros: "no-cors",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: "pedro.ortiz@yahoo.com",
-          }),
-        })
-          .then((res) => res.json())
+          headers: myHeaders,
+          cors: "no-cors",
+          body: raw,
+        };
+        return fetch(`${URL}/reset`, requestOptions)
+          .then((response) => response.json())
           .then((data) => {
+            console.log(data.email)
+            localStorage.setItem(
+              "Dropcase",
+              JSON.stringify({
+                email: data.email,
+              })
+            );
+            return data.msg;
+          });
+      },
+      verificationCode: (code) => {
+        let local = JSON.parse(localStorage.getItem("Dropcase"))
+        console.log(local)
+        console.log(code)
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        console.log(code)
+        const raw = JSON.stringify({code:code.code,email:local.email});
+        const requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          cors: "no-cors",
+          body: raw,
+        };
+        console.log(raw)
+        return fetch(`${URL}/vcode`, requestOptions)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data.msg)
+            return data.msg;
+          });
+      },
+      newPassword: (password) => {
+        let local = JSON.parse(localStorage.getItem("Dropcase"))
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        const raw = JSON.stringify({new_password:password.new_password,email:local.email});
+        const requestOptions = {
+          method: "PUT",
+          headers: myHeaders,
+          cors: "no-cors",
+          body: raw,
+        };
+        console.log(raw)
+        return fetch(`${URL}/reset`, requestOptions)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data.msg)
             return data.msg;
           });
       },
       checkToken: () => {
         let tokenCheck = JSON.parse(localStorage.getItem("Dropcases"));
         if (tokenCheck !== null) {
-          // token is present, so do something (set loggedIn, maybe?)
-          // console.log(tokenCheck);
+          
           return fetch(`${URL}/validate`, {
             headers: {
               "Content-Type": "application/json",
