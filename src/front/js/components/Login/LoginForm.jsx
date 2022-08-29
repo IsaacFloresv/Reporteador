@@ -1,18 +1,16 @@
 import React, { useContext, useState, useEffect } from "react";
 import { Context } from "../../store/appContext.js";
 import { BiLockAlt } from "react-icons/bi";
-import { BsArrowRight } from "react-icons/bs";
 import { validateLogin } from "../ValidateErrors/Errors.jsx";
 import logo from "../../../../../public/assets/logo.png";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import Alert from "../Alert/Alert.jsx";
 
 const LoginForm = ({ setStage }) => {
-  const { actions, store } = useContext(Context);
   let navigate = useNavigate();
+  const { actions, store } = useContext(Context);
   const [login, setLogin] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
-  //const [isLogged, setIsLogged] = useState(false);
 
   const handleChange = ({ target }) => {
     setLogin({
@@ -33,13 +31,7 @@ const LoginForm = ({ setStage }) => {
         email: login.email,
         password: login.password,
       });
-      if (store.alert.msg == "Bad username or password") {
-        setStage("login");
-      }
-      if (
-        store.alert.msg ==
-        "You are not a registered user,sign up to continue or go away!!!"
-      ) {
+      if (store.showError == "invalid_credentials") {
         setStage("login");
       }
       if (store.user.loggedIn === true) {
@@ -49,7 +41,7 @@ const LoginForm = ({ setStage }) => {
   };
 
   return (
-    <div className="col-12 col-md-7 ">
+    <div className="col-12 col-md-7 p-0" style={{ overflow: "hidden" }}>
       <div className="h-100 d-flex align-items-center">
         <form
           className="w-100 needs-validation"
@@ -58,6 +50,13 @@ const LoginForm = ({ setStage }) => {
         >
           <div className="container-fluid">
             <div className="w-75 m-auto">
+              {store.showError ? (
+                <Alert color="danger">
+                  Usuario o contrasena son incorrectos
+                </Alert>
+              ) : (
+                ""
+              )}
               <div className="col-6 text-center mx-auto ">
                 <img
                   className="text-center"
