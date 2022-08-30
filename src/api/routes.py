@@ -25,6 +25,25 @@ app.config['UPLOAD_FOLDER'] = "~/public/client_files"
 def handle_invalid_usage(error):
     return jsonify(error.to_dict()), error.status_code
 
+@api.route("/vcode", methods=["POST"])
+def mfa():
+    email = request.json.get("email", None)
+    code = request.json.get("code", None)
+    user = Users.query.filter_by(email=email).first()
+    if user is None:
+        return jsonify({
+            "msg": "Email Error"
+        }), 401
+    is_correct = check_password_hash(user.password, code)
+    if not is_correct:
+        return jsonify({"msg": "Wrong verification code"}), 401
+    if is_correct:
+        access_token = create_access_token(identity=email)
+        response_body = {
+            'msg': 'Set new password',
+        # 'token': access_token,
+        }
+        return jsonify(response_body), 200
 
 def send_email(msg, email):
     print(msg)
@@ -238,7 +257,6 @@ def users():
         }
         return jsonify(response_body),200
 
-
 @api.route('/client', methods=['GET', 'POST', 'PUT'])
 @jwt_required()
 def customers():
@@ -412,7 +430,7 @@ def cases():
 @api.route("/reset", methods=["POST","PUT"])
 def update_password():
     if request.method == "POST":
-        # new_password = request.json.get("password")
+       
         email = request.json.get("email")
 
         if not email:
@@ -421,14 +439,15 @@ def update_password():
         user = Users.query.filter_by(email=email).first()
 
         if user:
-            new_password = ''.join(random.choice(string.ascii_letters)for i in range(12))
-        # new_password_hashed
+            new_password = ''.join(str(random.randint(0,9))for i in range(6))
+        # new_verification_code_hashed
             pw_hash = generate_password_hash(new_password, 10).decode('utf-8')
             user.password = pw_hash
             db.session.commit()
 
             response_body = {
-                "msg": "Success. An email will be sent to your account with your temporary password."
+                "msg": "Success. An email will be sent to your account with your temporary password.",
+                "email":email
             }
 
             try:
@@ -463,18 +482,13 @@ def update_password():
             return jsonify({"msg": "Email not registered"}), 400
     if request.method == "PUT":
         email = request.json.get("email", None)
-        old_Password = request.json.get("old_password", None)
         new_password = request.json.get('new_password',None)
         user = Users.query.filter_by(email=email).first()
         
-        if user is None:
+        if new_password is None:
             return jsonify({
-            "msg": "Please fill all inputs"
+            "msg": "Please fill new password"
             }), 401
-        is_correct = check_password_hash(user.password, old_Password)
-        
-        if not is_correct:
-            return jsonify({"msg": "Bad username or password"}), 401
 
         if 'new_password' in request.json:
             new_password = request.json['new_password']
