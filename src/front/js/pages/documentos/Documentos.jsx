@@ -5,8 +5,6 @@ import Search_documents from "../../components/search-documents/Search-documents
 import Card_documents from "../../components/card-documents/Card-documents.jsx";
 import Card_folders from "../../components/card-folders/Card-folders.jsx";
 
-// images
-import WidgetContainer from "../../components/widgets/widget-container/WidgetContainer.jsx";
 
 //data
 const documents = [
