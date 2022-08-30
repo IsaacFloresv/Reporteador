@@ -18,7 +18,7 @@ class Users(db.Model):
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow() )
 
     def __repr__(self):
-        return f'User ID:{self.id} Username:{self.name}'
+        return f'User ID:{self.id}'
 
     def serialize(self):
         return {
@@ -36,14 +36,14 @@ class Clients(db.Model):
     name = db.Column(db.String(120), unique=False, nullable=False)
     first_lastname = db.Column(db.String(120), unique=False, nullable=False)
     second_lastname = db.Column(db.String(120), unique=False, nullable=False)
-    lawyer_id = db.Column(db.String(80), unique=False, nullable=False)
-    is_favorite = db.Column(db.Boolean(), unique=False, nullable=False)
+    users_id = db.Column(db.Integer, db.ForeignKey('Users.id'),nullable=False)
+    users_id_relation= relationship(Users,primaryjoin=users_id==Users.id)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
     delete = db.Column(db.Boolean, unique=False, nullable=False,default=False)
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
     def __repr__(self):
-        return f'Customer:{self.name},{self.first_lastname}'
+        return f'Customer:{self.id}'
 
     def serialize(self):
         return {
@@ -52,7 +52,6 @@ class Clients(db.Model):
             "first_lastname": self.first_lastname,
             "second_lastname": self.second_lastname,
             "lawyer_id": self.lawyer_id,
-            "is_favorite": self.is_active,
             "delete": self.delete,
             "is_active": self.is_active,
             # do not serialize the password, its a security breach
