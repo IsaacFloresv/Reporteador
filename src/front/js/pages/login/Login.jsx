@@ -13,7 +13,7 @@ const Login = () => {
   return (
     <div className="container-fluid">
       <div className="row">
-        <div className="col-3 p-3 position-absolute top-0 start-0 d-none d-xl-block">
+        <div className="col p-3 position-absolute top-0 start-0">
           <Link to="/registro" className="text-white text-decoration-none">
             <p className="text-black fw-semibold">
               <BsArrowLeft />
@@ -40,14 +40,6 @@ const Login = () => {
           ""
         )}{" "}
       </div>
-      <div className="text-center p-3 d-none d-sm-block">
-          <Link to="/registro" className="text-white text-decoration-none">
-            <p className="text-black fw-semibold">
-              <BsArrowLeft />
-              <span className="mx-2 "></span>Aun no tengo cuenta,registrarme
-            </p>
-          </Link>
-        </div>
     </div>
   );
 };

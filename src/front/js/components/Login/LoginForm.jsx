@@ -42,102 +42,102 @@ const LoginForm = ({ setStage }) => {
   };
 
   return (
-    <div className="col-12 col-md-7 p-0" style={{ overflow: "hidden" }}>
-      <div className="h-100 d-flex align-items-center">
-        <form
-          className="w-100 needs-validation"
-          style={{ marginTop: -20 }}
-          onSubmit={(e) => handleSubmit(e)}
-        >
-          <div className="container-fluid">
-            <div className="w-75 m-auto">
-              {store.showError ? (
-                <Alert color="danger">
-                  Usuario o contrasena son incorrectos
-                </Alert>
-              ) : (
-                ""
-              )}
-              <div className="col-6 text-center mx-auto ">
-                <img
-                  className="text-center"
-                  style={{
-                    width: 100 + "%",
-                  }}
-                  src={logo}
-                />
+    <div className="col-12 col-md-7 p-0 vh-100" style={{ overflow: "hidden" }}>
+    <div className="h-100 d-flex align-items-center">
+      <form
+        className="w-100 needs-validation"
+        style={{ marginTop: -20 }}
+        onSubmit={(e) => handleSubmit(e)}
+      >
+        <div className="container-fluid">
+          <div className="w-75 m-auto">
+            {store.showError ? (
+              <Alert color="danger">
+                Usuario o contrasena son incorrectos
+              </Alert>
+            ) : (
+              ""
+            )}
+            <div className="col-6 text-center mx-auto ">
+              <img
+                className="text-center"
+                style={{
+                  width: 100 + "%",
+                }}
+                src={logo}
+              />
+            </div>
+            <div>
+              <div className="col-xxl-12 py-2">
+                <label
+                  htmlFor="validationCustom01"
+                  className="form-label px-0 mb-0"
+                >
+                  Correo electronico
+                </label>
+                <input
+                  name="email"
+                  type="text"
+                  className="form-control"
+                  id="validationCustom01"
+                  placeholder="email "
+                  onChange={(e) => handleChange(e)}
+                />{" "}
+                {errors.email && <p className="text-danger"> {errors.email}</p>}
+                <div className="valid-feedback">Looks good!</div>
               </div>
-              <div>
-                <div className="col-xxl-12 py-2">
-                  <label
-                    htmlFor="validationCustom01"
-                    className="form-label px-0 mb-0"
-                  >
-                    Correo electronico
-                  </label>
-                  <input
-                    name="email"
-                    type="text"
-                    className="form-control"
-                    id="validationCustom01"
-                    placeholder="email "
-                    onChange={(e) => handleChange(e)}
-                  />{" "}
-                  {errors.email && <p className="text-danger"> {errors.email}</p>}
-                  <div className="valid-feedback">Looks good!</div>
-                </div>
-                <div className="col-xxl-12">
-                  <label
-                    htmlFor="validationCustom02"
-                    className="form-label px-0 mb-0"
-                  >
-                    Contraseña
-                  </label>
-                  <input
-                    name="password"
-                    type="password"
-                    className="form-control"
-                    id="validationCustom02"
-                    placeholder="password"
-                    onChange={(e) => handleChange(e)}
-                  />{" "}
-                  {errors.password && <p className="text-danger"> {errors.password}</p>}
-                  <div className="valid-feedback">Looks good!</div>
-                </div>
-                <div className="align-items-center d-flex justify-content-between py-2">
+              <div className="col-xxl-12">
+                <label
+                  htmlFor="validationCustom02"
+                  className="form-label px-0 mb-0"
+                >
+                  Contraseña
+                </label>
+                <input
+                  name="password"
+                  type="password"
+                  className="form-control"
+                  id="validationCustom02"
+                  placeholder="password"
+                  onChange={(e) => handleChange(e)}
+                />{" "}
+                {errors.password && <p className="text-danger"> {errors.password}</p>}
+                <div className="valid-feedback">Looks good!</div>
+              </div>
+              <div className="align-items-center d-flex justify-content-between py-2">
+                <div>
                   <div>
-                    <div>
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        value=""
-                      />
-                      <span className="mx-2">Recordar cuenta</span>
-                    </div>
-                  </div>
-                  <div>
-                    <div
-                      className="btn btn-link pe-0 "
-                      onClick={() => setStage("Send")}
-                    >
-                      <span className="mx-2">
-                        <BiLockAlt />
-                      </span>
-                      Olvide mi contraseña
-                    </div>
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      value=""
+                    />
+                    <span className="mx-2">Recordar cuenta</span>
                   </div>
                 </div>
-                <div className="col-12">
-                  <button className="btn btn-primary col-12" type="submit">
-                    Ingresar
-                  </button>
+                <div>
+                  <div
+                    className="btn btn-link pe-0 "
+                    onClick={() => setStage("Send")}
+                  >
+                    <span className="mx-2">
+                      <BiLockAlt />
+                    </span>
+                    Olvide mi contraseña
+                  </div>
                 </div>
+              </div>
+              <div className="col-12">
+                <button className="btn btn-primary col-12" type="submit">
+                  Ingresar
+                </button>
               </div>
             </div>
           </div>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
+  </div>
   );
 };
 export default LoginForm;
