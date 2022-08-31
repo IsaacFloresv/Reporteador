@@ -94,42 +94,42 @@ const getState = ({
         };
         values.email;
         raw.email;
-        fetch(`${URL}/login`, requestOptions)
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.status === "invalid_credentials") {
-              setStore({
-                showError: true,
-              });
-            }
-
-            if (typeof data.user === "undefined") throw new Error(data.msg);
-            localStorage.setItem(
-              "Dropcase",
-              JSON.stringify({
-                token: data.token,
-                email: data.user.Email,
-                name: `${data.user.Name} ${data.user.Lastname}`,
-                loggedIn: true,
-              })
-
-            );
-            const userinfo = JSON.parse(localStorage.getItem("Dropcase"));
-            if (userinfo !== null) {
-              setStore({
-                user: {
-                  ...userinfo,
-                },
-              });
-            }
-          })
-          .catch((error) =>
-            getActions().setAlert({
-              type: "danger",
-              msg: error.message,
-              show: true,
-            })
-          );
+        fetch(`${URL}/login`, requestOptions).then((res) => {
+          if (res.status === 200) {
+            setStore({
+              loggedIn: true,
+            });
+            return res.json().then((data) => {
+              console.log("200", data);
+              localStorage.setItem(
+                "Dropcase",
+                JSON.stringify({
+                  token: data.token,
+                  email: data.user.Email,
+                  name: `${data.user.Name} ${data.user.Lastname}`,
+                  loggedIn: true,
+                })
+              );
+              const userinfo = JSON.parse(localStorage.getItem("Dropcase"));
+              if (userinfo !== null) {
+                setStore({
+                  user: {
+                    ...userinfo,
+                  },
+                });
+              }
+            });
+          } else if (res.status === 400) {
+            return res.json().then((data) => {
+              console.log("400", data);
+              if (data.status === "invalid_credentials") {
+                setStore({
+                  showError: true,
+                });
+              }
+            });
+          }
+        });
       },
       forgotPassword: (email) => {
         const myHeaders = new Headers();
