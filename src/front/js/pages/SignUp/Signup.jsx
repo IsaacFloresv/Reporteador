@@ -4,6 +4,8 @@ import { Context } from "../../store/appContext.js";
 import { Link } from "react-router-dom";
 import logo from "../../../../../public/assets/logo.png";
 import register_image from "../../../../../public/assets/register_image.png";
+import Alert from "../../components/Alert/Alert.jsx";
+import { validateInfo } from "../../components/ValidateErrors/Errors.jsx";
 
 const Signup = () => {
   let navigate = useNavigate();
@@ -14,55 +16,15 @@ const Signup = () => {
     lawyer_identification: "",
     email: "",
     password: "",
+    validatePassword: ""
   });
   const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [validatePassword, setValidatePassword] = useState(null);
-
   const handleChange = ({ target }) => {
-    if (target.name === "verifiedPassword") {
-      setValidatePassword(target.value === user.password ? true : false);
-    }
     setUser({
       ...user,
       [target.name]: target.value,
     });
   };
-  function validateInfo(values) {
-    let errors = {};
-
-    if (!values.name.trim()) {
-      errors.name = "Nombre es requerido";
-    } else if (!/^[a-zA-Z]+$/.test(values.name)) {
-      errors.name = "Ingresa nombre correcto";
-    }
-    if (!values.lastname.trim()) {
-      errors.lastname = "Apellido es requerido";
-    } else if (!/^[a-zA-Z]+$/.test(values.lastname)) {
-      errors.lastname = "Ingresa apellido correcto";
-    }
-    if (!values.lawyer_identification) {
-      errors.lawyer_identification = "Id de abogado es requerido";
-    } else if (!/^[a-zA-Z-0-9]+$/.test(values.lawyer_identification)) {
-      errors.lawyer_identification = "ingresa un Carnet de abogado correcto";
-    }
-    if (!values.email) {
-      errors.email = "Email es requerido";
-    } else if (!/\S+@\S+\.\S+/.test(values.email)) {
-      errors.email = "Email no valido";
-    }
-    if (!values.password) {
-      errors.password = "Contraseña es requerida";
-    } else if (values.password.length < 8) {
-      errors.password = "la contraseña debe tener 8 caracteres";
-    }
-
-    if (validatePassword === false) {
-      errors.verifiedPassword = "La contraseña no coincide";
-    }
-    return errors;
-  }
-
   const handleSubmit = (e) => {
     e.preventDefault();
     const errors = validateInfo({
@@ -71,7 +33,9 @@ const Signup = () => {
       lawyer_identification: user.lawyer_identification,
       email: user.email,
       password: user.password,
+      validatePassword: user.validatePassword
     });
+    setErrors(errors);
     if (Object.keys(errors).length === 0) {
       actions.register({
         name: user.name,
@@ -80,19 +44,12 @@ const Signup = () => {
         email: user.email,
         password: user.password,
       });
-      if (store.status == "user_duplicate") {
-        console.log("Usuario ya existe");
-      } else {
-        setIsSubmitting(true);
-        console.log(store.status);
-      }
     }
-    setErrors(errors);
   };
   useEffect(() => {
-    if (isSubmitting) navigate("/login");
-  }, [isSubmitting]);
-
+    if (store.status) navigate("/login");
+    actions.clearStatus();
+  }, [store.status]);
   return (
     <div>
       <div className="container-fluid fw-bold">
@@ -104,6 +61,13 @@ const Signup = () => {
           >
             <div className="container">
               <div className="w-75 mx-auto">
+                {store.showError ? (
+                  <Alert color="danger">
+                    Este usuario ya existe
+                  </Alert>
+                ) : (
+                  ""
+                )}
                 <div className="col-5 text-center mx-auto ">
                   <img
                     className="text-center"
@@ -129,7 +93,6 @@ const Signup = () => {
                       <p className="text-danger"> {errors.name}</p>
                     )}{" "}
                   </div>
-
                   <div className="col-6 d-flex flex-column">
                     <label className="form-label m-0">Apellido</label>
                     <div className="input-group has-validation">
@@ -140,12 +103,11 @@ const Signup = () => {
                         onChange={(e) => handleChange(e)}
                         required
                       />
-                   
                     </div>
                     {" "}
-                      {errors.lastname && (
-                        <p className="text-danger"> {errors.lastname}</p>
-                      )}{" "}
+                    {errors.lastname && (
+                      <p className="text-danger"> {errors.lastname}</p>
+                    )}{" "}
                   </div>
                 </div>
                 <div className="col-md-12">
@@ -203,12 +165,11 @@ const Signup = () => {
                   <input
                     type="password"
                     className="form-control my-1"
-                    name="verifiedPassword"
+                    name="validatePassword"
                     onChange={(e) => handleChange(e)}
-                    required
                   />{" "}
-                  {errors.verifiedPassword && (
-                    <p className="text-danger"> {errors.verifiedPassword}</p>
+                  {errors.validatePassword && (
+                    <p className="text-danger"> {errors.validatePassword}</p>
                   )}{" "}
                 </div>
                 <div className="col-12 py-4">

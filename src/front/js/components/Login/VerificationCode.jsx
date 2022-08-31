@@ -25,7 +25,6 @@ const VerificationCode = ({ setStage }) => {
 
   };
   useEffect(() => {
-    console.log(store.status);
     if (store.status) {
       setStage("NewPassword")
     }
@@ -33,11 +32,13 @@ const VerificationCode = ({ setStage }) => {
   }, [store.status]);
 
   return (
+    <div className="col-12 col-md-7 p-0 vh-100" style={{ overflow: "hidden" }}>
+    <div className="h-100 d-flex align-items-center">
     <form
-      className="col-12 col-xl-7  d-flex align-items-center needs-validation"
+      className="w-100 needs-validation"
       onSubmit={(e) => handleSubmit(e)}
     >
-      <div className="container">
+      <div className="container-fluid">
         <div className="w-75 m-auto">
           <div className="col-6 text-center mx-auto ">
             <img
@@ -63,7 +64,6 @@ const VerificationCode = ({ setStage }) => {
               onChange={(e) => handleChange(e)}
             />{" "}
             {errors.code && <p className="text-danger"> {errors.code}</p>}
-            {console.log(store.status)}
         {store.showError ? (
             <p className="text-danger">Codigo Invalido</p>
             ) : (
@@ -72,7 +72,7 @@ const VerificationCode = ({ setStage }) => {
             <div className="valid-feedback">Looks good!</div>
             <div className="d-flex justify-content-between">
               <div className="col-3 my-2">
-                <button className="btn btn-primary col-12" type="submit">
+                <button className="btn btn-primary" type="submit">
                   Nueva Contraseña
                 </button>
               </div>
@@ -81,6 +81,8 @@ const VerificationCode = ({ setStage }) => {
         </div>
       </div>
     </form>
+    </div>
+  </div>
   );
 };
 export default VerificationCode;

@@ -240,7 +240,7 @@ def users():
             return jsonify({
                 "status":"user_duplicate",
                 "msg":"Email already exist,please login"
-            }),400
+            }),401
         if not password:
             return 'You need to enter a password', 400
         if not lawyer_identification:

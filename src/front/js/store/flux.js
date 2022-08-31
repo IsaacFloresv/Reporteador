@@ -59,27 +59,33 @@ const getState = ({
           body: raw,
         };
         const store = getStore();
-        return fetch(`${URL}/user`, requestOptions)
-          .then((response) => response.json())
-          .then((data) => {
-            "data ",
-            data;
-            setStore({
-              user: {
-                ...store.user,
-                ...data.user,
-              },
-              status: data.status,
+        fetch(`${URL}/user`, requestOptions).then((res) => {
+          if (res.status === 200) {
+            return res.json().then((data) => {
+              setStore({
+                user: {
+                  ...store.user,
+                  ...data.user,
+                },
+                status:true,
+              });
+              //("store", store),
+              ("status", store.status);
+              getActions().setAlert({
+                type: "success",
+                msg: data.msg,
+                show: true,
+              });
             });
-            ("store", store),
-            ("status", store.status);
-            getActions().setAlert({
-              type: "success",
-              msg: data.msg,
-              show: true,
+          } else if (res.status === 401) {
+            return res.json().then((data) => {
+                setStore({
+                  status: false,
+                  showError:true
+                });
             });
-            return store;
-          });
+          }
+        })
       },
 
       login: (values) => {
@@ -100,7 +106,6 @@ const getState = ({
               loggedIn: true,
             });
             return res.json().then((data) => {
-              console.log("200", data);
               localStorage.setItem(
                 "Dropcase",
                 JSON.stringify({
@@ -121,7 +126,6 @@ const getState = ({
             });
           } else if (res.status === 400) {
             return res.json().then((data) => {
-              console.log("400", data);
               if (data.status === "invalid_credentials") {
                 setStore({
                   showError: true,
@@ -158,12 +162,10 @@ const getState = ({
         let local = JSON.parse(localStorage.getItem("Dropcase"))
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-
         const raw = JSON.stringify({
           code: code.code,
           email: local.email
         });
-        console.log(raw)
         const requestOptions = {
           method: "POST",
           headers: myHeaders,
@@ -176,11 +178,10 @@ const getState = ({
               status: true,
             });
             return res.json().then((data) => {
-              console.log("200", data);
+              
             });
           } else if (res.status === 401) {
             return res.json().then((data) => {
-              console.log("401", data);
                 setStore({
                   status: false,
                   showError:true
