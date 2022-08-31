@@ -17,6 +17,7 @@ const SendCode = ({ setStage }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const errores = validateEmail({ email: mail.email });
+    setErrors(errores);
     if (Object.keys(errores).length === 0) {
       let forgot = await actions.forgotPassword({ email: mail.email });
       if (store.alert.msg == "Email not registered") {
@@ -50,14 +51,13 @@ const SendCode = ({ setStage }) => {
             </label>
             <input
               name="email"
-              type="email"
               className="form-control"
               id="validationCustom01"
               placeholder="email "
-              required
               onChange={(e) => handleChange(e)}
             />{" "}
-            {errors.email && <p> {errors.email}</p>}
+            {console.log(errors.email)}
+            {errors.email && <p className="text-danger"> {errors.email}</p>}
             <div className="valid-feedback">Looks good!</div>
             <div className="d-flex justify-content-between">
               <div className="col-3">

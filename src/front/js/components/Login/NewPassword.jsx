@@ -26,6 +26,7 @@ const NewPassword = ({ setStage }) => {
       { new_password: password.new_password },
       validatePassword
     );
+    setErrors(errores);
     if (Object.keys(errores).length === 0) {
       let set_password = await actions.newPassword({
         new_password: password.new_password,
@@ -67,10 +68,9 @@ const NewPassword = ({ setStage }) => {
                 className="form-control"
                 id="validationCustom01"
                 placeholder="Contraseña "
-                required
                 onChange={(e) => handleChange(e)}
               />{" "}
-              {errors.password && <p> {errors.password}</p>}
+              {errors.password && <p className="text-danger"> {errors.password}</p>}
               <div className="valid-feedback">Looks good!</div>
             </div>
             <div className="col-xxl-12">
@@ -87,9 +87,8 @@ const NewPassword = ({ setStage }) => {
                 id="validationCustom02"
                 placeholder=" Contraseña"
                 onChange={(e) => handleChange(e)}
-                required
               />{" "}
-              {errors.verifiedPassword && <p> {errors.verifiedPassword}</p>}
+              {errors.verifiedPassword && <p className="text-danger"> {errors.verifiedPassword}</p>}
               <div className="valid-feedback">Looks good!</div>
             </div>
             <div className="align-items-center d-flex justify-content-between py-2"></div>

@@ -104,7 +104,7 @@ const Signup = () => {
           >
             <div className="container">
               <div className="w-75 mx-auto">
-                <div className="col-5 text-center mx-auto my-5 ">
+                <div className="col-5 text-center mx-auto ">
                   <img
                     className="text-center"
                     style={{
@@ -116,7 +116,7 @@ const Signup = () => {
                 <div className="row">
                   <div className="col-6">
                     <label for="validationCustom01" className="form-label m-0">
-                      First Name
+                      Nombre
                     </label>
                     <input
                       type="text"
@@ -139,16 +139,18 @@ const Signup = () => {
                         name="lastname"
                         onChange={(e) => handleChange(e)}
                         required
-                      />{" "}
+                      />
+                   
+                    </div>
+                    {" "}
                       {errors.lastname && (
                         <p className="text-danger"> {errors.lastname}</p>
                       )}{" "}
-                    </div>
                   </div>
                 </div>
                 <div className="col-md-12">
                   <label for="validationCustom03" className="form-label m-0">
-                    lawyer_identification
+                    ID de Abogado
                   </label>
                   <input
                     type="text"
@@ -181,10 +183,10 @@ const Signup = () => {
                 </div>
                 <div className="col-md-12">
                   <label for="validationCustom02" className="form-label m-0">
-                    Password
+                    Contraseña
                   </label>
                   <input
-                    type="text"
+                    type="password"
                     className="form-control my-1"
                     name="password"
                     onChange={(e) => handleChange(e)}
@@ -196,10 +198,10 @@ const Signup = () => {
                 </div>
                 <div className="col-md-12">
                   <label for="validationCustom05" className="form-label m-0">
-                    Verify password
+                    Verificar contraseña
                   </label>
                   <input
-                    type="text"
+                    type="password"
                     className="form-control my-1"
                     name="verifiedPassword"
                     onChange={(e) => handleChange(e)}
@@ -211,7 +213,7 @@ const Signup = () => {
                 </div>
                 <div className="col-12 py-4">
                   <button className="btn btn-primary col-12" type="submit">
-                    Register
+                    Registrar
                   </button>
                 </div>
                 <div className="text-center">

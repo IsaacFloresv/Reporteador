@@ -68,7 +68,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           });
       },
 
-      login: (values) => {
+      login:(values) => {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
         const raw = JSON.stringify(values);
@@ -98,6 +98,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                 name: `${data.user.Name} ${data.user.Lastname}`,
                 loggedIn: true,
               })
+
             );
             const userinfo = JSON.parse(localStorage.getItem("Dropcase"));
             if (userinfo !== null) {
@@ -140,44 +141,43 @@ const getState = ({ getStore, getActions, setStore }) => {
           });
       },
       verificationCode: (code) => {
-        let local = JSON.parse(localStorage.getItem("Dropcase"))(local)(code);
+        let local = JSON.parse(localStorage.getItem("Dropcase"))
+        console.log(local)
+        console.log(code)
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-        code;
-        const raw = JSON.stringify({ code: code.code, email: local.email });
+        console.log(code)
+        const raw = JSON.stringify({code:code.code,email:local.email});
         const requestOptions = {
           method: "POST",
           headers: myHeaders,
           cors: "no-cors",
           body: raw,
         };
-        raw;
+        console.log(raw)
         return fetch(`${URL}/vcode`, requestOptions)
           .then((response) => response.json())
           .then((data) => {
-            data.msg;
+            console.log(data.msg)
             return data.msg;
           });
       },
       newPassword: (password) => {
-        let local = JSON.parse(localStorage.getItem("Dropcase"));
+        let local = JSON.parse(localStorage.getItem("Dropcase"))
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-        const raw = JSON.stringify({
-          new_password: password.new_password,
-          email: local.email,
-        });
+        const raw = JSON.stringify({new_password:password.new_password,email:local.email});
         const requestOptions = {
           method: "PUT",
           headers: myHeaders,
           cors: "no-cors",
           body: raw,
         };
-        raw;
+        console.log(raw)
         return fetch(`${URL}/reset`, requestOptions)
           .then((response) => response.json())
           .then((data) => {
-            data.msg;
+            console.log(data.msg)
             return data.msg;
           });
       },

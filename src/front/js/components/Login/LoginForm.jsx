@@ -34,6 +34,7 @@ const LoginForm = ({ setStage }) => {
       if (store.showError == "invalid_credentials") {
         setStage("login");
       }
+      console.log(store.user.loggedIn)
       if (store.user.loggedIn === true) {
         navigate("/dashboard");
       }
@@ -80,10 +81,9 @@ const LoginForm = ({ setStage }) => {
                     className="form-control"
                     id="validationCustom01"
                     placeholder="email "
-                    required
                     onChange={(e) => handleChange(e)}
                   />{" "}
-                  {errors.email && <p> {errors.email}</p>}
+                  {errors.email && <p className="text-danger"> {errors.email}</p>}
                   <div className="valid-feedback">Looks good!</div>
                 </div>
                 <div className="col-xxl-12">
@@ -100,9 +100,8 @@ const LoginForm = ({ setStage }) => {
                     id="validationCustom02"
                     placeholder="password"
                     onChange={(e) => handleChange(e)}
-                    required
                   />{" "}
-                  {errors.password && <p> {errors.password}</p>}
+                  {errors.password && <p className="text-danger"> {errors.password}</p>}
                   <div className="valid-feedback">Looks good!</div>
                 </div>
                 <div className="align-items-center d-flex justify-content-between py-2">
