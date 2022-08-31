@@ -31,15 +31,15 @@ const LoginForm = ({ setStage }) => {
         email: login.email,
         password: login.password,
       });
-      if (store.showError == "invalid_credentials") {
-        setStage("login");
-      }
-      console.log(store.user.loggedIn)
-      if (store.user.loggedIn === true) {
-        navigate("/dashboard");
-      }
     }
   };
+  
+  useEffect(() => {
+    console.log(store.user.loggedIn);
+    if (store.user.loggedIn) {
+      navigate("/dashboard");
+    }
+  }, [store.user.loggedIn]);
 
   return (
     <div className="col-12 col-md-7 p-0 vh-100" style={{ overflow: "hidden" }}>
