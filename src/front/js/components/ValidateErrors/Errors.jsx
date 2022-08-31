@@ -57,10 +57,7 @@ const validateEmail = (values) => {
 };
 const valPassword = (values, validatePassword) => {
   let errors = {};
-
-  if (!values.new_password) {
-    errors.password = "Escribe la contraseña";
-  } else if (values.new_password.length < 8) {
+ if (values.new_password.length < 8) {
     errors.password = "Contraseña invalida";
   }
   if (validatePassword === false) {

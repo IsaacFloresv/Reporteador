@@ -67,6 +67,7 @@ const NewPassword = ({ setStage }) => {
                 type="password"
                 className="form-control"
                 id="validationCustom01"
+                required
                 placeholder="Contraseña "
                 onChange={(e) => handleChange(e)}
               />{" "}
@@ -85,6 +86,7 @@ const NewPassword = ({ setStage }) => {
                 type="password"
                 className="form-control"
                 id="validationCustom02"
+                required
                 placeholder=" Contraseña"
                 onChange={(e) => handleChange(e)}
               />{" "}

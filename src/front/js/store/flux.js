@@ -1,7 +1,11 @@
 const URL = process.env.BACKEND_URL;
 URL;
 
-const getState = ({ getStore, getActions, setStore }) => {
+const getState = ({
+  getStore,
+  getActions,
+  setStore
+}) => {
   return {
     store: {
       token: "",
@@ -22,7 +26,9 @@ const getState = ({ getStore, getActions, setStore }) => {
     },
     actions: {
       setAlert: (payload) => {
-        setStore({ alert: payload });
+        setStore({
+          alert: payload
+        });
       },
       clearAlert: () => {
         setStore({
@@ -31,6 +37,12 @@ const getState = ({ getStore, getActions, setStore }) => {
             msg: "",
             show: false,
           },
+        });
+      },
+      clearStatus: () => {
+        setStore({
+          status:false,
+          showError: false
         });
       },
       putCurrentPage: () => {
@@ -50,7 +62,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         return fetch(`${URL}/user`, requestOptions)
           .then((response) => response.json())
           .then((data) => {
-            "data ", data;
+            "data ",
+            data;
             setStore({
               user: {
                 ...store.user,
@@ -58,7 +71,8 @@ const getState = ({ getStore, getActions, setStore }) => {
               },
               status: data.status,
             });
-            ("store", store), ("status", store.status);
+            ("store", store),
+            ("status", store.status);
             getActions().setAlert({
               type: "success",
               msg: data.msg,
@@ -142,42 +156,58 @@ const getState = ({ getStore, getActions, setStore }) => {
       },
       verificationCode: (code) => {
         let local = JSON.parse(localStorage.getItem("Dropcase"))
-        console.log(local)
-        console.log(code)
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-        console.log(code)
-        const raw = JSON.stringify({code:code.code,email:local.email});
+
+        const raw = JSON.stringify({
+          code: code.code,
+          email: local.email
+        });
+        console.log(raw)
         const requestOptions = {
           method: "POST",
           headers: myHeaders,
           cors: "no-cors",
           body: raw,
         };
-        console.log(raw)
-        return fetch(`${URL}/vcode`, requestOptions)
-          .then((response) => response.json())
-          .then((data) => {
-            console.log(data.msg)
-            return data.msg;
-          });
+        fetch(`${URL}/vcode`, requestOptions).then((res) => {
+          if (res.status === 200) {
+            setStore({
+              status: true,
+            });
+            return res.json().then((data) => {
+              console.log("200", data);
+            });
+          } else if (res.status === 401) {
+            return res.json().then((data) => {
+              console.log("401", data);
+                setStore({
+                  status: false,
+                  showError:true
+                });
+            });
+          }
+        });
       },
+      
       newPassword: (password) => {
         let local = JSON.parse(localStorage.getItem("Dropcase"))
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-        const raw = JSON.stringify({new_password:password.new_password,email:local.email});
+        const raw = JSON.stringify({
+          new_password: password.new_password,
+          email: local.email
+        });
         const requestOptions = {
           method: "PUT",
           headers: myHeaders,
           cors: "no-cors",
           body: raw,
         };
-        console.log(raw)
+
         return fetch(`${URL}/reset`, requestOptions)
           .then((response) => response.json())
           .then((data) => {
-            console.log(data.msg)
             return data.msg;
           });
       },
@@ -185,11 +215,11 @@ const getState = ({ getStore, getActions, setStore }) => {
         let tokenCheck = JSON.parse(localStorage.getItem("Dropcases"));
         if (tokenCheck !== null) {
           return fetch(`${URL}/validate`, {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${tokenCheck.token}`,
-            },
-          })
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${tokenCheck.token}`,
+              },
+            })
             .then((response) => {
               if (response.status === 401) {
                 throw new Error("Token Expired, please login.");
