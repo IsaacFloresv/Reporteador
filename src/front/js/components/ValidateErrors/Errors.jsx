@@ -18,16 +18,16 @@ const validateInfo = (values) => {
   if (!values.email) {
     errors.email = "Email es requerido";
   } else if (!/\S+@\S+\.\S+/.test(values.email)) {
-    errors.email = "Email no valido";
+    errors.email = "Email invalido";
   }
   if (!values.password) {
     errors.password = "Contraseña es requerida";
   } else if (values.password.length < 8) {
-    errors.password = "la contraseña debe tener 8 caracteres";
+    errors.password = "Tu contraseña debe tener al menos 8 caracteres";
   }
 
   if (validatePassword === false) {
-    errors.verifiedPassword = "La contraseña no coincide";
+    errors.verifiedPassword = "Las contraseñas no coinciden";
   }
   return errors;
 };
@@ -42,7 +42,7 @@ const validateLogin = (values) => {
   if (!values.password) {
     errors.password = "Contraseña es requerida";
   } else if (values.password.length < 8) {
-    errors.password = "la contraseña debe tener 8 caracteres";
+    errors.password = "La contraseña debe tener al menos 8 caracteres";
   }
   return errors;
 };
@@ -51,7 +51,7 @@ const validateEmail = (values) => {
   if (!values.email) {
     errors.email = "Email es requerido";
   } else if (!/\S+@\S+\.\S+/.test(values.email)) {
-    errors.email = "Email no valido";
+    errors.email = "Email invalido";
   }
   return errors;
 };
@@ -64,18 +64,18 @@ const valPassword = (values, validatePassword) => {
     errors.password = "Contraseña invalida";
   }
   if (validatePassword === false) {
-    errors.verifiedPassword = "La contraseña no coincide";
+    errors.verifiedPassword = "Las contraseñas no coinciden";
   }
   return errors;
 };
 const validateCode = (values) => {
   let errors = {};
   if (!values.code) {
-    errors.code = "Email es requerido";
+    errors.code = "Ingresa el codigo de verificación";
   } else if (!/^[0-9]+$/.test(values.code)) {
-    errors.code = "Email no valido";
+    errors.code = "Codigo debe ser numérico";
   }
-  return errors;
+  return errors;DVD
 };
 export {
   validateInfo,

@@ -17,6 +17,7 @@ const VerificationCode = ({ setStage }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const errores = validateCode({ code: codes.code });
+    setErrors(errores);
     if (Object.keys(errores).length === 0) {
       let code = await actions.verificationCode({ code: codes.code });
       if (store.alert.msg == "Wrong Code") {
@@ -51,25 +52,14 @@ const VerificationCode = ({ setStage }) => {
             </label>
             <input
               name="code"
-              type="text"
               className="form-control"
               id="validationCustom01"
               placeholder=""
-              required
               onChange={(e) => handleChange(e)}
             />{" "}
-            {errors.code && <p> {errors.code}</p>}
+            {errors.code && <p className="text-danger"> {errors.code}</p>}
             <div className="valid-feedback">Looks good!</div>
             <div className="d-flex justify-content-between">
-              <div className="col-3">
-                <button
-                  className="btn btn-link pe-0 "
-                  onClick={() => setstage("login")}
-                >
-                  <span className=""></span>
-                  Back to login
-                </button>
-              </div>
               <div className="col-3 my-2">
                 <button className="btn btn-primary col-12" type="submit">
                   Nueva Contraseña

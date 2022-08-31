@@ -15,6 +15,7 @@ import string
 from email.mime.text import MIMEText
 from flask_bcrypt import generate_password_hash, check_password_hash
 from socket import gaierror
+
 api = Blueprint('api', __name__)
 # instancia del objeto Flask
 app = Flask(__name__)
@@ -47,14 +48,18 @@ def mfa():
 
 def send_email(msg, email):
     print(msg)
-    sender = "Dropcases"
+    sender = "info@dropcas.es"
     receiver = email
 
     try:
-        with smtplib.SMTP("smtp.mailtrap.io", 2525) as server:
-            server.login("8c7f3d9c31cc96", "97d8ee24d57c1d")
+        with smtplib.SMTP("send.smtp.mailtrap.io", 2525) as server:
+            server.starttls()
+            server.login("api", "3973fe61601f535b62b2ea8a05343106")
+            print(1)
             server.sendmail(sender, receiver, msg.as_string())
+            print("Mail sent")
         return jsonify("msg:Mail sent")
+
     except (gaierror, ConnectionRefusedError):
         print('Failed to connect to the server. Bad connection settings?')
     except smtplib.SMTPServerDisconnected:
@@ -245,7 +250,7 @@ def users():
 
             msg = MIMEText(message, 'html')
             msg['Subject'] = "Welcome"
-            msg['From'] = "Dropcases"
+            msg['From'] = "info@dropcas.es"
             msg['To'] = email
             send_email(msg, email)
 
@@ -446,13 +451,13 @@ def update_password():
             db.session.commit()
 
             response_body = {
-                "msg": "Success. An email will be sent to your account with your temporary password.",
+                "msg": "Success. An email will be sent to your account with your verfication code.",
                 "email":email
             }
 
             try:
                 message = '''\
-                    A reset request was sent to our system. Please use the following password to sign in:
+                    A reset request was sent to our system. Please use the following code to sign in:
                     <br/>
                     <br/>
                     <br/>
@@ -469,7 +474,7 @@ def update_password():
 
                 msg = MIMEText(message, 'html')
                 msg['Subject'] = "Password Reset Request"
-                msg['From'] = "Dropcases"
+                msg['From'] = "info@dropcas.es"
                 msg['To'] = email
 
                 send_email(msg, email)
