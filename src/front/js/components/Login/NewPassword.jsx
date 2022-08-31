@@ -39,8 +39,10 @@ const NewPassword = ({ setStage }) => {
   };
 
   return (
+    <div className="col-12 col-md-7 p-0 vh-100" style={{ overflow: "hidden" }}>
+    <div className="h-100 d-flex align-items-center">
     <form
-      className="col-12 col-xl-7  d-flex align-items-center needs-validation"
+      className="w-100 needs-validation"
       onSubmit={(e) => handleSubmit(e)}
     >
       <div className="container">
@@ -95,7 +97,7 @@ const NewPassword = ({ setStage }) => {
             </div>
             <div className="align-items-center d-flex justify-content-between py-2"></div>
             <div className="col-12">
-              <button className="btn btn-primary col-12" type="submit">
+              <button className="btn btn-primary" type="submit">
                 Guardar
               </button>
             </div>
@@ -103,6 +105,8 @@ const NewPassword = ({ setStage }) => {
         </div>
       </div>
     </form>
+    </div>
+  </div>
   );
 };
 

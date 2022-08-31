@@ -27,11 +27,14 @@ const SendCode = ({ setStage }) => {
     }
   };
   return (
+    <div className="col-12 col-md-7 p-0 vh-100" style={{ overflow: "hidden" }}>
+    <div className="h-100 d-flex align-items-center">
     <form
-      className="col-12 col-xl-7  d-flex align-items-center needs-validation"
+       className="w-100 needs-validation"
+       style={{ marginTop: -20 }}
       onSubmit={(e) => handleSubmit(e)}
     >
-      <div className="container">
+      <div className="container-fluid">
         <div className="w-75 m-auto">
           <div className="col-6 text-center mx-auto ">
             <img
@@ -56,7 +59,6 @@ const SendCode = ({ setStage }) => {
               placeholder="email "
               onChange={(e) => handleChange(e)}
             />{" "}
-            {console.log(errors.email)}
             {errors.email && <p className="text-danger"> {errors.email}</p>}
             <div className="valid-feedback">Looks good!</div>
             <div className="d-flex justify-content-between">
@@ -70,7 +72,7 @@ const SendCode = ({ setStage }) => {
                 </button>
               </div>
               <div className="col-3 my-2">
-                <button className="btn btn-primary col-12" type="submit">
+                <button className="btn btn-primary" type="submit">
                   Generar codigo
                 </button>
               </div>
@@ -79,6 +81,8 @@ const SendCode = ({ setStage }) => {
         </div>
       </div>
     </form>
+    </div>
+    </div>
   );
 };
 export default SendCode;

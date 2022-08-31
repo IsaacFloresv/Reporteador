@@ -58,7 +58,7 @@ const LoginForm = ({ setStage }) => {
             ) : (
               ""
             )}
-            <div className="col-6 text-center mx-auto ">
+            <div className="col-5 text-center mx-auto ">
               <img
                 className="text-center"
                 style={{

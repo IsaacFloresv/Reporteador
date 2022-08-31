@@ -21,14 +21,17 @@ const validateInfo = (values) => {
     errors.email = "Email invalido";
   }
   if (!values.password) {
-    errors.password = "Contraseña es requerida";
+    errors.password = "La Contraseña es requerida";
   } else if (values.password.length < 8) {
     errors.password = "Tu contraseña debe tener al menos 8 caracteres";
   }
-
-  if (validatePassword === false) {
-    errors.verifiedPassword = "Las contraseñas no coinciden";
+  if (!values.validatePassword) {
+    errors.validatePassword = "Contraseña de verificacion es requerida";
+  } else if (values.validatePassword.length < 8) {
+    errors.validatePassword = "Tu contraseña debe tener al menos 8 caracteres";
   }
+  if(values.password !== values.validatePassword){
+    errors.validatePassword="Contraseñas no coinciden"}
   return errors;
 };
 const validateLogin = (values) => {
@@ -72,7 +75,7 @@ const validateCode = (values) => {
   } else if (!/^[0-9]+$/.test(values.code)) {
     errors.code = "Codigo debe ser numérico";
   }
-  return errors;DVD
+  return errors;
 };
 export {
   validateInfo,
