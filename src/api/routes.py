@@ -46,7 +46,7 @@ def mfa():
         }
         return jsonify(response_body), 200
 
-def send_email(msg, email):
+"""def send_email(msg, email):
     print(msg)
     sender = "info@dropcas.es"
     receiver = email
@@ -55,6 +55,27 @@ def send_email(msg, email):
         with smtplib.SMTP("send.smtp.mailtrap.io", 2525) as server:
             server.starttls()
             server.login("api", "3973fe61601f535b62b2ea8a05343106")
+            print(1)
+            server.sendmail(sender, receiver, msg.as_string())
+            print("Mail sent")
+        return jsonify("msg:Mail sent")
+
+    except (gaierror, ConnectionRefusedError):
+        print('Failed to connect to the server. Bad connection settings?')
+    except smtplib.SMTPServerDisconnected:
+        print('Failed to connect to the server. Wrong user/password?')
+    except smtplib.SMTPException as e:
+        print('SMTP error occurred: ' + str(e))"""
+
+def send_email(msg, email):
+    print(msg)
+    sender = "info@dropcas.es"
+    receiver = email
+
+    try:
+        with smtplib.SMTP("smtp.mailtrap.io", 2525) as server:
+            server.starttls()
+            server.login("8c7f3d9c31cc96", "97d8ee24d57c1d")
             print(1)
             server.sendmail(sender, receiver, msg.as_string())
             print("Mail sent")
