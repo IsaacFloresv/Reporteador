@@ -1,11 +1,7 @@
 const URL = process.env.BACKEND_URL;
 URL;
 
-const getState = ({
-  getStore,
-  getActions,
-  setStore
-}) => {
+const getState = ({ getStore, getActions, setStore }) => {
   return {
     store: {
       token: "",
@@ -21,13 +17,14 @@ const getState = ({
         msg: "",
         show: false,
       },
+      notes: [],
       status: "",
       showError: false,
     },
     actions: {
       setAlert: (payload) => {
         setStore({
-          alert: payload
+          alert: payload,
         });
       },
       clearAlert: () => {
@@ -41,8 +38,8 @@ const getState = ({
       },
       clearStatus: () => {
         setStore({
-          status:false,
-          showError: false
+          status: false,
+          showError: false,
         });
       },
       putCurrentPage: () => {
@@ -67,10 +64,10 @@ const getState = ({
                   ...store.user,
                   ...data.user,
                 },
-                status:true,
+                status: true,
               });
               //("store", store),
-              ("status", store.status);
+              "status", store.status;
               getActions().setAlert({
                 type: "success",
                 msg: data.msg,
@@ -79,13 +76,13 @@ const getState = ({
             });
           } else if (res.status === 401) {
             return res.json().then((data) => {
-                setStore({
-                  status: false,
-                  showError:true
-                });
+              setStore({
+                status: false,
+                showError: true,
+              });
             });
           }
-        })
+        });
       },
 
       login: (values) => {
@@ -112,6 +109,7 @@ const getState = ({
                   token: data.token,
                   email: data.user.Email,
                   name: `${data.user.Name} ${data.user.Lastname}`,
+                  id: data.user.ID,
                   loggedIn: true,
                 })
               );
@@ -159,12 +157,12 @@ const getState = ({
           });
       },
       verificationCode: (code) => {
-        let local = JSON.parse(localStorage.getItem("Dropcase"))
+        let local = JSON.parse(localStorage.getItem("Dropcase"));
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
         const raw = JSON.stringify({
           code: code.code,
-          email: local.email
+          email: local.email,
         });
         const requestOptions = {
           method: "POST",
@@ -177,27 +175,25 @@ const getState = ({
             setStore({
               status: true,
             });
-            return res.json().then((data) => {
-              
-            });
+            return res.json().then((data) => {});
           } else if (res.status === 401) {
             return res.json().then((data) => {
-                setStore({
-                  status: false,
-                  showError:true
-                });
+              setStore({
+                status: false,
+                showError: true,
+              });
             });
           }
         });
       },
-      
+
       newPassword: (password) => {
-        let local = JSON.parse(localStorage.getItem("Dropcase"))
+        let local = JSON.parse(localStorage.getItem("Dropcase"));
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
         const raw = JSON.stringify({
           new_password: password.new_password,
-          email: local.email
+          email: local.email,
         });
         const requestOptions = {
           method: "PUT",
@@ -216,11 +212,11 @@ const getState = ({
         let tokenCheck = JSON.parse(localStorage.getItem("Dropcases"));
         if (tokenCheck !== null) {
           return fetch(`${URL}/validate`, {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${tokenCheck.token}`,
-              },
-            })
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${tokenCheck.token}`,
+            },
+          })
             .then((response) => {
               if (response.status === 401) {
                 throw new Error("Token Expired, please login.");
@@ -242,17 +238,6 @@ const getState = ({
         }
       },
 
-      uploadFiles: (files, user) => {
-        for (let i = 0; i < files.length; i++) {
-          const formData = new FormData();
-          formData.append("usuario", user);
-          formData.append("archivo", files[i]);
-          fetch(`${URL}/upload`, {
-            method: "POST",
-            body: formData,
-          }).then((res) => res);
-        }
-      },
       userIsLogin: () => {
         const userinfo = JSON.parse(localStorage.getItem("Dropcase"));
         if (userinfo !== null) {
@@ -265,6 +250,58 @@ const getState = ({
       },
       logout: () => {
         localStorage.clear();
+      },
+      saveNote: (description) => {
+        const store = getStore();
+        const raw = {
+          user_id: store.user.id,
+          data: description,
+          delete: false,
+        };
+        fetch(`${URL}/notes`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(raw),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            setStore({
+              notes: [data.Notes, ...store.notes],
+            });
+            console.log(store.notes);
+          })
+          .catch((error) => console.error(error));
+      },
+      getNotes: () => {
+        const store = getStore();
+        console.log(store.notes);
+        fetch(`${URL}/notes`)
+          .then((res) => res.json())
+          .then((data) => {
+            setStore({
+              notes: data.Notes.reverse(),
+            });
+            console.log(store.notes);
+          });
+      },
+      deleteNote: (index) => {
+        const store = getStore();
+        fetch(`${URL}/notes`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: store.notes[index] }),
+        })
+          .then((res) => res.json())
+          .then((data) => console.log(data));
+        const notes = [...store.notes];
+        const newNotes = notes.filter((item, i) => i != index);
+        setStore({
+          notes: newNotes,
+        });
       },
     },
   };
