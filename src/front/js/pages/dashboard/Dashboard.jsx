@@ -163,7 +163,7 @@ const Dashboard = () => {
           </div>
 
           {/* My Notes */}
-          <div>
+          /*<div>
             <WidgetContainer title="Mis notas">
               <div
                 style={{ height: 370, width: 100 + "%", overflowY: "scroll" }}
@@ -189,7 +189,7 @@ const Dashboard = () => {
                 </div>
               </div>
             </WidgetContainer>
-          </div>
+          </div>*/
         </div>
 
         {/* Right Column */}
