@@ -1,102 +1,53 @@
-import React, { useContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Context } from "../../store/appContext.js";
+import React, { useContext, useRef } from "react";
+import { Context } from "../../store/appContext";
 
-const Modal_Notes = () => {
-  let navigate = useNavigate();
-  const { actions, store } = useContext(Context);
-  const [user, setUser] = useState({
-    id: "",
-    data: "",
-  });
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  function validateInfo(values) {
-    let errors = {};
-
-    if (!values.data.trim()) {
-      errors.name = "El campo nota no puede estar vacio.";
-    } else if (!/^[a-zA-Z]+$/.test(values.data)) {
-      errors.name = "Ingresa una nota";
-    }
-    return errors;
-  }
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const errors = validateInfo({
-      id: notes.id,
-      data: notes.data,
-    });
-    if (Object.keys(errors).length === 0) {
-      actions.register({
-        id: notes.id,
-        data: notes.data,
-      });
-      
-      setIsSubmitting(true);
-      console.log(store.status);       
-      }
-    }
-    setErrors(errors);
+const Modal_notes = () => {
+  const { store, actions } = useContext(Context);
+  const formData = useRef("");
+  const handleSubmit = () => {
+    actions.saveNote(formData.current.value);
   };
 
-  useEffect(() => {
-    if (isSubmitting) navigate("/dashboard");
-  }, [isSubmitting]);
-
   return (
-    <div>
-      <div className="container-fluid fw-bold">
-        <div className="row">
-          <form
-            className="col-12 col-xl-7 d-flex align-items-center needs-validation"
-            noValidate
-            onSubmit={(e) => handleSubmit(e)}
-          >
-            <div className="container">
-              <div className="w-75 mx-auto">                  
-                  <div class="modal" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Nueva nota</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                        <div className="col-6">
-                    <label for="validationCustom01" className="form-label m-0">
-                      Nota
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control my-1"
-                      name="data"
-                      required
-                      onChange={(e) => handleChange(e)}
-                    />{" "}
-                    {errors.name && (
-                      <p className="text-danger"> {errors.data}</p>
-                    )}{" "}
-                  </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                            <button type="button" class="btn btn-primary">Agregar</button>
-                        </div>
-                        </div>
-                    </div>
-                </div>
-              </div>
-            </div>
-          </form>
+    <div
+      className="modal fade"
+      id="exampleModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div className="modal-dialog modal-dialog-centered">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title" id="exampleModalLabel">
+              Crea una nueva tarea
+            </h5>
+            <button
+              type="button"
+              className="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div className="modal-body">
+            <textarea
+              ref={formData}
+              class="form-control"
+              id="exampleFormControlTextarea1"
+              rows="6"
+            />
+            <button
+              onClick={handleSubmit}
+              className="btn btn-primary mx-auto mt-2"
+              data-bs-dismiss="modal"
+            >
+              Guardar Nota
+            </button>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default Modal_Notes;
+export default Modal_notes;

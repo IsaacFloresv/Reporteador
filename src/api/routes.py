@@ -587,6 +587,7 @@ def file(filename):
 def notes():
     if request.method == 'POST':
         body = request.json
+        print(body)
         user_id = request.json.get('user_id')
         data = request.json.get('data')
         delete = request.json.get('delete')

@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: c14551a3a3d0
+Revision ID: 5232aee6c878
 Revises: 
-Create Date: 2022-08-27 22:45:35.751395
+Create Date: 2022-09-01 07:46:11.653660
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'c14551a3a3d0'
+revision = '5232aee6c878'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,17 +25,6 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('Case_status')
     )
-    op.create_table('Clients',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=120), nullable=False),
-    sa.Column('first_lastname', sa.String(length=120), nullable=False),
-    sa.Column('second_lastname', sa.String(length=120), nullable=False),
-    sa.Column('lawyer_id', sa.String(length=80), nullable=False),
-    sa.Column('is_active', sa.Boolean(), nullable=False),
-    sa.Column('delete', sa.Boolean(), nullable=False),
-    sa.Column('create_at', sa.DateTime(timezone=True), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
     op.create_table('Users',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('email', sa.String(length=100), nullable=False),
@@ -48,6 +37,35 @@ def upgrade():
     sa.Column('create_at', sa.DateTime(timezone=True), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
+    )
+    op.create_table('Clients',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=120), nullable=False),
+    sa.Column('first_lastname', sa.String(length=120), nullable=False),
+    sa.Column('second_lastname', sa.String(length=120), nullable=False),
+    sa.Column('users_id', sa.Integer(), nullable=False),
+    sa.Column('is_active', sa.Boolean(), nullable=False),
+    sa.Column('delete', sa.Boolean(), nullable=False),
+    sa.Column('create_at', sa.DateTime(timezone=True), nullable=True),
+    sa.ForeignKeyConstraint(['users_id'], ['Users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('Notes',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('data', sa.String(length=500), nullable=False),
+    sa.Column('delete', sa.Boolean(), nullable=False),
+    sa.Column('create_at', sa.DateTime(timezone=True), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['Users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('notifications',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('description', sa.String(length=250), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('create_at', sa.DateTime(timezone=True), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['Users.id'], ),
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('Address',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -90,16 +108,6 @@ def upgrade():
     sa.ForeignKeyConstraint(['client_id'], ['Clients.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email_address')
-    )
-    op.create_table('Notes',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('data', sa.String(length=500), nullable=False),
-    sa.Column('delete', sa.Boolean(), nullable=False),
-    sa.Column('create_at', sa.DateTime(timezone=True), nullable=True),
-    sa.ForeignKeyConstraint(['user_id'], ['Users.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('data')
     )
     op.create_table('Phone_number',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -145,11 +153,12 @@ def downgrade():
     op.drop_table('Files')
     op.drop_table('Case_updates')
     op.drop_table('Phone_number')
-    op.drop_table('Notes')
     op.drop_table('Email_address')
     op.drop_table('Cases')
     op.drop_table('Address')
-    op.drop_table('Users')
+    op.drop_table('notifications')
+    op.drop_table('Notes')
     op.drop_table('Clients')
+    op.drop_table('Users')
     op.drop_table('Case_status')
     # ### end Alembic commands ###

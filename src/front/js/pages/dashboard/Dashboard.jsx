@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 
 // Components
 import NumbersChart from "../../components/widgets/numbers-chart/NumbersChart.jsx";
@@ -11,8 +11,11 @@ import CalendarWidget from "../../components/widgets/calendar/Calendar.jsx";
 import CtaUpgrade from "../../components/cta-upgrade/CtaUpgrade.jsx";
 import TasksWidget from "../../components/widgets/tasks/TasksWidget.jsx";
 import Agenda from "../../components/widgets/agenda/Agenda.jsx";
+import Modal_notes from "../../components/modal_notes/modal_notes.jsx";
+import { Context } from "../../store/appContext.js";
 
 const Dashboard = () => {
+  const { store } = useContext(Context);
   const chartData = [
     {
       cant: "$3,089.64",
@@ -37,7 +40,6 @@ const Dashboard = () => {
   ];
 
   const test = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-
   const agenda = [
     {
       day: 1,
@@ -108,6 +110,7 @@ const Dashboard = () => {
   return (
     <>
       <div className="row mb-3">
+        <Modal_notes />
         {chartData.map((item, index) => {
           return (
             <>
@@ -169,10 +172,10 @@ const Dashboard = () => {
                 style={{ height: 370, width: 100 + "%", overflowY: "scroll" }}
                 className="position-relative"
               >
-                {test.map((item, index) => {
+                {store.notes.map((item, index) => {
                   return (
                     <div key={index}>
-                      <TasksWidget />
+                      <TasksWidget data={item.data} index={index} />
                     </div>
                   );
                 })}
@@ -181,7 +184,13 @@ const Dashboard = () => {
                   style={{ transform: "scale(0.8)" }}
                 >
                   <div className="d-flex justify-content-center">
-                    <button className="btn btn-white bg-white shadow px-5">
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleModal"
+                      className="btn btn-white bg-white shadow px-5"
+                    >
                       Crear nueva tarea{" "}
                       <span className="text-primary"> + </span>
                     </button>
