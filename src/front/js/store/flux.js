@@ -1,5 +1,5 @@
-const URL = process.env.BACKEND_URL;
-URL;
+const URL = `${process.env.BACKEND_URL}/api`
+
 
 const getState = ({ getStore, getActions, setStore }) => {
   return {
@@ -17,7 +17,6 @@ const getState = ({ getStore, getActions, setStore }) => {
         msg: "",
         show: false,
       },
-      notes: [],
       status: "",
       showError: false,
     },
@@ -39,7 +38,6 @@ const getState = ({ getStore, getActions, setStore }) => {
       clearStatus: () => {
         setStore({
           status: false,
-          showError: false,
         });
       },
       putCurrentPage: () => {
@@ -78,7 +76,6 @@ const getState = ({ getStore, getActions, setStore }) => {
             return res.json().then((data) => {
               setStore({
                 status: false,
-                showError: true,
               });
             });
           }
@@ -175,12 +172,10 @@ const getState = ({ getStore, getActions, setStore }) => {
             setStore({
               status: true,
             });
-            return res.json().then((data) => {});
           } else if (res.status === 401) {
             return res.json().then((data) => {
               setStore({
                 status: false,
-                showError: true,
               });
             });
           }
@@ -238,6 +233,47 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
       },
 
+
+      upload: (values) => {
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "multipart/form-data");
+        let data = new FormData();
+        let payload ={
+              ...values,
+        }
+        data.append('file',values)
+        console.log(payload)
+        console.log(data)
+        for (let key in payload) {
+          console.log(key)
+					if (key === "file") {
+						data.append("file", payload[key]);
+					} else {
+						data.append(key, payload[key]);
+					}
+				}
+        var serializeForm = function (form) {
+              var obj = {};
+              var formData = form;
+              for (var key of formData.keys()) {
+                  obj[key] = formData.get(key);
+              }
+              return obj;
+          };
+
+          console.log(serializeForm(data))
+        return fetch(`${URL}/upload`, {
+					method: "POST",
+					//cors: "no-cors",
+          headers:myHeaders,
+					body: data
+        })
+        .then(res => {
+          if (!res.ok) throw new Error(res.statusText);
+          return res.json();
+        })
+				
+      },
       userIsLogin: () => {
         const userinfo = JSON.parse(localStorage.getItem("Dropcase"));
         if (userinfo !== null) {

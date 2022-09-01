@@ -2,11 +2,12 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 
-from flask import Flask, request, jsonify, url_for, Blueprint, send_file
-from api.models import db, Users, Clients, Files, Notes
+from flask import Flask, request, jsonify, url_for, Blueprint, send_file,render_template
+from api.models import db, Users, Clients, Files, Notes,Cases,Case_updates
 from api.utils import generate_sitemap, APIException
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 import smtplib
+from cloudinary.uploader import upload
 import os
 from os import path
 from pathlib import Path
@@ -19,8 +20,6 @@ from socket import gaierror
 api = Blueprint('api', __name__)
 # instancia del objeto Flask
 app = Flask(__name__)
-# Carpeta de subida
-app.config['UPLOAD_FOLDER'] = "~/public/client_files"
 
 @api.errorhandler(APIException)
 def handle_invalid_usage(error):
@@ -46,7 +45,7 @@ def mfa():
         }
         return jsonify(response_body), 200
 
-"""def send_email(msg, email):
+def send_email(msg, email):
     print(msg)
     sender = "info@dropcas.es"
     receiver = email
@@ -65,9 +64,9 @@ def mfa():
     except smtplib.SMTPServerDisconnected:
         print('Failed to connect to the server. Wrong user/password?')
     except smtplib.SMTPException as e:
-        print('SMTP error occurred: ' + str(e))"""
+        print('SMTP error occurred: ' + str(e))
 
-def send_email(msg, email):
+"""def send_email(msg, email):
     print(msg)
     sender = "info@dropcas.es"
     receiver = email
@@ -86,7 +85,7 @@ def send_email(msg, email):
     except smtplib.SMTPServerDisconnected:
         print('Failed to connect to the server. Wrong user/password?')
     except smtplib.SMTPException as e:
-        print('SMTP error occurred: ' + str(e))
+        print('SMTP error occurred: ' + str(e))"""
 
 
 @api.route('/')
@@ -528,38 +527,24 @@ def update_password():
     return jsonify(response_body), 200
 
 @api.route('/upload', methods=['POST'])
-def upload():
-    if request.method == 'POST':
-        #Get the name of the client
-        usuario = request.form['usuario']
-        #Get the name of the directory where the files will be saved
-        folder = os.path.join(app.config['UPLOAD_FOLDER'],usuario)
-        #It is confirmed if the directory exists, if it doesn't exist, the folder is created
-        if (os.path.isdir(folder)== False):
-            os.makedirs(folder)
+def upload_files():
 
-        #Get the name of the file
-        f = request.files['archivo']
-        filename = f.filename.replace(" ","_")
-        ruta = os.path.join(folder,filename)
-        #It is confirmed if the file exists in the directory, if it doesn't exist, the file is saved
-        if os.path.isfile(ruta):
-            index = filename.index('.')
-            # Find cant of all existing files with same name
-            keyword = filename[:index]
-            duplicate_names = 0
-            for fname in os.listdir(folder):
-                if keyword in fname:
-                    duplicate_names += 1
-            # Remplace duplicate file name with new name
-            filename = filename[:index]+ f"({duplicate_names})" +filename[index:]
-            ruta = os.path.join(folder,filename)
-            f.save(ruta)
-            return jsonify({'response': 'Uploaded succesfully!', 'route': ruta}), 200
-        else:
-            #The file is saved
-            f.save(ruta)
-            return jsonify({'response': 'Uploaded succesfully!', 'route': ruta}), 200
+    file_url = request.files.get('file')
+    result = upload(file_url)
+    url = result["secure_url"]
+
+    case_update_id = request.form.get('case_update_id')
+    file_name = request.form.get('name')
+
+    files = Files(url=url,Case_updates_id=case_update_id,name=file_name)
+    db.session.add(files)
+    db.session.commit()
+
+    payload = {
+        'msg': 'Files uploaded.',
+        'Files': files.serialize()
+    }
+    return jsonify(payload),200
 
 @api.route('/files', methods=['GET'])
 @jwt_required()

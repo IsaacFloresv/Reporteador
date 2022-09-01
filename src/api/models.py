@@ -201,7 +201,7 @@ class Case_updates(db.Model):
     case_id_relation= relationship(Cases,primaryjoin=case_id==Cases.id)
     title = db.Column(db.String(500), unique=True, nullable=False)
     description = db.Column(db.String(5000), unique=True, nullable=False)
-    file_id = db.Column(db.Integer, unique=True, nullable=False)
+    file_id = db.Column(db.Integer, unique=True, nullable=True)
     delete = db.Column(db.Boolean, unique=False, nullable=False)
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
@@ -224,9 +224,9 @@ class Files(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), unique=True, nullable=False)
     url = db.Column(db.String(500), unique=True, nullable=False)
-    Case_updates_id = db.Column(db.Integer, db.ForeignKey('Case_updates.id'),nullable=False)
-    Case_updates_id_relation= relationship(Case_updates,primaryjoin=Case_updates_id==Case_updates.id)    
-    delete = db.Column(db.Boolean, unique=False, nullable=False)
+    Case_updates_id = db.Column(db.Integer, db.ForeignKey('Case_updates.id'),nullable=True)
+    Case_updates_id_relation= relationship(Case_updates,primaryjoin=Case_updates_id==Case_updates.id)
+    delete = db.Column(db.Boolean, unique=False, nullable=False,default=True)
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
     def __repr__(self):
