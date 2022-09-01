@@ -1,6 +1,6 @@
 import React from "react";
 
-const TasksWidget = (data,date) => {
+const TasksWidget = ({ data, date }) => {
   return (
     <>
       <div
@@ -8,9 +8,7 @@ const TasksWidget = (data,date) => {
         style={{ backgroundColor: "#EFF7EF" }}
       >
         <p className="mb-0">
-          <small>
-            {data}
-          </small>
+          <small>{data}</small>
         </p>
         <p
           className="m-0 text-end text-muted"
