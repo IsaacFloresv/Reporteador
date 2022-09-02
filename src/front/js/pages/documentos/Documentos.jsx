@@ -1,5 +1,5 @@
-import React from "react";
-
+import React, { useContext, useState, useEffect } from "react";
+import { Context } from "../../store/appContext.js";
 // wiggets
 import Search_documents from "../../components/search-documents/Search-documents.jsx";
 import Card_documents from "../../components/card-documents/Card-documents.jsx";
@@ -7,23 +7,8 @@ import Card_folders from "../../components/card-folders/Card-folders.jsx";
 
 
 //data
-const documents = [
-  {
-    name: "Prueba 1.png",
-    caso: "Difamación",
-    edited: "10/05/2022",
-  },
-  {
-    name: "Juramento.jpg",
-    caso: "Estafa",
-    edited: "01/03/2020",
-  },
-  {
-    name: "Testimonio.pdf",
-    caso: "Hurto",
-    edited: "09/07/2012",
-  },
-];
+
+
 
 const folders = [
   {
@@ -65,8 +50,17 @@ const folders = [
 ];
 
 const Documentos = () => {
-  const test = [];
+  
+  const { actions, store } = useContext(Context);
 
+const fetchApi =() => {
+actions.AllFiles()
+}
+const documents = Object.values(store.docs)
+useEffect(() => {
+  fetchApi();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
   // Render
   return (
     <>
@@ -78,9 +72,9 @@ const Documentos = () => {
           <h5 className="col ">
             Agregados recientemente
           </h5>
-          <p className="col d-md-flex justify-content-md-end">
+          {/*<p className="col d-md-flex justify-content-md-end">
             <a href="#">ver todos</a>
-          </p>
+          </p>*/}
         </div>
         <div className="container-fluid align-items-center p-2 m-0">
           <div
@@ -93,8 +87,8 @@ const Documentos = () => {
                   <div key={index}>
                     <Card_documents
                       name={item.name}
-                      caso={item.caso}
-                      edited={item.edited}
+                      url={item.url}
+                      edited={item.created}
                       index={index}
                     />
                   </div>

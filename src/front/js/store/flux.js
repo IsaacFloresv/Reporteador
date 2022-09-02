@@ -1,9 +1,13 @@
 const URL = `${process.env.BACKEND_URL}/api`
 
-
-const getState = ({ getStore, getActions, setStore }) => {
+const getState = ({
+  getStore,
+  getActions,
+  setStore
+}) => {
   return {
     store: {
+      docs:[],
       token: "",
       user: {
         id: "",
@@ -80,6 +84,18 @@ const getState = ({ getStore, getActions, setStore }) => {
             });
           }
         });
+      },
+      AllFiles: () => {
+        const myHeaders = new Headers();
+        let local = JSON.parse(localStorage.getItem("Dropcase"));
+        myHeaders.append("Content-Type", "application/json");
+        //myHeaders.append("Authorization", `Bearer ${local.token}`);
+        const requestOptions = {
+          headers: myHeaders,
+        };
+        fetch(`${URL}/allfiles`, requestOptions).then(res =>
+          res.json().then((data) => setStore({docs:data.Files})))
+          let store = getStore()  
       },
 
       login: (values) => {
@@ -203,15 +219,28 @@ const getState = ({ getStore, getActions, setStore }) => {
             return data.msg;
           });
       },
+      updateFile: (index) => {
+        let files =getStore().docs
+        let newfiles = files.filter((item,i)=>i!==index)
+        setStore({
+          docs:newfiles})
+
+      },
+      getFile: (index) => {
+        let files =getStore().docs
+        let newfiles = files.filter((item,i)=>i==index)
+        let file= newfiles.find((url)=>url.url);
+        return (file)        
+      },
       checkToken: () => {
         let tokenCheck = JSON.parse(localStorage.getItem("Dropcases"));
         if (tokenCheck !== null) {
           return fetch(`${URL}/validate`, {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${tokenCheck.token}`,
-            },
-          })
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${tokenCheck.token}`,
+              },
+            })
             .then((response) => {
               if (response.status === 401) {
                 throw new Error("Token Expired, please login.");
@@ -238,41 +267,36 @@ const getState = ({ getStore, getActions, setStore }) => {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "multipart/form-data");
         let data = new FormData();
-        let payload ={
-              ...values,
+        let payload = {
+          ...values,
         }
-        data.append('file',values)
-        console.log(payload)
-        console.log(data)
+        data.append('file', values)
         for (let key in payload) {
-          console.log(key)
-					if (key === "file") {
-						data.append("file", payload[key]);
-					} else {
-						data.append(key, payload[key]);
-					}
-				}
+          if (key === "file") {
+            data.append("file", payload[key]);
+          } else {
+            data.append(key, payload[key]);
+          }
+        }
         var serializeForm = function (form) {
-              var obj = {};
-              var formData = form;
-              for (var key of formData.keys()) {
-                  obj[key] = formData.get(key);
-              }
-              return obj;
-          };
-
-          console.log(serializeForm(data))
+          var obj = {};
+          var formData = form;
+          for (var key of formData.keys()) {
+            obj[key] = formData.get(key);
+          }
+          return obj;
+        };
         return fetch(`${URL}/upload`, {
-					method: "POST",
-					//cors: "no-cors",
-          headers:myHeaders,
-					body: data
-        })
-        .then(res => {
-          if (!res.ok) throw new Error(res.statusText);
-          return res.json();
-        })
-				
+            method: "POST",
+            //cors: "no-cors",
+            headers: myHeaders,
+            body: data
+          })
+          .then(res => {
+            if (!res.ok) throw new Error(res.statusText);
+            return res.json();
+          })
+
       },
       userIsLogin: () => {
         const userinfo = JSON.parse(localStorage.getItem("Dropcase"));
@@ -295,42 +319,42 @@ const getState = ({ getStore, getActions, setStore }) => {
           delete: false,
         };
         fetch(`${URL}/notes`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(raw),
-        })
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(raw),
+          })
           .then((res) => res.json())
           .then((data) => {
             setStore({
               notes: [data.Notes, ...store.notes],
             });
-            console.log(store.notes);
           })
           .catch((error) => console.error(error));
       },
       getNotes: () => {
         const store = getStore();
-        console.log(store.notes);
+  
         fetch(`${URL}/notes`)
           .then((res) => res.json())
           .then((data) => {
             setStore({
               notes: data.Notes.reverse(),
             });
-            console.log(store.notes);
           });
       },
       deleteNote: (index) => {
         const store = getStore();
         fetch(`${URL}/notes`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id: store.notes[index] }),
-        })
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              id: store.notes[index]
+            }),
+          })
           .then((res) => res.json())
           .then((data) => console.log(data));
         const notes = [...store.notes];
