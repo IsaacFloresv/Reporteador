@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 7f54dda57b42
+Revision ID: 1db83e2923ed
 Revises: 
-Create Date: 2022-09-02 16:41:05.767552
+Create Date: 2022-09-02 22:30:21.116664
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '7f54dda57b42'
+revision = '1db83e2923ed'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -22,8 +22,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('Case_status', sa.String(length=50), nullable=False),
     sa.Column('create_at', sa.DateTime(timezone=True), nullable=True),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('Case_status')
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('Users',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -35,8 +34,7 @@ def upgrade():
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('delete', sa.Boolean(), nullable=False),
     sa.Column('create_at', sa.DateTime(timezone=True), nullable=True),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('email')
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('Clients',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -79,25 +77,19 @@ def upgrade():
     )
     op.create_table('Cases',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('title', sa.String(length=1000), nullable=False),
     sa.Column('exp_number', sa.Integer(), nullable=False),
     sa.Column('description', sa.String(length=250), nullable=False),
     sa.Column('client_id', sa.Integer(), nullable=False),
     sa.Column('lawyer_id', sa.Integer(), nullable=False),
-    sa.Column('status_id', sa.Integer(), nullable=False),
-    sa.Column('cost', sa.Integer(), nullable=False),
+    sa.Column('cost', sa.Integer(), nullable=True),
     sa.Column('init_date', sa.String(length=50), nullable=False),
-    sa.Column('end_date', sa.String(length=50), nullable=False),
+    sa.Column('end_date', sa.String(length=50), nullable=True),
     sa.Column('delete', sa.Boolean(), nullable=False),
     sa.Column('create_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['client_id'], ['Clients.id'], ),
     sa.ForeignKeyConstraint(['lawyer_id'], ['Users.id'], ),
-    sa.ForeignKeyConstraint(['status_id'], ['Case_status.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('cost'),
-    sa.UniqueConstraint('description'),
-    sa.UniqueConstraint('end_date'),
-    sa.UniqueConstraint('exp_number'),
-    sa.UniqueConstraint('init_date')
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('Email_address',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -106,8 +98,7 @@ def upgrade():
     sa.Column('delete', sa.Boolean(), nullable=False),
     sa.Column('create_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['client_id'], ['Clients.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('email_address')
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('Phone_number',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -116,22 +107,17 @@ def upgrade():
     sa.Column('delete', sa.Boolean(), nullable=False),
     sa.Column('create_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['client_id'], ['Clients.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('phone_number')
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('Case_updates',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('case_id', sa.Integer(), nullable=False),
     sa.Column('title', sa.String(length=500), nullable=False),
     sa.Column('description', sa.String(length=5000), nullable=False),
-    sa.Column('file_id', sa.Integer(), nullable=True),
     sa.Column('delete', sa.Boolean(), nullable=False),
     sa.Column('create_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['case_id'], ['Cases.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('description'),
-    sa.UniqueConstraint('file_id'),
-    sa.UniqueConstraint('title')
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('Files',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -141,9 +127,7 @@ def upgrade():
     sa.Column('delete', sa.Boolean(), nullable=False),
     sa.Column('create_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['Case_updates_id'], ['Case_updates.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('name'),
-    sa.UniqueConstraint('url')
+    sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###
 

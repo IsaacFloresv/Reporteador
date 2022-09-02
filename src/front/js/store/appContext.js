@@ -24,8 +24,12 @@ const injectContext = (PassedComponent) => {
     useEffect(() => {
       state.actions.getNotes();
       state.actions.userIsLogin();
-      state.actions.getClients();
     }, []);
+
+    useEffect(() => {
+      state.actions.getClients();
+      state.actions.getCases();
+    }, [state.store.user]);
 
     useEffect(() => {
       setTimeout(() => {

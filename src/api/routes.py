@@ -3,7 +3,7 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 """
 
 from flask import Flask, request, jsonify, url_for, Blueprint, send_file,render_template, make_response
-from api.models import db, Users, Clients, Files, Notes,Cases,Case_updates, Phone_number, Address, Email_address
+from api.models import db, Users, Clients, Files, Notes,Cases, Case_updates, Phone_number, Address, Email_address
 from api.utils import generate_sitemap, APIException
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 import smtplib
@@ -391,15 +391,15 @@ def case_status():
         return jsonify(response_body), 200
 
 @api.route('/cases', methods=['GET', 'POST', 'PUT'])
-@jwt_required()
+# @jwt_required()
 def cases():
     if request.method == 'POST':
         body = request.json
+        title= request.json.get('title')
         exp_number = request.json.get('exp_number')
         description = request.json.get('description')
         client_id = request.json.get('client_id')
         lawyer_id=request.json.get('lawyer_id')
-        status_id=request.json.get('status_id')
         cost=request.json.get('cost')
         init_date=request.json.get('init_date')
         end_date=request.json.get('end_date')
@@ -408,19 +408,18 @@ def cases():
             return "The request body is null", 400
         if not client_id:
             return 'You need to specify the numero de cliente', 400
-        cases = Cases(exp_number=exp_number,description=description,client_id=client_id,lawyer_id=lawyer_id,status_id=status_id,cost=cost,init_date=init_date,end_date=end_date)
+        cases = Cases(title=title,exp_number=exp_number,description=description,client_id=client_id,lawyer_id=lawyer_id,cost=cost,init_date=init_date,end_date=end_date)
         db.session.add(cases)
         db.session.commit()
         response_body = {
         'msg': ' A new case has been created successfully.',
-        'user': cases.serialize()
+        'case': cases.serialize()
         }
         return jsonify(response_body), 200
         
     if request.method == 'GET':
-
-        cases = Cases.query.all()
-        print(cases)
+        user_id = request.args.get('userid')
+        cases = Cases.query.filter_by(lawyer_id=user_id)
         all_cases = list(map(lambda x: x.serialize(),cases))
         print(all_cases)
         response_body = {
@@ -468,6 +467,23 @@ def cases():
         }
         db.session.commit()
         return jsonify(response_body), 200
+
+@api.route('/case-update', methods=['GET', 'POST'])
+# @jwt_required()
+def case_update():
+    if request.method == "POST":
+        title= request.json.get('title')
+        description = request.json.get('description')
+        case_id = request.json.get('case_id')
+        delete = False
+
+        case_update = Case_updates(case_id=case_id, title=title, description=description,delete=delete)
+
+        db.session.add(case_update)
+        db.session.commit()
+
+        return jsonify(case_update.serialize()), 200
+
 
 @api.route("/reset", methods=["POST","PUT"])
 def update_password():
@@ -547,6 +563,7 @@ def update_password():
 def upload_files():
 
     file_url = request.files.get('file')
+    print(file_url)
     result = upload(file_url)
     url = result["secure_url"]
 
