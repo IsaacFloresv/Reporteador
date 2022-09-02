@@ -298,7 +298,8 @@ def users():
         return jsonify(response_body),200
 
 @api.route('/client', methods=['GET', 'POST', 'PUT'])
-# @jwt_required()
+#@jwt_required()
+
 def customers():
     if request.method == 'GET':
         print(request.args.get('userid'))
@@ -562,17 +563,38 @@ def upload_files():
     }
     return jsonify(payload),200
 
-@api.route('/files', methods=['GET'])
-@jwt_required()
+@api.route('/allfiles', methods=['GET'])
+#@jwt_required()
 def files():
     if request.method == 'GET':
         files = Files.query.all()
-        all_files = list(map(lambda x: x.serialize(), files))
+        files = list(map(lambda x: x.serialize(), files))
+        all_files = files[-6:]
         response_body = {
             "msg": "This is total Files",
             "Files": all_files
         }
         return jsonify(response_body), 200
+        db.session.commit()
+
+@api.route('/files', methods=['GET'])
+@jwt_required()
+def files_by_User():
+
+    if request.method == 'GET':
+
+        case_id = request.json['user_id']
+        user = Users.query.filter_by(email=email).first()
+        files = Files.query.all()
+        all_files = list(map(lambda x: x.serialize(), files))
+        if all_files:
+            response_body = {
+                "msg": "This is total Files",
+                "Files": all_files
+            }
+            return jsonify(response_body), 200
+        else:
+            return jsonify("No hay documentos almacenados"), 400
         db.session.commit()
 
 @api.route('/file/<filename>', methods=['GET','DELETE'])
