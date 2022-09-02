@@ -8,17 +8,10 @@ const NewClient = () => {
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
-    if (e.target.name === "profile_picture") {
-      setuser({
-        ...user,
-        [e.target.name]: e.target.files[0],
-      });
-    } else {
-      setuser({
-        ...user,
-        [e.target.name]: e.target.value,
-      });
-    }
+    setuser({
+      ...user,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const handleSubmit = (e) => {
@@ -35,7 +28,6 @@ const NewClient = () => {
       },
       {
         // usercontact
-        client_id: store.user.id,
         phone_one: user.phone_one,
         phone_two: user.phone_two,
         email_one: user.email_one,
@@ -44,6 +36,7 @@ const NewClient = () => {
         address_two: user.address_two,
       }
     );
+    navigate(-1);
   };
 
   return (
@@ -122,9 +115,9 @@ const NewClient = () => {
                 />
               </div>
               <div className="col-md-6">
-                <label>
+                <label className="">
                   Numero de Telefono #2
-                  <p className="text-black-50">(optional)</p>
+                  <span className="text-muted mx-2">(optional)</span>
                 </label>
                 <input
                   onChange={handleInputChange}
@@ -146,7 +139,7 @@ const NewClient = () => {
               </div>
               <div className="col-md-6">
                 <label>
-                  Email #2<p className="text-black-50">(optional)</p>
+                  Email #2<span className="text-muted mx-2">(optional)</span>
                 </label>
                 <input
                   onChange={handleInputChange}
@@ -168,7 +161,7 @@ const NewClient = () => {
               </div>
               <div className="col-md-6">
                 <label>
-                  Adress #2<p className="text-black-50">(optional)</p>
+                  Adress #2<span className="text-muted mx-2">(optional)</span>
                 </label>
                 <input
                   onChange={handleInputChange}
@@ -180,7 +173,7 @@ const NewClient = () => {
               </div>
             </div>
 
-            <div className="row">
+            {/* <div className="row">
               <div className="col-md-6">
                 <label className="">Customer Photo</label>
                 <br />
@@ -190,7 +183,7 @@ const NewClient = () => {
                   type="file"
                 />
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

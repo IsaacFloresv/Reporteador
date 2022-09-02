@@ -44,7 +44,7 @@ class Clients(db.Model):
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
     def __repr__(self):
-        return f'Customer:{self.id}'
+        return f'clients:{self.id}'
 
     def serialize(self):
         return {

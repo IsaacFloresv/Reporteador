@@ -154,11 +154,13 @@ const Dashboard = () => {
               <div
                 style={{ height: 400, width: 100 + "%", overflowY: "scroll" }}
               >
-                {test.map((item, index) => {
-                  return (
+                {store.clients.map((item, index) => {
+                  return item.favorite ? (
                     <div key={index}>
                       <CasesFollowing />
                     </div>
+                  ) : (
+                    ""
                   );
                 })}
               </div>
