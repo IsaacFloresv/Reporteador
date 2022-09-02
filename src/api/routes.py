@@ -578,19 +578,23 @@ def files():
         db.session.commit()
 
 @api.route('/files', methods=['GET'])
-@jwt_required()
+#@jwt_required()
 def files_by_User():
 
     if request.method == 'GET':
 
-        case_id = request.json['user_id']
+        client_id = request.json['client_id']
+        email = request.json['email']
         user = Users.query.filter_by(email=email).first()
         files = Files.query.all()
         all_files = list(map(lambda x: x.serialize(), files))
+        client = Email_address.query.filter_by(id=user)
+        all_emails = list(map(lambda x: x.serialize(), client_emails))
         if all_files:
             response_body = {
                 "msg": "This is total Files",
-                "Files": all_files
+                "Files": all_files,
+                "client":clients,
             }
             return jsonify(response_body), 200
         else:
@@ -716,7 +720,8 @@ def usercontact():
             }
         }
         return jsonify(response_body), 200
-        
+
+
 if __name__ == '__main__':
  # Iniciamos la aplicación
      app.run(debug=True) 

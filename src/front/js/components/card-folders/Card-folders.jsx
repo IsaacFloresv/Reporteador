@@ -27,17 +27,12 @@ const Card_folders = ({ name, cant, client, edited, index }) => {
                 <ul class="dropdown-menu">
                   <li>
                     <a class="dropdown-item" href="#">
-                      Action
+                      Open
                     </a>
                   </li>
                   <li>
                     <a class="dropdown-item" href="#">
-                      Another action
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="#">
-                      Something else here
+                      Delete
                     </a>
                   </li>
                 </ul>
@@ -50,7 +45,7 @@ const Card_folders = ({ name, cant, client, edited, index }) => {
               <b>Cliente: </b>
               {client}
             </p>
-            <p className="p-0 m-0">Ultimo cambio {edited}</p>
+            {/*<p className="p-0 m-0">Ultimo cambio {edited}</p>*/}
           </div>
         </div>
       </div>

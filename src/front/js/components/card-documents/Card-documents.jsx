@@ -6,7 +6,7 @@ import {saveAs} from "file-saver"
 
 
 
-const Card_documents = ({ name, edited, index }) => {
+const Card_documents = ({ name, edited, index,url }) => {
   const { actions,store} = useContext(Context);
 
   const handleDelete = () => {
@@ -23,7 +23,7 @@ const Card_documents = ({ name, edited, index }) => {
   return (
     <div className="card text-left" >
       <div className="card-body btn-link">
-        <img class=" card-img-top" alt="..." src={defpreview} />
+        <img class=" card-img-top w-100" alt={defpreview} src={url} />
       </div>
       <div className="card-footer text-muted pb-0 mb-0">
 

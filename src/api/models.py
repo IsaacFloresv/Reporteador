@@ -203,7 +203,6 @@ class Case_updates(db.Model):
     case_id_relation= relationship(Cases,primaryjoin=case_id==Cases.id)
     title = db.Column(db.String(500), unique=True, nullable=False)
     description = db.Column(db.String(5000), unique=True, nullable=False)
-    file_id = db.Column(db.Integer, unique=True, nullable=True)
     delete = db.Column(db.Boolean, unique=False, nullable=False)
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
@@ -224,7 +223,7 @@ class Case_updates(db.Model):
 class Files(db.Model):
     __tablename__='Files'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150), unique=True, nullable=False)
+    name = db.Column(db.String(150), unique=False, nullable=False)
     url = db.Column(db.String(500), unique=True, nullable=False)
     Case_updates_id = db.Column(db.Integer, db.ForeignKey('Case_updates.id'),nullable=True)
     Case_updates_id_relation= relationship(Case_updates,primaryjoin=Case_updates_id==Case_updates.id)
@@ -237,6 +236,7 @@ class Files(db.Model):
     def serialize(self):
         return {
             "id": self.id,
+            "case_updates_id":self.Case_updates_id,
             "name": self.name,
             "url": self.url,
             "created":self.create_at
