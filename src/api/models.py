@@ -219,7 +219,7 @@ class Case_updates(db.Model):
 
             # do not serialize the password, its a security breach
         }
-
+#
 class Files(db.Model):
     __tablename__='Files'
     id = db.Column(db.Integer, primary_key=True)

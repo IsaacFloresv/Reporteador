@@ -278,7 +278,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             .catch((error) => console.error(error));
         }
       },
-
+//
       upload: (values) => {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "multipart/form-data");

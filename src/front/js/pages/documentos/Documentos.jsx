@@ -12,7 +12,7 @@ const Documentos = () => {
   const [folders, setfolders] = useState(store.clients);
   const [documents, setDocuments] = useState(store.docs);
   const [searchValue, setsearchValue] = useState("");
-
+//
   useEffect(() => {
     setfolders(store.clients);
   }, [store.clients]);

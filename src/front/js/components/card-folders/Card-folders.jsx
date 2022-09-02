@@ -1,7 +1,7 @@
 import React from "react";
 import { AiFillFolder } from "react-icons/ai";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
-
+//s
 const Card_folders = ({ name, cant, client, edited, index }) => {
   return (
     <div className="mb-2">
