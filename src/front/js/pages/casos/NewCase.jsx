@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 const NewCase = () => {
   const navigate = useNavigate();
+
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center my-3">

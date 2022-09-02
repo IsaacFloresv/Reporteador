@@ -3,7 +3,7 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 """
 
 from flask import Flask, request, jsonify, url_for, Blueprint, send_file,render_template
-from api.models import db, Users, Clients, Files, Notes,Cases,Case_updates
+from api.models import db, Users, Clients, Files, Notes,Cases,Case_updates, Phone_number, Address, Email_address
 from api.utils import generate_sitemap, APIException
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 import smtplib
@@ -283,17 +283,18 @@ def users():
         return jsonify(response_body),200
 
 @api.route('/client', methods=['GET', 'POST', 'PUT'])
-@jwt_required()
+# @jwt_required()
 def customers():
     if request.method == 'GET':
-        customers = Clients.query.all()
+        print(request.args.get('userid'))
+        user_id = request.args.get('userid')
+        customers = Clients.query.filter_by(users_id=user_id)
         all_customers = list(map(lambda x: x.serialize(), customers))
         response_body = {
             "msg": "Customers list",
-            "Customer": all_customers
+            "clients": all_customers
         }
         return jsonify(response_body), 200
-        db.session.commit()
 
     if request.method == 'PUT':
         if 'id' not in request.json:
@@ -335,27 +336,40 @@ def customers():
     elif request.method == 'POST':
         body = request.json
         name = request.json.get('name')
+        dni = request.json.get('dni')
         lawyer_id = request.json.get('lawyer_id')
         is_active = request.json.get('is_active')
         first_lastname = request.json.get('first_lastname')
         second_lastname = request.json.get('second_lastname')
+        d_client_id = request.json.get('client_id')
+        d_phone_one = request.json.get('phone_one')
+        d_phone_two = request.json.get('phone_two')
+        d_email_one = request.json.get('email_one')
+        d_email_two = request.json.get('email_two')
+        d_address_one = request.json.get('address_one')
+        d_address_two = request.json.get('address_two')
 
         if body is None:
             return "The request body is null", 400
         if not name:
             return 'You need to specify customer', 400
-        clients = Clients(name=name, lawyer_id=lawyer_id, is_active=is_active,
-                          first_lastname=first_lastname, second_lastname=second_lastname)
+        clients = Clients(name=name, users_id=lawyer_id, is_active=is_active,first_lastname=first_lastname, second_lastname=second_lastname, dni=dni)
         db.session.add(clients)
         db.session.commit()
         response_body = {
             'msg': 'Customer has been created successfully.',
-            'user': clients.serialize()
+            'client': {
+                'name': name,
+                'dni': dni,
+                'lawyer_id': lawyer_id,
+                'first_lastname': first_lastname,
+                'second_lastname': second_lastname,
+            }        
         }
         return jsonify(response_body), 200
 
 @api.route('/status', methods=['GET', 'POST', 'PUT'])
-@jwt_required()
+# @jwt_required()
 def case_status():
     if request.method == 'POST':
         body = request.json
@@ -646,6 +660,39 @@ def notes():
         }        
         return jsonify(response_body), 200
 
+@api.route('/usercontact', methods=['POST','GET','PUT''DELETE'])
+#@jwt_required()
+def usercontact():
+    if request.method == 'POST':
+        d_client_id = request.json.get('client_id')
+        d_phone_one = request.json.get('phone_one')
+        d_phone_two = request.json.get('phone_two')
+        d_email_one = request.json.get('email_one')
+        d_email_two = request.json.get('email_two')
+        d_address_one = request.json.get('address_one')
+        d_address_two = request.json.get('address_two')
+
+        phone_one = Phone_number(client_id = d_client_id, phone_number = d_phone_one, delete=False)
+        phone_two = Phone_number(client_id = d_client_id, phone_number = d_phone_two, delete=False)
+        address_one = Address(client_id = d_client_id, address = d_address_one, delete=False)
+        address_two = Address(client_id = d_client_id, address = d_address_two, delete=False)
+        email_one = Email_address(client_id = d_client_id, email_address = d_email_one, delete=False)
+        email_two = Email_address(client_id = d_client_id, email_address = d_email_two, delete=False)
+        db.session.add_all([phone_one,phone_two,email_one,email_two,address_one,address_two])
+        db.session.commit()
+        response_body = {
+            'msg': 'client create!',
+            'usercontact': {
+                'phone_one': d_phone_one,
+                'phone_two': d_phone_two,
+                'address_one': d_address_one,
+                'address_two': d_address_two,
+                'email_one': d_email_one,
+                'email_two': d_email_two,
+            }
+        }
+        return jsonify(response_body), 200
+        
 if __name__ == '__main__':
  # Iniciamos la aplicación
      app.run(debug=True) 

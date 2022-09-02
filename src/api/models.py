@@ -36,6 +36,7 @@ class Clients(db.Model):
     name = db.Column(db.String(120), unique=False, nullable=False)
     first_lastname = db.Column(db.String(120), unique=False, nullable=False)
     second_lastname = db.Column(db.String(120), unique=False, nullable=False)
+    dni = db.Column(db.Integer, unique=False, nullable=False)
     users_id = db.Column(db.Integer, db.ForeignKey('Users.id'),nullable=False)
     users_id_relation= relationship(Users,primaryjoin=users_id==Users.id)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
@@ -51,7 +52,8 @@ class Clients(db.Model):
             "name": self.name,
             "first_lastname": self.first_lastname,
             "second_lastname": self.second_lastname,
-            "lawyer_id": self.lawyer_id,
+            "dni": self.dni,
+            "lawyer_id": self.users_id,
             "delete": self.delete,
             "is_active": self.is_active,
             # do not serialize the password, its a security breach
@@ -83,7 +85,7 @@ class Address(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     client_id = db.Column(db.Integer, db.ForeignKey('Clients.id'),nullable=False)
     client_id_relation= relationship(Clients,primaryjoin=client_id==Clients.id)
-    address = db.Column(db.String(100), unique=True, nullable=False)
+    address = db.Column(db.String(100), unique=False, nullable=False)
     delete = db.Column(db.Boolean, unique=False, nullable=False)
     create_at=db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
