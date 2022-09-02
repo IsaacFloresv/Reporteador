@@ -1,5 +1,4 @@
-const URL = `${process.env.BACKEND_URL}/api`
-
+const URL = process.env.BACKEND_URL;
 
 const getState = ({ getStore, getActions, setStore }) => {
   return {
@@ -17,8 +16,10 @@ const getState = ({ getStore, getActions, setStore }) => {
         msg: "",
         show: false,
       },
+      notes: [],
       status: "",
       showError: false,
+      clients: [],
     },
     actions: {
       setAlert: (payload) => {
@@ -233,46 +234,43 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
       },
 
-
       upload: (values) => {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "multipart/form-data");
         let data = new FormData();
-        let payload ={
-              ...values,
-        }
-        data.append('file',values)
-        console.log(payload)
-        console.log(data)
+        let payload = {
+          ...values,
+        };
+        data.append("file", values);
+        console.log(payload);
+        console.log(data);
         for (let key in payload) {
-          console.log(key)
-					if (key === "file") {
-						data.append("file", payload[key]);
-					} else {
-						data.append(key, payload[key]);
-					}
-				}
+          console.log(key);
+          if (key === "file") {
+            data.append("file", payload[key]);
+          } else {
+            data.append(key, payload[key]);
+          }
+        }
         var serializeForm = function (form) {
-              var obj = {};
-              var formData = form;
-              for (var key of formData.keys()) {
-                  obj[key] = formData.get(key);
-              }
-              return obj;
-          };
+          var obj = {};
+          var formData = form;
+          for (var key of formData.keys()) {
+            obj[key] = formData.get(key);
+          }
+          return obj;
+        };
 
-          console.log(serializeForm(data))
+        console.log(serializeForm(data));
         return fetch(`${URL}/upload`, {
-					method: "POST",
-					//cors: "no-cors",
-          headers:myHeaders,
-					body: data
-        })
-        .then(res => {
+          method: "POST",
+          //cors: "no-cors",
+          headers: myHeaders,
+          body: data,
+        }).then((res) => {
           if (!res.ok) throw new Error(res.statusText);
           return res.json();
-        })
-				
+        });
       },
       userIsLogin: () => {
         const userinfo = JSON.parse(localStorage.getItem("Dropcase"));
@@ -338,6 +336,55 @@ const getState = ({ getStore, getActions, setStore }) => {
         setStore({
           notes: newNotes,
         });
+      },
+      addClient: (userdata, usercontact) => {
+        const store = getStore();
+        // Save Client without email, phone or address
+        fetch(`${URL}/client`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(userdata),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            setStore({
+              clients: [
+                ...store.clients,
+                {
+                  ...data.client,
+                },
+              ],
+            });
+          })
+          .catch((error) => console.error(error))
+          .then(() => {
+            // Save email, phone, address
+            fetch(`${URL}/usercontact`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(usercontact),
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                console.log(data);
+              })
+              .catch((error) => console.error(error));
+          });
+      },
+      getClients: () => {
+        const store = getStore();
+        fetch(`${URL}/client?userid=${store.user.id}`)
+          .then((res) => res.json())
+          .then((data) => {
+            setStore({
+              clients: data.clients,
+            });
+            console.log(store.clients);
+          });
       },
     },
   };
