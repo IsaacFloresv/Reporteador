@@ -8,7 +8,7 @@ db = SQLAlchemy()
 class Users(db.Model):
     __tablename__='Users'
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(100), unique=True, nullable=False)
+    email = db.Column(db.String(100), unique=False, nullable=False)
     password = db.Column(db.String(500), unique=False, nullable=False)
     name = db.Column(db.String(100), unique=False, nullable=False)
     lastname = db.Column(db.String(100), unique=False, nullable=False)
@@ -64,7 +64,7 @@ class Phone_number(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     client_id = db.Column(db.Integer, db.ForeignKey('Clients.id'),nullable=False)
     client_id_relation= relationship(Clients,primaryjoin=client_id==Clients.id)
-    phone_number = db.Column(db.String(50), unique=True, nullable=False)
+    phone_number = db.Column(db.String(50), unique=False, nullable=False)
     delete = db.Column(db.Boolean, unique=False, nullable=False)
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
@@ -106,7 +106,7 @@ class Email_address(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     client_id = db.Column(db.Integer, db.ForeignKey('Clients.id'),nullable=False)
     client_id_relation= relationship(Clients,primaryjoin=client_id==Clients.id)
-    email_address = db.Column(db.String(100), unique=True, nullable=False)
+    email_address = db.Column(db.String(100), unique=False, nullable=False)
     delete = db.Column(db.Boolean, unique=False, nullable=False)
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
@@ -146,7 +146,7 @@ class Notes(db.Model):
 class Case_status(db.Model):
     __tablename__='Case_status'
     id = db.Column(db.Integer, primary_key=True)
-    Case_status = db.Column(db.String(50), unique=True, nullable=False)
+    Case_status = db.Column(db.String(50), unique=False, nullable=False)
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
     def __repr__(self):
@@ -163,17 +163,16 @@ class Case_status(db.Model):
 class Cases(db.Model):
     __tablename__='Cases'
     id = db.Column(db.Integer, primary_key=True)
-    exp_number = db.Column(db.Integer, unique=True, nullable=False)
-    description = db.Column(db.String(250), unique=True, nullable=False)
+    title = db.Column(db.String(1000), unique=False, nullable=False)
+    exp_number = db.Column(db.Integer, unique=False, nullable=False)
+    description = db.Column(db.String(250), unique=False, nullable=False)
     client_id = db.Column(db.Integer, db.ForeignKey('Clients.id'),nullable=False)
     client_id_relation= relationship(Clients,primaryjoin=client_id==Clients.id)
     lawyer_id = db.Column(db.Integer, db.ForeignKey('Users.id'),nullable=False)
     lawyer_id_relation= relationship(Users,primaryjoin=lawyer_id==Users.id)
-    status_id = db.Column(db.Integer, db.ForeignKey('Case_status.id'),nullable=False)
-    status_id_relation= relationship(Case_status,primaryjoin=status_id==Case_status.id)
-    cost = db.Column(db.Integer, unique=True, nullable=False)
-    init_date = db.Column(db.String(50), unique=True, nullable=False)
-    end_date = db.Column(db.String(50), unique=True, nullable=False)
+    cost = db.Column(db.Integer, unique=False, nullable=True)
+    init_date = db.Column(db.String(50), unique=False, nullable=False)
+    end_date = db.Column(db.String(50), unique=False, nullable=True)
     delete = db.Column(db.Boolean, unique=False, nullable=False,default=False)
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
@@ -183,11 +182,11 @@ class Cases(db.Model):
     def serialize(self):
         return {
             "id": self.id,
+            "title": self.title,
             "exp_number": self.exp_number,
             "description": self.description,
             "client_id": self.client_id,
             "lawyer_id": self.lawyer_id,
-            "status_id": self.status_id,
             "cost": self.cost,
             "init_date": self.init_date,
             "end_date": self.end_date,
@@ -201,9 +200,8 @@ class Case_updates(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     case_id = db.Column(db.Integer, db.ForeignKey('Cases.id'),nullable=False)
     case_id_relation= relationship(Cases,primaryjoin=case_id==Cases.id)
-    title = db.Column(db.String(500), unique=True, nullable=False)
-    description = db.Column(db.String(5000), unique=True, nullable=False)
-    file_id = db.Column(db.Integer, unique=True, nullable=True)
+    title = db.Column(db.String(500), unique=False, nullable=False)
+    description = db.Column(db.String(5000), unique=False, nullable=False)
     delete = db.Column(db.Boolean, unique=False, nullable=False)
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
 
@@ -215,7 +213,6 @@ class Case_updates(db.Model):
             "id": self.id,
             "case_id": self.case_id,
             "description": self.description,
-            "file_id": self.file_id,
             "delete": self.delete,
 
             # do not serialize the password, its a security breach
@@ -224,8 +221,8 @@ class Case_updates(db.Model):
 class Files(db.Model):
     __tablename__='Files'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150), unique=True, nullable=False)
-    url = db.Column(db.String(500), unique=True, nullable=False)
+    name = db.Column(db.String(150), unique=False, nullable=False)
+    url = db.Column(db.String(500), unique=False, nullable=False)
     Case_updates_id = db.Column(db.Integer, db.ForeignKey('Case_updates.id'),nullable=True)
     Case_updates_id_relation= relationship(Case_updates,primaryjoin=Case_updates_id==Case_updates.id)
     delete = db.Column(db.Boolean, unique=False, nullable=False,default=False)
