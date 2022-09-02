@@ -1,12 +1,9 @@
-
-const URL = `${process.env.BACKEND_URL}/api`
-
+const URL = process.env.BACKEND_URL;
 
 const getState = ({ getStore, getActions, setStore }) => {
-
   return {
     store: {
-      docs:[],
+      docs: [],
       token: "",
       user: {
         id: "",
@@ -24,6 +21,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       status: "",
       showError: false,
       clients: [],
+      cases: [],
       currentClient: {
         user: {
           delete: false,
@@ -111,9 +109,10 @@ const getState = ({ getStore, getActions, setStore }) => {
         const requestOptions = {
           headers: myHeaders,
         };
-        fetch(`${URL}/allfiles`, requestOptions).then(res =>
-          res.json().then((data) => setStore({docs:data.Files})))
-          let store = getStore()  
+        fetch(`${URL}/allfiles`, requestOptions).then((res) =>
+          res.json().then((data) => setStore({ docs: data.Files }))
+        );
+        let store = getStore();
       },
 
       login: (values) => {
@@ -238,27 +237,27 @@ const getState = ({ getStore, getActions, setStore }) => {
           });
       },
       updateFile: (index) => {
-        let files =getStore().docs
-        let newfiles = files.filter((item,i)=>i!==index)
+        let files = getStore().docs;
+        let newfiles = files.filter((item, i) => i !== index);
         setStore({
-          docs:newfiles})
-
+          docs: newfiles,
+        });
       },
       getFile: (index) => {
-        let files =getStore().docs
-        let newfiles = files.filter((item,i)=>i==index)
-        let file= newfiles.find((url)=>url.url);
-        return (file)        
+        let files = getStore().docs;
+        let newfiles = files.filter((item, i) => i == index);
+        let file = newfiles.find((url) => url.url);
+        return file;
       },
       checkToken: () => {
         let tokenCheck = JSON.parse(localStorage.getItem("Dropcases"));
         if (tokenCheck !== null) {
           return fetch(`${URL}/validate`, {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${tokenCheck.token}`,
-              },
-            })
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${tokenCheck.token}`,
+            },
+          })
             .then((response) => {
               if (response.status === 401) {
                 throw new Error("Token Expired, please login.");
@@ -317,7 +316,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           if (!res.ok) throw new Error(res.statusText);
           return res.json();
         });
-
       },
       userIsLogin: () => {
         const userinfo = JSON.parse(localStorage.getItem("Dropcase"));
@@ -340,12 +338,12 @@ const getState = ({ getStore, getActions, setStore }) => {
           delete: false,
         };
         fetch(`${URL}/notes`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(raw),
-          })
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(raw),
+        })
           .then((res) => res.json())
           .then((data) => {
             setStore({
@@ -356,7 +354,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       },
       getNotes: () => {
         const store = getStore();
-  
+
         fetch(`${URL}/notes`)
           .then((res) => res.json())
           .then((data) => {
@@ -368,14 +366,14 @@ const getState = ({ getStore, getActions, setStore }) => {
       deleteNote: (index) => {
         const store = getStore();
         fetch(`${URL}/notes`, {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              id: store.notes[index]
-            }),
-          })
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: store.notes[index],
+          }),
+        })
           .then((res) => res.json())
           .then((data) => console.log(data));
         const notes = [...store.notes];
@@ -435,11 +433,24 @@ const getState = ({ getStore, getActions, setStore }) => {
         fetch(`${URL}/client?userid=${store.user.id}`)
           .then((res) => res.json())
           .then((data) => {
+            console.log(data);
             setStore({
               clients: data.clients,
             });
-            console.log(store.clients);
-          });
+          })
+          .catch((error) => console.log(error));
+      },
+      getCases: () => {
+        const store = getStore();
+        fetch(`${URL}/cases?userid=${store.user.id}`)
+          .then((res) => res.json())
+          .then((data) => {
+            setStore({
+              cases: data.Cases,
+            });
+            console.log("funcionando!!");
+          })
+          .catch((error) => console.log(error));
       },
       getClient: (id) => {
         fetch(`${URL}/client/${id}`)
@@ -485,6 +496,82 @@ const getState = ({ getStore, getActions, setStore }) => {
           clients: newclients,
         });
         console.log(store.clients);
+      },
+      addnewcase: (caseinfo) => {
+        const store = getStore();
+        let caseID = "";
+        fetch(`${URL}/cases`, {
+          // Save case data without update
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...caseinfo.data,
+            lawyer_id: store.user.id,
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            caseID = data.case.id;
+            setStore({
+              cases: [...store.cases, ...data.cases],
+            });
+            console.log(store.cases);
+            console.log("GUARDANDO CASO");
+          })
+          .catch((error) => console.error(error))
+          .then(() => {
+            let case_update_id = "";
+            let raw = {
+              ...caseinfo.update_data,
+              case_id: `${caseID}`,
+            };
+            fetch(`${URL}/case-update`, {
+              // Save case update
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(raw),
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                console.log("BUSCAME!", data);
+                case_update_id = data.case_id;
+              })
+              .then(() => {
+                for (let i = 0; i < caseinfo.files.length; i++) {
+                  let form = new FormData();
+                  form.append("file", caseinfo.files[i]);
+                  form.append("name", caseinfo.files[i].name);
+                  form.append("case_update_id", case_update_id);
+                  //COMIENZA
+                  var serializeForm = function () {
+                    var obj = {};
+                    var formData = form;
+                    for (var key of formData.keys()) {
+                      obj[key] = formData.get(key);
+                    }
+                    return obj;
+                  };
+                  console.log(serializeForm());
+                  //TERMINA
+                  fetch(`${URL}/upload`, {
+                    method: "POST",
+                    body: form,
+                  })
+                    .then((res) => res.json())
+                    .then((data) => {
+                      console.log(data);
+                    })
+                    .catch((error) => console.error(error));
+                }
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          });
       },
     },
   };

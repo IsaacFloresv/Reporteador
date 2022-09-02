@@ -1,9 +1,26 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { BsBriefcase } from "react-icons/bs";
 import { Link } from "react-router-dom";
+import { Context } from "../../store/appContext";
 
 const Casos = () => {
+  const { store, actions } = useContext(Context);
+  const [cases, setcases] = useState([]);
+  const [searchValue, setsearchValue] = useState("");
+
+  useEffect(() => {
+    setcases(store.cases);
+    console.log(cases);
+  }, [store.cases]);
+
+  useEffect(() => {
+    const usersfilter = store.cases.filter((s) =>
+      s.title.toLowerCase().includes(searchValue.toLowerCase())
+    );
+    setcases(usersfilter);
+  }, [searchValue]);
+
   const checkbox = (
     <input
       class="form-check-input"
@@ -13,7 +30,13 @@ const Casos = () => {
     />
   );
 
-  const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1];
+  const handleDelete = (index) => {
+    actions.deleteClient(index);
+  };
+
+  const handleFavorite = (index) => {
+    actions.addtofavorite(index);
+  };
 
   return (
     <>
@@ -23,15 +46,15 @@ const Casos = () => {
           className="d-flex align-items-center"
           style={{ fontSize: 0.75 + "rem" }}
         >
-          <div>
+          {/* <div>
             <span>Ordenar</span>
             <span className="mx-2 fw-semibold dropdown-toggle">
               Alfabeticamente
             </span>
-          </div>
+          </div> */}
           <div className="mx-2">
             <span>Total:</span>
-            <span className="mx-2 fw-semibold">18 Casos</span>
+            <span className="mx-2 fw-semibold">{cases.length} Casos</span>
           </div>
           <Link to="/nuevo-caso">
             <button className="btn btn-primary btn-sm">+ Abrir Caso</button>
@@ -74,34 +97,31 @@ const Casos = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.map((item, index) => {
+                  {cases.map((item, index) => {
                     return (
                       <tr>
                         <td scope="row" className="text-center">
                           {checkbox}
                         </td>
                         <td>
-                        <Link to="/caso/ale" className="text-decoration-none text-black">
-                          <div className="d-flex align-items-center">
-                            <div
-                              className="bg-light rounded d-flex align-items-center justify-content-center"
-                              style={{ width: 40, height: 40 }}
-                            >
-                              <BsBriefcase size={20} />
-                            </div>
-                            <div className="d-flex flex-column mx-3">
-                              <span className="fw-semibold">
-                                Difamacion publica por Amber Heard
-                              </span>
-                              <small>
-                                Cliente:{" "}
+                          <Link
+                            to="/caso/ale"
+                            className="text-decoration-none text-black"
+                          >
+                            <div className="d-flex align-items-center">
+                              <div
+                                className="bg-light rounded d-flex align-items-center justify-content-center"
+                                style={{ width: 40, height: 40 }}
+                              >
+                                <BsBriefcase size={20} />
+                              </div>
+                              <div className="d-flex flex-column mx-3">
                                 <span className="fw-semibold">
-                                  Jhonny Deep Martinez
+                                  {item.title}
                                 </span>
-                              </small>
+                              </div>
                             </div>
-                          </div>
-                        </Link>
+                          </Link>
                         </td>
                         <td>
                           <div className="w-50 mx-auto badge text-bg-primary fw-normal text-white d-flex align-items-center justify-content-center">
