@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 
-from flask import Flask, request, jsonify, url_for, Blueprint, send_file,render_template
+from flask import Flask, request, jsonify, url_for, Blueprint, send_file,render_template, make_response
 from api.models import db, Users, Clients, Files, Notes,Cases,Case_updates, Phone_number, Address, Email_address
 from api.utils import generate_sitemap, APIException
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
@@ -163,14 +163,29 @@ def single_user(id):
     return jsonify(single_user), 200
     
 @api.route('/client/<int:id>', methods=['GET'])
-@jwt_required()
+# @jwt_required()
 def single_client(id):
-    client = Clients.query.get(id)
-    single_client = client.serialize()
-    return jsonify(single_client), 200
+    client_id = id
+    print(f"ID ES {client_id}")
+    single_client = Clients.query.filter_by(id=client_id).first()
+    client_emails = Email_address.query.filter_by(id=client_id)
+    client_phones = Phone_number.query.filter_by(id=client_id)
+    client_address = Address.query.filter_by(id=client_id)
+    all_emails = list(map(lambda x: x.serialize(), client_emails))
+    all_phones = list(map(lambda x: x.serialize(), client_phones))
+    all_address = list(map(lambda x: x.serialize(), client_address))
+
+    return jsonify({
+        'user': single_client.serialize(),
+        'contact': {
+            "email": all_emails,
+            "phone": all_phones,
+            "address": all_address
+        }
+    }),200
 
 @api.route('/case/<int:id>', methods=['GET'])
-@jwt_required()
+# @jwt_required()
 def single_case(id):
     case = Cases.query.get(id)
     single_case = case.serialize()
@@ -341,13 +356,6 @@ def customers():
         is_active = request.json.get('is_active')
         first_lastname = request.json.get('first_lastname')
         second_lastname = request.json.get('second_lastname')
-        d_client_id = request.json.get('client_id')
-        d_phone_one = request.json.get('phone_one')
-        d_phone_two = request.json.get('phone_two')
-        d_email_one = request.json.get('email_one')
-        d_email_two = request.json.get('email_two')
-        d_address_one = request.json.get('address_one')
-        d_address_two = request.json.get('address_two')
 
         if body is None:
             return "The request body is null", 400
@@ -358,14 +366,8 @@ def customers():
         db.session.commit()
         response_body = {
             'msg': 'Customer has been created successfully.',
-            'client': {
-                'name': name,
-                'dni': dni,
-                'lawyer_id': lawyer_id,
-                'first_lastname': first_lastname,
-                'second_lastname': second_lastname,
-            }        
-        }
+            'client': clients.serialize()
+         }
         return jsonify(response_body), 200
 
 @api.route('/status', methods=['GET', 'POST', 'PUT'])

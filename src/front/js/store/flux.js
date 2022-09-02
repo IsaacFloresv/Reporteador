@@ -20,6 +20,23 @@ const getState = ({ getStore, getActions, setStore }) => {
       status: "",
       showError: false,
       clients: [],
+      currentClient: {
+        user: {
+          delete: false,
+          dni: "",
+          first_lastname: "",
+          id: "",
+          is_active: true,
+          lawyer_id: "",
+          name: "",
+          second_lastname: "",
+        },
+        contact: {
+          address: "",
+          email: "",
+          phone: "",
+        },
+      },
     },
     actions: {
       setAlert: (payload) => {
@@ -339,6 +356,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       },
       addClient: (userdata, usercontact) => {
         const store = getStore();
+        let clientID = "";
         // Save Client without email, phone or address
         fetch(`${URL}/client`, {
           method: "POST",
@@ -349,6 +367,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         })
           .then((res) => res.json())
           .then((data) => {
+            clientID = data.client.id;
+            console.log(data.client);
             setStore({
               clients: [
                 ...store.clients,
@@ -360,13 +380,18 @@ const getState = ({ getStore, getActions, setStore }) => {
           })
           .catch((error) => console.error(error))
           .then(() => {
+            console.log(clientID);
             // Save email, phone, address
+            const body = {
+              client_id: clientID,
+              ...usercontact,
+            };
             fetch(`${URL}/usercontact`, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify(usercontact),
+              body: JSON.stringify(body),
             })
               .then((res) => res.json())
               .then((data) => {
@@ -385,6 +410,51 @@ const getState = ({ getStore, getActions, setStore }) => {
             });
             console.log(store.clients);
           });
+      },
+      getClient: (id) => {
+        fetch(`${URL}/client/${id}`)
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+            setStore({
+              currentClient: {
+                user: data.user,
+                contact: "",
+              },
+            });
+          })
+          .catch((error) => console.log(error));
+      },
+      deleteClient: (index) => {
+        const clients = getStore().clients;
+        const newclients = clients.filter((e, i) => i !== index);
+        setStore({
+          clients: newclients,
+        });
+      },
+      clientSearch: (param) => {
+        const clients = getStore().clients;
+        const newclients = clients.filter((e, i) => e.name.includes(param));
+        setStore({
+          clients: newclients,
+        });
+      },
+      addtofavorite: (index) => {
+        const store = getStore();
+        const newclients = [...store.clients];
+        newclients[index].favorite
+          ? (newclients[index] = {
+              ...newclients[index],
+              favorite: false,
+            })
+          : (newclients[index] = {
+              ...newclients[index],
+              favorite: true,
+            });
+        setStore({
+          clients: newclients,
+        });
+        console.log(store.clients);
       },
     },
   };
