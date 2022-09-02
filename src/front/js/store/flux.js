@@ -1,3 +1,4 @@
+
 const URL = process.env.BACKEND_URL;
 
 const getState = ({ getStore, getActions, setStore }) => {
@@ -103,7 +104,6 @@ const getState = ({ getStore, getActions, setStore }) => {
       },
       AllFiles: () => {
         const myHeaders = new Headers();
-        let local = JSON.parse(localStorage.getItem("Dropcase"));
         myHeaders.append("Content-Type", "application/json");
         //myHeaders.append("Authorization", `Bearer ${local.token}`);
         const requestOptions = {
@@ -125,6 +125,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           cors: "no-cors",
           body: raw,
         };
+        console.log(requestOptions)
         values.email;
         raw.email;
         fetch(`${URL}/login`, requestOptions).then((res) => {
@@ -278,7 +279,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             .catch((error) => console.error(error));
         }
       },
-
+//
       upload: (values) => {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "multipart/form-data");
@@ -480,6 +481,12 @@ const getState = ({ getStore, getActions, setStore }) => {
           clients: newclients,
         });
       },
+      getfavorites:()=>{
+        const clients = getStore().clients;
+        const favorites = clients.filter((e, i) => e.favorite==true);
+        console.log(favorites)
+        return favorites
+              },
       addtofavorite: (index) => {
         const store = getStore();
         const newclients = [...store.clients];
