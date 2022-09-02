@@ -1,10 +1,9 @@
+
 const URL = `${process.env.BACKEND_URL}/api`
 
-const getState = ({
-  getStore,
-  getActions,
-  setStore
-}) => {
+
+const getState = ({ getStore, getActions, setStore }) => {
+
   return {
     store: {
       docs:[],
@@ -21,8 +20,27 @@ const getState = ({
         msg: "",
         show: false,
       },
+      notes: [],
       status: "",
       showError: false,
+      clients: [],
+      currentClient: {
+        user: {
+          delete: false,
+          dni: "",
+          first_lastname: "",
+          id: "",
+          is_active: true,
+          lawyer_id: "",
+          name: "",
+          second_lastname: "",
+        },
+        contact: {
+          address: "",
+          email: "",
+          phone: "",
+        },
+      },
     },
     actions: {
       setAlert: (payload) => {
@@ -262,16 +280,19 @@ const getState = ({
         }
       },
 
-
       upload: (values) => {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "multipart/form-data");
         let data = new FormData();
         let payload = {
           ...values,
-        }
-        data.append('file', values)
+        };
+        data.append("file", values);
+        console.log(payload);
+        console.log(data);
         for (let key in payload) {
+          console.log(key);
+
           if (key === "file") {
             data.append("file", payload[key]);
           } else {
@@ -286,16 +307,16 @@ const getState = ({
           }
           return obj;
         };
+        console.log(serializeForm(data));
         return fetch(`${URL}/upload`, {
-            method: "POST",
-            //cors: "no-cors",
-            headers: myHeaders,
-            body: data
-          })
-          .then(res => {
-            if (!res.ok) throw new Error(res.statusText);
-            return res.json();
-          })
+          method: "POST",
+          //cors: "no-cors",
+          headers: myHeaders,
+          body: data,
+        }).then((res) => {
+          if (!res.ok) throw new Error(res.statusText);
+          return res.json();
+        });
 
       },
       userIsLogin: () => {
@@ -362,6 +383,108 @@ const getState = ({
         setStore({
           notes: newNotes,
         });
+      },
+      addClient: (userdata, usercontact) => {
+        const store = getStore();
+        let clientID = "";
+        // Save Client without email, phone or address
+        fetch(`${URL}/client`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(userdata),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            clientID = data.client.id;
+            console.log(data.client);
+            setStore({
+              clients: [
+                ...store.clients,
+                {
+                  ...data.client,
+                },
+              ],
+            });
+          })
+          .catch((error) => console.error(error))
+          .then(() => {
+            console.log(clientID);
+            // Save email, phone, address
+            const body = {
+              client_id: clientID,
+              ...usercontact,
+            };
+            fetch(`${URL}/usercontact`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(body),
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                console.log(data);
+              })
+              .catch((error) => console.error(error));
+          });
+      },
+      getClients: () => {
+        const store = getStore();
+        fetch(`${URL}/client?userid=${store.user.id}`)
+          .then((res) => res.json())
+          .then((data) => {
+            setStore({
+              clients: data.clients,
+            });
+            console.log(store.clients);
+          });
+      },
+      getClient: (id) => {
+        fetch(`${URL}/client/${id}`)
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+            setStore({
+              currentClient: {
+                user: data.user,
+                contact: "",
+              },
+            });
+          })
+          .catch((error) => console.log(error));
+      },
+      deleteClient: (index) => {
+        const clients = getStore().clients;
+        const newclients = clients.filter((e, i) => i !== index);
+        setStore({
+          clients: newclients,
+        });
+      },
+      clientSearch: (param) => {
+        const clients = getStore().clients;
+        const newclients = clients.filter((e, i) => e.name.includes(param));
+        setStore({
+          clients: newclients,
+        });
+      },
+      addtofavorite: (index) => {
+        const store = getStore();
+        const newclients = [...store.clients];
+        newclients[index].favorite
+          ? (newclients[index] = {
+              ...newclients[index],
+              favorite: false,
+            })
+          : (newclients[index] = {
+              ...newclients[index],
+              favorite: true,
+            });
+        setStore({
+          clients: newclients,
+        });
+        console.log(store.clients);
       },
     },
   };

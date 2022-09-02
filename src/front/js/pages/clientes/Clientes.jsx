@@ -1,8 +1,24 @@
-import React from "react";
-import { BiDotsHorizontalRounded } from "react-icons/bi";
+import React, { useContext, useEffect, useState } from "react";
+import { BiDotsHorizontalRounded, BiStar } from "react-icons/bi";
 import { Link } from "react-router-dom";
+import { Context } from "../../store/appContext";
 
 const Clientes = () => {
+  const { store, actions } = useContext(Context);
+  const [users, setusers] = useState(store.clients);
+  const [searchValue, setsearchValue] = useState("");
+
+  useEffect(() => {
+    setusers(store.clients);
+  }, [store.clients]);
+
+  useEffect(() => {
+    const usersfilter = store.clients.filter((value) =>
+      value.name.toLowerCase().includes(searchValue.toLowerCase())
+    );
+    setusers(usersfilter);
+  }, [searchValue]);
+
   const checkbox = (
     <input
       class="form-check-input"
@@ -12,7 +28,13 @@ const Clientes = () => {
     />
   );
 
-  const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1];
+  const handleDelete = (index) => {
+    actions.deleteClient(index);
+  };
+
+  const handleFavorite = (index) => {
+    actions.addtofavorite(index);
+  };
 
   return (
     <>
@@ -22,15 +44,17 @@ const Clientes = () => {
           className="d-flex align-items-center"
           style={{ fontSize: 0.75 + "rem" }}
         >
-          <div>
+          {/* <div>
             <span>Ordenar</span>
             <span className="mx-2 fw-semibold dropdown-toggle">
               Alfabeticamente
             </span>
-          </div>
+          </div> */}
           <div className="mx-2">
             <span>Total:</span>
-            <span className="mx-2 fw-semibold">38 Clientes</span>
+            <span className="mx-2 fw-semibold">
+              {store.clients.length} Clientes
+            </span>
           </div>
           <Link to="/nuevo-cliente">
             <button className="btn btn-primary btn-sm">
@@ -63,6 +87,7 @@ const Clientes = () => {
                     <th
                       style={{ fontSize: 0.8 + "rem" }}
                       className="fw-normal text-muted text-center"
+                      m
                     >
                       Status
                     </th>
@@ -81,16 +106,19 @@ const Clientes = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.map((item, index) => {
+                  {users.map((item, index) => {
                     return (
-                      <tr>
+                      <tr key={index}>
                         <td scope="row" className="text-center">
                           {checkbox}
                         </td>
                         <td>
-                          <Link className="text-decoration-none text-black" to="/client/eduardo">
+                          <Link
+                            className="text-decoration-none text-black"
+                            to={`/client/${item.id}`}
+                          >
                             <img
-                              src="https://www.lavanguardia.com/files/image_449_220/files/fp/uploads/2022/06/13/62a776a005e6f.r_d.3200-2132.jpeg"
+                              src="https://wallchase.com/assets/img/no-pic.jpg"
                               width={40}
                               height={40}
                               alt=""
@@ -98,7 +126,16 @@ const Clientes = () => {
                               style={{ objectFit: "cover" }}
                             />{" "}
                             <span className="mx-2 fw-semibold">
-                              Jonny Deep Martinez
+                              {item.favorite ? (
+                                <BiStar
+                                  size={20}
+                                  className="me-2"
+                                  color="#D2B43B"
+                                />
+                              ) : (
+                                ""
+                              )}
+                              {`${item.name} ${item.first_lastname} ${item.second_lastname}`}
                             </span>
                           </Link>
                         </td>
@@ -109,7 +146,35 @@ const Clientes = () => {
                         </td>
                         <td className="text-center">8</td>
                         <td className="text-center">
-                          <BiDotsHorizontalRounded size={17} color="gray" />
+                          <div class="btn-group dropend">
+                            <div
+                              type="button"
+                              data-bs-toggle="dropdown"
+                              aria-expanded="false"
+                            >
+                              <BiDotsHorizontalRounded size={17} color="gray" />
+                            </div>
+                            <ul class="dropdown-menu">
+                              <li>
+                                <a
+                                  class="dropdown-item"
+                                  href="#"
+                                  onClick={() => handleDelete(index)}
+                                >
+                                  Eliminar
+                                </a>
+                              </li>
+                              <li>
+                                <a
+                                  class="dropdown-item"
+                                  href="#"
+                                  onClick={() => handleFavorite(index)}
+                                >
+                                  Seguir
+                                </a>
+                              </li>
+                            </ul>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -126,10 +191,11 @@ const Clientes = () => {
                 style={{ backgroundColor: "#FCFDFF" }}
               >
                 <span>Buscar Cliente</span>
-                <button className="btn link-danger px-0">clear</button>
+                <button className="btn link-danger px-0">limpiar</button>
               </div>
               <div className="p-4">
                 <input
+                  onChange={(e) => setsearchValue(e.target.value)}
                   className="form-control"
                   type="text"
                   placeholder="Ejemplo: juan..."

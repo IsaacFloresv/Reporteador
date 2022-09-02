@@ -22,8 +22,9 @@ const injectContext = (PassedComponent) => {
     );
 
     useEffect(() => {
-      state.actions.userIsLogin();
       state.actions.getNotes();
+      state.actions.userIsLogin();
+      state.actions.getClients();
     }, []);
 
     useEffect(() => {

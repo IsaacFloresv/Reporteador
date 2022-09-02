@@ -1,9 +1,43 @@
-import React from "react";
-import { GrDocumentUpload } from "react-icons/gr/index";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Context } from "../../store/appContext";
 
 const NewClient = () => {
-  const navigate = useNavigate()
+  const [user, setuser] = useState(null);
+  const { store, actions } = useContext(Context);
+  const navigate = useNavigate();
+
+  const handleInputChange = (e) => {
+    setuser({
+      ...user,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    actions.addClient(
+      {
+        // userdata
+        lawyer_id: store.user.id,
+        name: user.name,
+        dni: user.dni,
+        first_lastname: user.first_lastname,
+        second_lastname: user.second_lastname,
+        is_active: true,
+      },
+      {
+        // usercontact
+        phone_one: user.phone_one,
+        phone_two: user.phone_two,
+        email_one: user.email_one,
+        email_two: user.email_two,
+        address_one: user.address_one,
+        address_two: user.address_two,
+      }
+    );
+    navigate(-1);
+  };
 
   return (
     <div>
@@ -12,21 +46,29 @@ const NewClient = () => {
           <h5 className="p-0">Agregar un nuevo cliente</h5>
         </div>
         <div>
-        
-          <button onClick={() => navigate(-1)} className="btn btn-link text-danger btn-cancel">
+          <button
+            onClick={() => navigate(-1)}
+            className="btn btn-link text-danger btn-cancel"
+          >
             Cancelar
           </button>
-          <button className="btn btn-primary">Guardar</button>
+          <button onClick={handleSubmit} className="btn btn-primary">
+            Guardar
+          </button>
         </div>
       </div>
       <div className="bg-white rounded dashed-border p-4">
         <div className="row">
-          <label className="my-2 text-primary">1. Informacion del Cliente</label>
+          <label className="my-2 text-primary">
+            1. Informacion del Cliente
+          </label>
           <div>
             <div className="row">
               <div className="col-md-6">
                 <label>Nombres</label>
                 <input
+                  onChange={handleInputChange}
+                  name="name"
                   type="text"
                   className="form-control"
                   aria-label="Proceeding"
@@ -35,7 +77,9 @@ const NewClient = () => {
               <div className="col-md-6">
                 <label>Numero de DNI</label>
                 <input
-                  type="text"
+                  onChange={handleInputChange}
+                  name="dni"
+                  type="number"
                   className="form-control"
                   aria-label="Proceeding"
                 />
@@ -43,6 +87,8 @@ const NewClient = () => {
               <div className="col-md-6">
                 <label>Apellido paterno</label>
                 <input
+                  onChange={handleInputChange}
+                  name="first_lastname"
                   type="text"
                   className="form-control"
                   aria-label="Proceeding"
@@ -51,6 +97,8 @@ const NewClient = () => {
               <div className="col-md-6">
                 <label>Apellido materno</label>
                 <input
+                  onChange={handleInputChange}
+                  name="second_lastname"
                   type="text"
                   className="form-control"
                   aria-label="Proceeding"
@@ -59,28 +107,31 @@ const NewClient = () => {
               <div className="col-md-6">
                 <label>Numero de Telefono #1</label>
                 <input
+                  onChange={handleInputChange}
+                  name="phone_one"
                   type="text"
                   className="form-control"
                   aria-label="Proceeding"
                 />
               </div>
               <div className="col-md-6">
-                <label>
-                Numero de Telefono #2
-                  <text className="text-black-50">(optional)</text>
+                <label className="">
+                  Numero de Telefono #2
+                  <span className="text-muted mx-2">(optional)</span>
                 </label>
                 <input
+                  onChange={handleInputChange}
+                  name="phone_two"
                   type="text"
                   className="form-control"
                   aria-label="Proceeding"
                 />
-                <text className="float-end text-primary">
-                  + Add more phone numbers
-                </text>
               </div>
               <div className="col-md-6">
                 <label>Email #1</label>
                 <input
+                  onChange={handleInputChange}
+                  name="email_one"
                   type="text"
                   className="form-control"
                   aria-label="Proceeding"
@@ -88,20 +139,21 @@ const NewClient = () => {
               </div>
               <div className="col-md-6">
                 <label>
-                  Email #2<text className="text-black-50">(optional)</text>
+                  Email #2<span className="text-muted mx-2">(optional)</span>
                 </label>
                 <input
+                  onChange={handleInputChange}
+                  name="email_two"
                   type="text"
                   className="form-control"
                   aria-label="Proceeding"
                 />
-                <text className="float-end text-primary">
-                  + Add more emails
-                </text>
               </div>
               <div className="col-md-6">
                 <label>Address #1</label>
                 <input
+                  onChange={handleInputChange}
+                  name="address_one"
                   type="text"
                   className="form-control"
                   aria-label="Proceeding"
@@ -109,48 +161,29 @@ const NewClient = () => {
               </div>
               <div className="col-md-6">
                 <label>
-                  Adress #2<text className="text-black-50">(optional)</text>
+                  Adress #2<span className="text-muted mx-2">(optional)</span>
                 </label>
                 <input
+                  onChange={handleInputChange}
+                  name="address_two"
                   type="text"
                   className="form-control"
                   aria-label="Proceeding"
                 />
-                <text className="float-end text-primary">
-                  + Add more phone addresses
-                </text>
               </div>
             </div>
 
-            <div className="row">
+            {/* <div className="row">
               <div className="col-md-6">
                 <label className="">Customer Photo</label>
-                <div className="dashed-border-upload form-control text-center upload-bg">
-                  <GrDocumentUpload />
-                  <div>Drag and drop your file</div>
-                  <div>Max-size 1Mb</div>
-                </div>
+                <br />
+                <input
+                  onChange={handleInputChange}
+                  name="profile_picture"
+                  type="file"
+                />
               </div>
-              <div className="col-md-6">
-                <label className="">DNI</label>
-                <div className="dashed-border-upload form-control text-center upload-bg">
-                  <GrDocumentUpload />
-                  <div>Drag and drop your file</div>
-                  <div>Max-size 1Mb</div>
-                </div>
-              </div>
-            </div>
-            <hr />
-            <label className="text-primary">2. Case Info</label>
-            <div className="d-flex ">
-              <button className="btn btn-link text-dark fw-bold">
-                Assign to existing case
-              </button>
-              <label className="text-dark fw-light">O</label>
-              <button className="btn btn-link text-dark fw-bold">
-                Create a new case
-              </button>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

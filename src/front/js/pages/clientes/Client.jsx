@@ -1,13 +1,20 @@
-import React from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { FiEdit, FiSmartphone } from "react-icons/fi";
 import { TbMail } from "react-icons/tb";
 import { BsFillBriefcaseFill, BsClockHistory } from "react-icons/bs";
-import CaseUpdate from "../../components/case_update/CaseUpdate.jsx";
+import { Context } from "../../store/appContext.js";
 
 const Client = () => {
+  const [user, setuser] = useState({});
+  const { store, actions } = useContext(Context);
   const { name } = useParams();
+
+  useEffect(() => {
+    actions.getClient(name);
+  }, []);
+
   return (
     <>
       <div className="container-fluid mt-4">
@@ -21,7 +28,7 @@ const Client = () => {
               >
                 <div className="d-flex align-items-center">
                   <img
-                    src="https://www.lavanguardia.com/files/image_449_220/files/fp/uploads/2022/06/13/62a776a005e6f.r_d.3200-2132.jpeg"
+                    src="https://wallchase.com/assets/img/no-pic.jpg"
                     alt="client-picture"
                     height={110}
                     width={110}
@@ -33,9 +40,9 @@ const Client = () => {
                       Activo
                     </span>
                     <h3 className="fw-bold mb-0">
-                      Jonny Jose
+                      {store.currentClient.user.name}
                       <br />
-                      Deep Gutierrez
+                      {`${store.currentClient.user.first_lastname} ${store.currentClient.user.second_lastname}`}
                     </h3>
                     <span className="fw-semibold"> DNI: 99999999</span>
                   </div>

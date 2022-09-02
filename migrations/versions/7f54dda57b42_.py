@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 5232aee6c878
+Revision ID: 7f54dda57b42
 Revises: 
-Create Date: 2022-09-01 07:46:11.653660
+Create Date: 2022-09-02 16:41:05.767552
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '5232aee6c878'
+revision = '7f54dda57b42'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -43,6 +43,7 @@ def upgrade():
     sa.Column('name', sa.String(length=120), nullable=False),
     sa.Column('first_lastname', sa.String(length=120), nullable=False),
     sa.Column('second_lastname', sa.String(length=120), nullable=False),
+    sa.Column('dni', sa.Integer(), nullable=False),
     sa.Column('users_id', sa.Integer(), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('delete', sa.Boolean(), nullable=False),
@@ -74,8 +75,7 @@ def upgrade():
     sa.Column('delete', sa.Boolean(), nullable=False),
     sa.Column('create_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['client_id'], ['Clients.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('address')
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('Cases',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -124,7 +124,7 @@ def upgrade():
     sa.Column('case_id', sa.Integer(), nullable=False),
     sa.Column('title', sa.String(length=500), nullable=False),
     sa.Column('description', sa.String(length=5000), nullable=False),
-    sa.Column('file_id', sa.Integer(), nullable=False),
+    sa.Column('file_id', sa.Integer(), nullable=True),
     sa.Column('delete', sa.Boolean(), nullable=False),
     sa.Column('create_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['case_id'], ['Cases.id'], ),
@@ -137,7 +137,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=150), nullable=False),
     sa.Column('url', sa.String(length=500), nullable=False),
-    sa.Column('Case_updates_id', sa.Integer(), nullable=False),
+    sa.Column('Case_updates_id', sa.Integer(), nullable=True),
     sa.Column('delete', sa.Boolean(), nullable=False),
     sa.Column('create_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['Case_updates_id'], ['Case_updates.id'], ),
