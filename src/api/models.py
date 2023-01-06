@@ -5,25 +5,6 @@ from sqlalchemy.orm import relationship
 
 db = SQLAlchemy()
 
-class texto_casos(db.Model):
-    __tablename__='texto_casos'
-    id = db.Column(db.Integer, primary_key=True)
-    cod = db.Column(db.string(20), unique=False, nullable=False)
-    categoria = db.Column(db.String(200), unique=False, nullable=False)
-    texto = db.Column(db.String(2000), unique=False, nullable=False)
-    
-    def __repr__(self):
-        return f'texto_casos:{self.id}'
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "cod": self.cod,
-            "categoria": self.categoria,
-            "texto": self.texto,
-            # do not serialize the password, its a security breach
-        }
-
 class tipo_id(db.Model):
     __tablename__='tipo_id'
     id = db.Column(db.Integer, primary_key=True)
@@ -359,8 +340,7 @@ class Comerciantes(db.Model):
             "is_active": self.is_active,
             # do not serialize the password, its a security breach
         }
-
-   
+  
 class Cases(db.Model):
     __tablename__='Cases'
     id = db.Column(db.Integer, primary_key=True)
@@ -406,6 +386,24 @@ class Cases(db.Model):
             # do not serialize the password, its a security breach
         }   
 
+class texto_casos(db.Model):
+    __tablename__='texto_casos'
+    id = db.Column(db.Integer, primary_key=True)
+    cod = db.Column(db.string(20), unique=False, nullable=False)
+    categoria = db.Column(db.String(200), unique=False, nullable=False)
+    texto = db.Column(db.String(2000), unique=False, nullable=False)
+    
+    def __repr__(self):
+        return f'texto_casos:{self.id}'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "cod": self.cod,
+            "categoria": self.categoria,
+            "texto": self.texto,
+            # do not serialize the password, its a security breach
+        }
 
 class Case_updates(db.Model):
     __tablename__='Case_updates'
