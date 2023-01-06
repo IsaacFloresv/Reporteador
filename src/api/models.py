@@ -446,30 +446,7 @@ class texto_casos(db.Model):
             "texto": self.texto,
             # do not serialize the password, its a security breach
         }
-
-class Case_updates(db.Model):
-    __tablename__='Case_updates'
-    id = db.Column(db.Integer, primary_key=True)
-    case_id = db.Column(db.Integer, db.ForeignKey('Cases.id'),nullable=False)
-    case_id_relation= relationship(Cases,primaryjoin=case_id==Cases.id)
-    title = db.Column(db.String(500), unique=False, nullable=False)
-    description = db.Column(db.String(5000), unique=False, nullable=False)
-    delete = db.Column(db.Boolean, unique=False, nullable=False)
-    create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
-
-    def __repr__(self):
-        return f'Case update: {self.id}'
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "case_id": self.case_id,
-            "description": self.description,
-            "delete": self.delete,
-
-            # do not serialize the password, its a security breach
-        }
-        
+      
 class respuesta_auto(db.Model):
     _tablename_='respuesta_auto'
     id = db.Column(db.Integer, primary_key=True)
@@ -486,24 +463,5 @@ class respuesta_auto(db.Model):
         "cod": self.cod,
         "titulo": self.titulo,        
         "descrip": self.descrip,
-        }
-        
-class Notifications(db.Model):
-    _tablename_='Notifications'
-    id = db.Column(db.Integer, primary_key=True)
-    description = db.Column(db.String(250), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('Users.id'),nullable=False)
-    user_id_relation= relationship(Users,primaryjoin=user_id==Users.id)
-    create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
-
-    def __repr__(self):
-        return f'Notifications {self.description}'
-
-    def serialize(self):
-        return{
-        "id": self.id,
-        "description": self.description,
-        "date": self.create_at,
-        }
-        
+        }    
     
