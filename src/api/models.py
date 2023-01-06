@@ -96,29 +96,28 @@ class phones(db.Model):
             # do not serialize the password, its a security breach
         }
 
-class district(db.Model):
-    __tablename__='district'
+class provincias(db.Model):
+    __tablename__='provincias'
     id = db.Column(db.Integer, primary_key=True)
-    id_cantones = db.Column(db.string(50), unique=False, nullable=False)
-    cod = db.Column(db.String(50), unique=False, nullable=False)
+    cod = db.Column(db.String(200), unique=False, nullable=False)
     descrip = db.Column(db.String(50), unique=False, nullable=False)
     
     def __repr__(self):
-        return f'district:{self.id}'
+        return f'provincias:{self.id}'
 
     def serialize(self):
         return {
             "id": self.id,
-            "id_cantones": self.id_cantones,
             "cod": self.cod,
             "descrip": self.descrip,
             # do not serialize the password, its a security breach
         }
-
+        
 class cantones(db.Model):
     __tablename__='cantones'
     id = db.Column(db.Integer, primary_key=True)
-    id_provincias = db.Column(db.string(50), unique=False, nullable=False)
+    id_provincias = db.Column(db.string(50), db.ForeignKey('provincias.id'),nullable=False)
+    id_provincias_relation = relationship(provincias,primaryjoin=id_provincias==provincias.id)
     cod = db.Column(db.String(200), unique=False, nullable=False)
     descrip = db.Column(db.String(50), unique=False, nullable=False)
     
@@ -134,18 +133,21 @@ class cantones(db.Model):
             # do not serialize the password, its a security breach
         }
 
-class provincias(db.Model):
-    __tablename__='provincias'
+class district(db.Model):
+    __tablename__='district'
     id = db.Column(db.Integer, primary_key=True)
-    cod = db.Column(db.String(200), unique=False, nullable=False)
+    id_cantones = db.Column(db.string(50), db.ForeignKey('cantones.id'),nullable=False)
+    id_cantones_relation = relationship(cantones,primaryjoin=id_cantones==cantones.id)
+    cod = db.Column(db.String(50), unique=False, nullable=False)
     descrip = db.Column(db.String(50), unique=False, nullable=False)
     
     def __repr__(self):
-        return f'provincias:{self.id}'
+        return f'district:{self.id}'
 
     def serialize(self):
         return {
             "id": self.id,
+            "id_cantones": self.id_cantones,
             "cod": self.cod,
             "descrip": self.descrip,
             # do not serialize the password, its a security breach
@@ -191,20 +193,18 @@ class person(db.Model):
             # do not serialize the password, its a security breach
         }
 
-class asunto(db.Model):
-    __tablename__='asunto'
+class bienes(db.Model):
+    __tablename__='bienes'
     id = db.Column(db.Integer, primary_key=True)
-    id_materia = db.Column(db.Integer, unique=False, nullable=False)
     cod = db.Column(db.String(50), unique=False, nullable=False)
     descrip = db.Column(db.String(300), unique=False, nullable=False)
     
     def __repr__(self):
-        return f'asunto:{self.id}'
+        return f'bienes:{self.id}'
 
     def serialize(self):
         return {
             "id": self.id,
-            "id_materia": self.id_materia,
             "cod": self.cod,
             "descrip": self.descrip,
             # do not serialize the password, its a security breach
@@ -227,14 +227,34 @@ class materia(db.Model):
             # do not serialize the password, its a security breach
         }
 
-class bienes(db.Model):
-    __tablename__='bienes'
+class asunto(db.Model):
+    __tablename__='asunto'
+    id = db.Column(db.Integer, primary_key=True)
+    id_materia = db.Column(db.Integer, db.ForeignKey('materia.id'),nullable=False)
+    id_materia_relation = relationship(materia,primaryjoin=id_materia==materia.id)
+    cod = db.Column(db.String(50), unique=False, nullable=False)
+    descrip = db.Column(db.String(300), unique=False, nullable=False)
+    
+    def __repr__(self):
+        return f'asunto:{self.id}'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "id_materia": self.id_materia,
+            "cod": self.cod,
+            "descrip": self.descrip,
+            # do not serialize the password, its a security breach
+        }
+
+class cat_origen(db.Model):
+    __tablename__='cat_origen'
     id = db.Column(db.Integer, primary_key=True)
     cod = db.Column(db.String(50), unique=False, nullable=False)
     descrip = db.Column(db.String(300), unique=False, nullable=False)
     
     def __repr__(self):
-        return f'bienes:{self.id}'
+        return f'cat_origen:{self.id}'
 
     def serialize(self):
         return {
@@ -248,6 +268,8 @@ class origen(db.Model):
     __tablename__='origen'
     id = db.Column(db.Integer, primary_key=True)
     n_origen = db.Column(db.Integer, primary_key=True)
+    cate_origen = db.column(db.Integer, ForeignKey('cat_origen.id'),nullable=False)
+    cate_origen_relation = relationship(cat_origen,primaryjoin=cate_origen==cat_origen.id)
     cod = db.Column(db.String(50), unique=False, nullable=False)
     descrip = db.Column(db.String(300), unique=False, nullable=False)
     
@@ -258,6 +280,7 @@ class origen(db.Model):
         return {
             "id": self.id,
             "n_origen": self.id,
+            "cate_origen": self.cate_origen,
             "cod": self.cod,
             "descrip": self.descrip,
             # do not serialize the password, its a security breach
@@ -320,7 +343,7 @@ class Comerciantes(db.Model):
     Lastname_2 = db.Column(db.String(120), unique=False, nullable=False)
     dni = db.Column(db.Integer, unique=False, nullable=False)
     users_id = db.Column(db.Integer, db.ForeignKey('Users.id'),nullable=False)
-    users_id_relation= relationship(Users,primaryjoin=users_id==Users.id)
+    users_id_relation= relationship(users,primaryjoin=users_id==users.id)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
     delete = db.Column(db.Boolean, unique=False, nullable=False,default=False)
     create_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
@@ -345,22 +368,36 @@ class Cases(db.Model):
     __tablename__='Cases'
     id = db.Column(db.Integer, primary_key=True)
     id_case = db.Column(db.Integer, unique=False, nullable=False)
-    id_t_date = db.Column(db.String(50), unique=False, nullable=False)
-    id_agente = db.Column(db.Integer, db.ForeignKey('Clients.id'),nullable=False)
-    id_comerciante = db.Column(db.Integer, db.ForeignKey('Clients.id'),nullable=False)
+    fech_creado = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
+    id_estado = db.Column(db.Integer, db.ForeignKey('estado_caso.id'),nullable=False)
+    id_origen = db.Column(db.Integer, db.ForeignKey('origen.id'),nullable=False)
+    id_origen_relation= relationship(origen,primaryjoin=id_origen==origen.id)    
+    id_agente = db.Column(db.Integer, db.ForeignKey('agente.id'),nullable=False)
+    phone_origen = db.Column(db.Integer, unique=False, nullable=True)
+    id_l_origen = db.Column(db.Integer, db.ForeignKey('origen.id'),nullable=False)
+    id_l_origen_relation = relationship(origen,primaryjoin=id_origen==origen.id)  
+    id_t_id = (db.Integer, db.ForeignKey('tipo_id.id'),nullable=False)
+    id_t_id_relation = relationship(tipo_id,primaryjoin=id_t_id==tipo_id.id) 
+    id_usuario = db.Column(db.Integer, db.ForeignKey('person.id'),nullable=False)
+    id_usuario_relation = relationship(person,primaryjoin=id_usuario==person.id)
+    id_email = db.Column(db.Integer, db.ForeignKey('email.id'),nullable=False)
+    id_email_relation = relationship(email,primaryjoin=id_email==email.id)
+    id_phone = db.Column(db.Integer, db.ForeignKey('phone.id'),nullable=False)
+    id_phone_relation = relationship(phone,primaryjoin=id_phone==phone.id)
+    id_distrito = db.Column(db.Integer, db.ForeignKey('distrito.id'),nullable=False)
+    id_distrito_relation = relationship(distrito,primaryjoin=id_distrito==district.id)
+    id_comerciante = db.Column(db.Integer, unique=False, nullable=False)
     nomb_fantacia = db.Column(db.Integer, unique=False, nullable=False)
     fech_incumplimiento = db.Column(db.DateTime(timezone=True), unique=False, nullable=False)
-    id_origen = db.Column(db.Integer, db.ForeignKey('Clients.id'),nullable=False)
-    id_origen_relation= relationship(Clients,primaryjoin=client_id==Clients.id)
-    id_phone = db.Column(db.Integer, db.ForeignKey('Users.id'),nullable=False)
-    id_phone_relation= relationship(Users,primaryjoin=lawyer_id==Users.id)
-    plazo_garantia = db.Column(db.Integer, unique=False, nullable=True)
-    id_description = db.Column(db.Integer, unique=False, nullable=False)
-    id_resp_agent = db.Column(db.Integer, unique=False, nullable=True)
-    id_bienes = db.Column(db.Integer, unique=False, nullable=False,default=False)
-    id_asunto = db.Column(db.Integer, db.ForeignKey('Clients.id'),nullable=False)
-    fech_creado = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow())
-    id_estado = db.Column(db.Integer, db.ForeignKey('Clients.id'),nullable=False)
+    plazo_garantia = db.Column(db.String(50), unique=False, nullable=True)
+    id_descrip = db.Column(db.Integer, db.ForeignKey('texto_casos.id'),nullable=False)
+    id_descrip_relation = relationship(texto_casos,primaryjoin=id_descrip==texto_casos.id)
+    id_resp_agent = db.Column(db.Integer, db.ForeignKey('texto_casos.id'),nullable=False)
+    id_resp_agent_relation = relationship(texto_casos,primaryjoin=id_resp_agent==texto_casos.id)
+    id_bienes = db.Column(db.Integer, unique=False, db.ForeignKey('bienes.id'),nullable=False)
+    id_distrito_relation = relationship(bienes,primaryjoin=id_bienes==bienes.id)
+    id_asunto = db.Column(db.Integer, db.ForeignKey('asunto.id'),nullable=False)
+    id_asunto_relation = relationship(asunto,primaryjoin=id_asunto==asunto.id)
     
     def __repr__(self):
         return f'Cases {self.id}'
@@ -368,21 +405,26 @@ class Cases(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "id_case": self.id_case,
-            "id_t_date": self.id_t_date,
+            "id_case": self.id_case,            
+            "fech_creado": self.fech_creado,
+            "id_estado": self.id_estado,
+            "id_origen": self.id_origen,
             "id_agente": self.id_agente,
-            "id_comerciante": self.id_comerciante,
+            "phone_origen": self.phone_origen,
+            "id_l_origen": self.id_l_origen,
+            "id_t_id": self.id_t_id,
+            "id_usuario": self.id_usuario,
+            "id_email": self.id_email,
+            "id_phone": self.id_phone,            
+            "id_distrito": self.id_distrito, 
+            "id_comerciante" self.id_comerciante,
             "nomb_fantacia": self.nomb_fantacia,
             "fech_incumplimiento": self.fech_incumplimiento,
-            "id_origen": self.id_origen,
-            "id_phone": self.id_phone,
             "plazo_garantia": self.plazo_garantia,
             "id_description": self.id_description,
             "id_resp_agent": self.id_resp_agent,
             "id_bienes": self.id_bienes,
             "id_asunto": self.id_asunto,
-            "fech_creado": self.fech_creado,
-            "id_estado": self.id_estado,
             # do not serialize the password, its a security breach
         }   
 
@@ -427,7 +469,6 @@ class Case_updates(db.Model):
 
             # do not serialize the password, its a security breach
         }
-#
         
 class respuesta_auto(db.Model):
     _tablename_='respuesta_auto'
