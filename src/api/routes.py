@@ -3,7 +3,7 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 """
 
 from flask import Flask, request, jsonify, url_for, Blueprint, send_file,render_template, make_response
-from api.models import db, Users, Clients, Files, Notes,Cases, Case_updates, Phone_number, Address, Email_address
+from api.models import db, companies, person, estado_caso, tipo_id, caract_esp, email, phones, provincias, cantones, distrit, bienes, materia, asunto, cat_origen, origen, agente, users, Comerciantes, texto_casos, Cases, respuesta_auto
 from api.utils import generate_sitemap, APIException
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 import smtplib
@@ -191,50 +191,76 @@ def single_case(id):
     single_case = case.serialize()
     return jsonify(single_case), 200
 
-
-@api.route('/user', methods=['GET', 'POST', 'PUT'])
-def users():
+@api.route('/companies', methods=['GET', 'POST', 'PUT'])
+def companies():
 
     if request.method == 'GET':
 
-        users = Users.query.all()
-        all_users = list(map(lambda x: x.serialize(), users))
+        companie = companies.query.all()
+        all_companies = list(map(lambda x: x.serialize(), companies))
         response_body = {
-            "msg": "Users list",
-            "Users": all_users
+            "msg": "companies list",
+            "companies": all_companies
         }
         return jsonify(response_body), 200
         db.session.commit()
 
     if request.method == 'PUT':
-        if 'email' not in request.json:
-            return jsonify({"msg": "Fill email fields please"}), 400
+        if 'id_companie' not in request.json:
+            return jsonify({"msg": "Fill id_companie fields please"}), 400
 
-        email = request.json['email']
-        user = Users.query.filter_by(email=email).first()
-
-        if 'password' in request.json:
-            password = request.json['password']
-            user.password = password
+        id_companie = request.json['id_companie']
+        companie = companies.query.filter_by(id_companie=id_companie).first()
 
         if 'name' in request.json:
             name = request.json['name']
-            user.name = name
+            companie.name = name
 
-        if 'lastname' in request.json:
-            lastname = request.json['lastname']
-            user.lastname = lastname
-
-        if 'is_active' in request.json:
-            is_active = request.json['is_active']
-            user.is_active = is_active
+        if 'razon_social' in request.json:
+            lastname = request.json['razon_social']
+            companie.razon_social = razon_social
 
         response_body = {
-            'msg': 'User successfully updated.',
-            'user': user.serialize()
+            'msg': 'companies successfully updated.',
+            'companies': user.serialize()
         }
         db.session.commit()
         return jsonify(response_body), 200
+
+    if request.method == 'POST':
+        body = request.json
+        id_companie = request.json.get('id_companie')
+        name = request.json.get('name')
+        razon_social = request.json.get('razon_social')
+        companie = companies.query.filter_by(id_companie=id_companie).first()
+        
+
+        if body is None:
+            return "The request body is null", 400
+        if not id_companie:
+            return 'You need to specify the id_companie', 400
+        if companie:
+            return jsonify({
+                "status":"id_companie",
+                "msg":"id_companie already exist."
+            }),401
+        if not name:
+            return 'You need to enter a name', 400
+        if not razon_social:
+            return 'You need to enter your razon_social', 400    
+        
+        companie = companie(id_companie=id_companie, name=name, razon_social=razon_social)
+        db.session.add(companie)
+        db.session.commit()
+        
+        response_body = {
+            'msg': 'Se guardo satisfactoriamente...',
+            'companies': companie.serialize()
+        }
+        return jsonify(response_body),200
+
+@api.route('/casos', methods=['POST'])
+def casos():
 
     if request.method == 'POST':
         body = request.json

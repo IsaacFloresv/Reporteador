@@ -5,154 +5,6 @@ from sqlalchemy.orm import relationship
 
 db = SQLAlchemy()
 
-class tipo_id(db.Model):
-    __tablename__='tipo_id'
-    id = db.Column(db.Integer, primary_key=True)
-    cod_t_id = db.Column(db.string(20), unique=False, nullable=False)
-    categoria = db.Column(db.String(20), unique=False, nullable=False)
-    descrip = db.Column(db.String(300), unique=False, nullable=False)
-    
-    def __repr__(self):
-        return f'tipo_id:{self.id}'
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "cod_t_id": self.cod_t_id,
-            "categoria": self.categoria,
-            "descrip": self.descrip,
-            # do not serialize the password, its a security breach
-        }
-
-class estado_caso(db.Model):
-    __tablename__='estado_caso'
-    id = db.Column(db.Integer, primary_key=True)
-    cod = db.Column(db.string(20), unique=False, nullable=False)
-    descrip = db.Column(db.String(300), unique=False, nullable=False)
-    
-    def __repr__(self):
-        return f'estado_caso:{self.id}'
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "cod": self.cod_t_id,
-            "descrip": self.descrip,
-            # do not serialize the password, its a security breach
-        }
-
-class caract_esp(db.Model):
-    __tablename__='caract_esp'
-    id = db.Column(db.Integer, primary_key=True)
-    cod = db.Column(db.string(20), unique=False, nullable=False)
-    descrip = db.Column(db.String(300), unique=False, nullable=False)
-    
-    def __repr__(self):
-        return f'caract_esp:{self.id}'
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "cod": self.cod_t_id,
-            "descrip": self.descrip,
-            # do not serialize the password, its a security breach
-        }
-
-class email(db.Model):
-    __tablename__='email'
-    id = db.Column(db.Integer, primary_key=True)
-    id_person = db.Column(db.Integer, primary_key=True)
-    id_person_relation= relationship(registro_tse,primaryjoin=id==Clients.id)
-    cod = db.Column(db.string(20), unique=False, nullable=False)
-    descrip = db.Column(db.String(300), unique=False, nullable=False)
-    
-    def __repr__(self):
-        return f'email:{self.id}'
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "cod": self.cod_t_id,
-            "descrip": self.descrip,
-            # do not serialize the password, its a security breach
-        }
-
-class phones(db.Model):
-    __tablename__='phones'
-    id = db.Column(db.Integer, primary_key=True)
-    id_origen = db.Column(db.string(50), unique=False, nullable=False)
-    cod = db.Column(db.String(50), unique=False, nullable=False)
-    phone = db.Column(db.String(50), unique=False, nullable=False)
-    
-    def __repr__(self):
-        return f'phones:{self.id}'
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "id_origen": self.id_origen,
-            "cod": self.cod,
-            "phone": self.phone,
-            # do not serialize the password, its a security breach
-        }
-
-class provincias(db.Model):
-    __tablename__='provincias'
-    id = db.Column(db.Integer, primary_key=True)
-    cod = db.Column(db.String(200), unique=False, nullable=False)
-    descrip = db.Column(db.String(50), unique=False, nullable=False)
-    
-    def __repr__(self):
-        return f'provincias:{self.id}'
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "cod": self.cod,
-            "descrip": self.descrip,
-            # do not serialize the password, its a security breach
-        }
-        
-class cantones(db.Model):
-    __tablename__='cantones'
-    id = db.Column(db.Integer, primary_key=True)
-    id_provincias = db.Column(db.string(50), db.ForeignKey('provincias.id'),nullable=False)
-    id_provincias_relation = relationship(provincias,primaryjoin=id_provincias==provincias.id)
-    cod = db.Column(db.String(200), unique=False, nullable=False)
-    descrip = db.Column(db.String(50), unique=False, nullable=False)
-    
-    def __repr__(self):
-        return f'cantones:{self.id}'
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "id_provincias": self.id_provincias,
-            "cod": self.cod,
-            "descrip": self.descrip,
-            # do not serialize the password, its a security breach
-        }
-
-class district(db.Model):
-    __tablename__='district'
-    id = db.Column(db.Integer, primary_key=True)
-    id_cantones = db.Column(db.string(50), db.ForeignKey('cantones.id'),nullable=False)
-    id_cantones_relation = relationship(cantones,primaryjoin=id_cantones==cantones.id)
-    cod = db.Column(db.String(50), unique=False, nullable=False)
-    descrip = db.Column(db.String(50), unique=False, nullable=False)
-    
-    def __repr__(self):
-        return f'district:{self.id}'
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "id_cantones": self.id_cantones,
-            "cod": self.cod,
-            "descrip": self.descrip,
-            # do not serialize the password, its a security breach
-        }
-
 class companies(db.Model):
     __tablename__='companies'
     id = db.Column(db.Integer, primary_key=True)
@@ -190,6 +42,154 @@ class person(db.Model):
             "name": self.name,
             "apell_1": self.apell_1,
             "apell_2": self.apell_2,
+            # do not serialize the password, its a security breach
+        }
+
+class tipo_id(db.Model):
+    __tablename__='tipo_id'
+    id = db.Column(db.Integer, primary_key=True)
+    cod_t_id = db.Column(db.Integer, unique=False, nullable=False)
+    categoria = db.Column(db.String(20), unique=False, nullable=False)
+    descrip = db.Column(db.String(300), unique=False, nullable=False)
+    
+    def __repr__(self):
+        return f'tipo_id:{self.id}'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "cod_t_id": self.cod_t_id,
+            "categoria": self.categoria,
+            "descrip": self.descrip,
+            # do not serialize the password, its a security breach
+        }
+
+class estado_caso(db.Model):
+    __tablename__='estado_caso'
+    id = db.Column(db.Integer, primary_key=True)
+    cod = db.Column(db.String(20), unique=False, nullable=False)
+    descrip = db.Column(db.String(300), unique=False, nullable=False)
+    
+    def __repr__(self):
+        return f'estado_caso:{self.id}'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "cod": self.cod_t_id,
+            "descrip": self.descrip,
+            # do not serialize the password, its a security breach
+        }
+
+class caract_esp(db.Model):
+    __tablename__='caract_esp'
+    id = db.Column(db.Integer, primary_key=True)
+    cod = db.Column(db.String(20), unique=False, nullable=False)
+    descrip = db.Column(db.String(300), unique=False, nullable=False)
+    
+    def __repr__(self):
+        return f'caract_esp:{self.id}'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "cod": self.cod_t_id,
+            "descrip": self.descrip,
+            # do not serialize the password, its a security breach
+        }
+
+class email(db.Model):
+    __tablename__='email'
+    id = db.Column(db.Integer, primary_key=True)
+    id_person = db.Column(db.Integer, primary_key=True)
+    id_person_relation= relationship(person,primaryjoin=id_person==person.id)
+    cod = db.Column(db.String(20), unique=False, nullable=False)
+    descrip = db.Column(db.String(300), unique=False, nullable=False)
+    
+    def __repr__(self):
+        return f'email:{self.id}'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "cod": self.cod_t_id,
+            "descrip": self.descrip,
+            # do not serialize the password, its a security breach
+        }
+
+class phones(db.Model):
+    __tablename__='phones'
+    id = db.Column(db.Integer, primary_key=True)
+    id_origen = db.Column(db.String(50), unique=False, nullable=False)
+    cod = db.Column(db.String(50), unique=False, nullable=False)
+    phone = db.Column(db.String(50), unique=False, nullable=False)
+    
+    def __repr__(self):
+        return f'phones:{self.id}'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "id_origen": self.id_origen,
+            "cod": self.cod,
+            "phone": self.phone,
+            # do not serialize the password, its a security breach
+        }
+
+class provincias(db.Model):
+    __tablename__='provincias'
+    id = db.Column(db.Integer, primary_key=True)
+    cod = db.Column(db.String(200), unique=False, nullable=False)
+    descrip = db.Column(db.String(50), unique=False, nullable=False)
+    
+    def __repr__(self):
+        return f'provincias:{self.id}'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "cod": self.cod,
+            "descrip": self.descrip,
+            # do not serialize the password, its a security breach
+        }
+        
+class cantones(db.Model):
+    __tablename__='cantones'
+    id = db.Column(db.Integer, primary_key=True)
+    id_provincias = db.Column(db.String(50), db.ForeignKey('provincias.id'),nullable=False)
+    id_provincias_relation = relationship(provincias,primaryjoin=id_provincias==provincias.id)
+    cod = db.Column(db.String(200), unique=False, nullable=False)
+    descrip = db.Column(db.String(50), unique=False, nullable=False)
+    
+    def __repr__(self):
+        return f'cantones:{self.id}'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "id_provincias": self.id_provincias,
+            "cod": self.cod,
+            "descrip": self.descrip,
+            # do not serialize the password, its a security breach
+        }
+
+class distrit(db.Model):
+    __tablename__='distrit'
+    id = db.Column(db.Integer, primary_key=True)
+    id_cantones = db.Column(db.String(50), db.ForeignKey('cantones.id'),nullable=False)
+    id_cantones_relation = relationship(cantones,primaryjoin=id_cantones==cantones.id)
+    cod = db.Column(db.String(50), unique=False, nullable=False)
+    descrip = db.Column(db.String(50), unique=False, nullable=False)
+    
+    def __repr__(self):
+        return f'distrit:{self.id}'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "id_cantones": self.id_cantones,
+            "cod": self.cod,
+            "descrip": self.descrip,
             # do not serialize the password, its a security breach
         }
 
@@ -267,8 +267,8 @@ class cat_origen(db.Model):
 class origen(db.Model):
     __tablename__='origen'
     id = db.Column(db.Integer, primary_key=True)
-    n_origen = db.Column(db.Integer, primary_key=True)
-    cate_origen = db.column(db.Integer, ForeignKey('cat_origen.id'),nullable=False)
+    n_origen = db.Column(db.Integer, unique=False, nullable=False)
+    cate_origen = db.Column(db.Integer, db.ForeignKey('cat_origen.id'),nullable=False)
     cate_origen_relation = relationship(cat_origen,primaryjoin=cate_origen==cat_origen.id)
     cod = db.Column(db.String(50), unique=False, nullable=False)
     descrip = db.Column(db.String(300), unique=False, nullable=False)
@@ -291,7 +291,7 @@ class agente(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name_agente = db.Column(db.String(50), primary_key=True)
     id_t_id = db.Column(db.String(50), unique=False, nullable=False)
-    agente_ced = db.Column(db.int, unique=False, nullable=False)
+    agente_ced = db.Column(db.Integer, unique=False, nullable=False)
     agente_pass = db.Column(db.String(50), unique=False, nullable=False)
     id_estado = db.Column(db.Integer, unique=False, nullable=False)
     
@@ -312,7 +312,7 @@ class agente(db.Model):
 class users(db.Model):
     __tablename__='users'
     id = db.Column(db.Integer, primary_key=True)
-    id_t_id = db.Colum(db.Integer, unique=True, nullable=False)
+    id_t_id = db.Column(db.Integer, unique=True, nullable=False)
     id_user = db.Column(db.Integer, unique=False, nullable=False)
     id_caract_esp = db.Column(db.String(500), unique=False, nullable=False)
     id_distrito = db.Column(db.String(100), unique=False, nullable=False)
@@ -363,7 +363,26 @@ class Comerciantes(db.Model):
             "is_active": self.is_active,
             # do not serialize the password, its a security breach
         }
-  
+
+class texto_casos(db.Model):
+    __tablename__='texto_casos'
+    id = db.Column(db.Integer, primary_key=True)
+    cod = db.Column(db.String(20), unique=False, nullable=False)
+    categoria = db.Column(db.String(200), unique=False, nullable=False)
+    texto = db.Column(db.String(2000), unique=False, nullable=False)
+    
+    def __repr__(self):
+        return f'texto_casos:{self.id}'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "cod": self.cod,
+            "categoria": self.categoria,
+            "texto": self.texto,
+            # do not serialize the password, its a security breach
+        }
+
 class Cases(db.Model):
     __tablename__='Cases'
     id = db.Column(db.Integer, primary_key=True)
@@ -376,16 +395,16 @@ class Cases(db.Model):
     phone_origen = db.Column(db.Integer, unique=False, nullable=True)
     id_l_origen = db.Column(db.Integer, db.ForeignKey('origen.id'),nullable=False)
     id_l_origen_relation = relationship(origen,primaryjoin=id_origen==origen.id)  
-    id_t_id = (db.Integer, db.ForeignKey('tipo_id.id'),nullable=False)
+    id_t_id = db.Column(db.Integer, db.ForeignKey('tipo_id.id'),nullable=False)
     id_t_id_relation = relationship(tipo_id,primaryjoin=id_t_id==tipo_id.id) 
     id_usuario = db.Column(db.Integer, db.ForeignKey('person.id'),nullable=False)
     id_usuario_relation = relationship(person,primaryjoin=id_usuario==person.id)
     id_email = db.Column(db.Integer, db.ForeignKey('email.id'),nullable=False)
     id_email_relation = relationship(email,primaryjoin=id_email==email.id)
-    id_phone = db.Column(db.Integer, db.ForeignKey('phone.id'),nullable=False)
-    id_phone_relation = relationship(phone,primaryjoin=id_phone==phone.id)
-    id_distrito = db.Column(db.Integer, db.ForeignKey('distrito.id'),nullable=False)
-    id_distrito_relation = relationship(distrito,primaryjoin=id_distrito==district.id)
+    id_phone = db.Column(db.Integer, db.ForeignKey('phones.id'),nullable=False)
+    id_phone_relation = relationship(phones,primaryjoin=id_phone==phones.id)
+    id_distrito = db.Column(db.Integer, db.ForeignKey('distrit.id'),nullable=False)
+    id_distrito_relation = relationship(distrit,primaryjoin=id_distrito==distrit.id)
     id_comerciante = db.Column(db.Integer, unique=False, nullable=False)
     nomb_fantacia = db.Column(db.Integer, unique=False, nullable=False)
     fech_incumplimiento = db.Column(db.DateTime(timezone=True), unique=False, nullable=False)
@@ -394,8 +413,8 @@ class Cases(db.Model):
     id_descrip_relation = relationship(texto_casos,primaryjoin=id_descrip==texto_casos.id)
     id_resp_agent = db.Column(db.Integer, db.ForeignKey('texto_casos.id'),nullable=False)
     id_resp_agent_relation = relationship(texto_casos,primaryjoin=id_resp_agent==texto_casos.id)
-    id_bienes = db.Column(db.Integer, unique=False, db.ForeignKey('bienes.id'),nullable=False)
-    id_distrito_relation = relationship(bienes,primaryjoin=id_bienes==bienes.id)
+    id_bienes = db.Column(db.Integer, db.ForeignKey('bienes.id'),nullable=False)
+    id_bienes_relation = relationship(bienes,primaryjoin=id_bienes==bienes.id)
     id_asunto = db.Column(db.Integer, db.ForeignKey('asunto.id'),nullable=False)
     id_asunto_relation = relationship(asunto,primaryjoin=id_asunto==asunto.id)
     
@@ -417,7 +436,7 @@ class Cases(db.Model):
             "id_email": self.id_email,
             "id_phone": self.id_phone,            
             "id_distrito": self.id_distrito, 
-            "id_comerciante" self.id_comerciante,
+            "id_comerciante": self.id_comerciante,
             "nomb_fantacia": self.nomb_fantacia,
             "fech_incumplimiento": self.fech_incumplimiento,
             "plazo_garantia": self.plazo_garantia,
@@ -427,25 +446,6 @@ class Cases(db.Model):
             "id_asunto": self.id_asunto,
             # do not serialize the password, its a security breach
         }   
-
-class texto_casos(db.Model):
-    __tablename__='texto_casos'
-    id = db.Column(db.Integer, primary_key=True)
-    cod = db.Column(db.string(20), unique=False, nullable=False)
-    categoria = db.Column(db.String(200), unique=False, nullable=False)
-    texto = db.Column(db.String(2000), unique=False, nullable=False)
-    
-    def __repr__(self):
-        return f'texto_casos:{self.id}'
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "cod": self.cod,
-            "categoria": self.categoria,
-            "texto": self.texto,
-            # do not serialize the password, its a security breach
-        }
       
 class respuesta_auto(db.Model):
     _tablename_='respuesta_auto'
