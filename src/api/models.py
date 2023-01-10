@@ -333,7 +333,7 @@ class users(db.Model):
             'Create_at':self.create_at            
         }
 
-class Comerciantes(db.Model):
+class comerciantes(db.Model):
     __tablename__='Comerciantes'
     id = db.Column(db.Integer, primary_key=True)
     t_dni = db.Column(db.String(50), unique=False, nullable=False)
@@ -383,7 +383,7 @@ class texto_casos(db.Model):
             # do not serialize the password, its a security breach
         }
 
-class Cases(db.Model):
+class cases(db.Model):
     __tablename__='Cases'
     id = db.Column(db.Integer, primary_key=True)
     id_case = db.Column(db.Integer, unique=False, nullable=False)
