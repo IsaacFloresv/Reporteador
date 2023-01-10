@@ -2,7 +2,7 @@
 import os
 from flask_admin import Admin
 
-from .models import db, Users, Clients, Files, Cases, Case_status, Case_updates, Notes, Phone_number,Email_address,Address
+from .models import db
 
 from flask_admin.contrib.sqla import ModelView
 
